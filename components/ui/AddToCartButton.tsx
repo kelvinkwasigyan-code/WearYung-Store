@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { ProductVariant } from '@/types/ecommerce';
+import { addToCart } from '@/lib/cart';
 
 interface AddToCartButtonProps {
   variants: ProductVariant[];
@@ -28,31 +29,17 @@ export default function AddToCartButton({
   const handleAddToCart = () => {
     if (!selectedVariant || !inStock) return;
 
-    // Read existing cart from localStorage
-    const raw = localStorage.getItem('wy-cart');
-    const cart = raw ? JSON.parse(raw) : { items: [] };
-
-    const existingIndex = cart.items.findIndex(
-      (item: { variantId: string }) => item.variantId === selectedVariant.id
-    );
-
-    if (existingIndex >= 0) {
-      cart.items[existingIndex].quantity += quantity;
-    } else {
-      cart.items.push({
-        variantId: selectedVariant.id,
-        productId,
-        productTitle,
-        productSlug,
-        productImage,
-        sku: selectedVariant.sku,
-        price: selectedVariant.price,
-        quantity,
-        attributes: selectedVariant.attributes,
-      });
-    }
-
-    localStorage.setItem('wy-cart', JSON.stringify(cart));
+    addToCart({
+      variantId: selectedVariant.id,
+      productId,
+      productTitle,
+      productSlug,
+      productImage,
+      sku: selectedVariant.sku,
+      price: selectedVariant.price,
+      quantity,
+      attributes: selectedVariant.attributes,
+    });
 
     // Flash confirmation
     setAdded(true);
@@ -61,8 +48,8 @@ export default function AddToCartButton({
 
   const renderAttributeLabel = (variant: ProductVariant): string => {
     const attrs = variant.attributes as Record<string, unknown>;
-    return Object.entries(attrs)
-      .map(([k, v]) => `${String(v)}`)
+    return Object.values(attrs)
+      .map(v => `${String(v)}`)
       .join(' / ');
   };
 

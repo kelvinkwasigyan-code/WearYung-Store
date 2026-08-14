@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { Order, Profile } from '@/types/ecommerce';
@@ -87,7 +88,7 @@ export default async function AccountPage() {
             {o.length === 0 ? (
               <div style={{ padding: '3rem', background: 'var(--wy-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--wy-border)', textAlign: 'center' }}>
                 <p style={{ color: 'var(--wy-muted)', marginBottom: '1rem' }}>No orders yet.</p>
-                <a href="/shop" className="btn btn-primary btn-sm">Start Shopping</a>
+                <Link href="/shop" className="btn btn-primary btn-sm">Start Shopping</Link>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

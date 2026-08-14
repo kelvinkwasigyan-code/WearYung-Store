@@ -4,18 +4,21 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import { useCart } from '@/lib/cart';
 
 interface NavbarProps {
   cartCount?: number;
 }
 
-export default function Navbar({ cartCount = 0 }: NavbarProps) {
+export default function Navbar({ cartCount }: NavbarProps) {
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const supabase = createClient();
+  const cart = useCart();
+  const displayCartCount = cartCount ?? cart.itemCount;
 
   useEffect(() => {
+    const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
@@ -105,7 +108,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <path d="M16 10a4 4 0 01-8 0"/>
               </svg>
-              {cartCount > 0 && (
+              {displayCartCount > 0 && (
                 <span style={{
                   position: 'absolute',
                   top: '-8px',
@@ -121,7 +124,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                  {cartCount}
+                  {displayCartCount}
                 </span>
               )}
             </Link>

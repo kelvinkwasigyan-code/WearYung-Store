@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
@@ -52,11 +53,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="container-wy" style={{ padding: '3rem 1.5rem' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '2rem', fontSize: '0.8rem', color: 'var(--wy-muted)' }}>
-          <a href="/" style={{ color: 'var(--wy-muted)', textDecoration: 'none' }}>Home</a>
+          <Link href="/" style={{ color: 'var(--wy-muted)', textDecoration: 'none' }}>Home</Link>
           <span>/</span>
-          <a href="/shop" style={{ color: 'var(--wy-muted)', textDecoration: 'none' }}>Shop</a>
+          <Link href="/shop" style={{ color: 'var(--wy-muted)', textDecoration: 'none' }}>Shop</Link>
           <span>/</span>
-          <a href={`/shop?category=${p.category}`} style={{ color: 'var(--wy-muted)', textDecoration: 'none', textTransform: 'capitalize' }}>{p.category}</a>
+          <Link href={`/shop?category=${p.category}`} style={{ color: 'var(--wy-muted)', textDecoration: 'none', textTransform: 'capitalize' }}>{p.category}</Link>
           <span>/</span>
           <span style={{ color: 'var(--wy-text)' }}>{p.title}</span>
         </nav>

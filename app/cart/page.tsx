@@ -2,52 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import type { Cart, CartItem } from '@/types/ecommerce';
-
-export const metadata = undefined; // client component
-
-function loadCart(): Cart {
-  if (typeof window === 'undefined') return { items: [], total: 0, itemCount: 0 };
-  try {
-    const raw = localStorage.getItem('wy-cart');
-    const data = raw ? JSON.parse(raw) : { items: [] };
-    const items: CartItem[] = data.items ?? [];
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    return { items, total, itemCount };
-  } catch {
-    return { items: [], total: 0, itemCount: 0 };
-  }
-}
-
-function saveCart(cart: Cart) {
-  localStorage.setItem('wy-cart', JSON.stringify({ items: cart.items }));
-}
+import { useCart, updateCartQuantity, removeCartItem } from '@/lib/cart';
 
 export default function CartPage() {
-  const [cart, setCart] = useState<Cart>({ items: [], total: 0, itemCount: 0 });
+  const cart = useCart();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setCart(loadCart());
-    setMounted(true);
+    // Delay rendering cart items until after initial mount to prevent hydration mismatch
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
-
-  const updateQuantity = (variantId: string, qty: number) => {
-    const updated = {
-      ...cart,
-      items: qty <= 0
-        ? cart.items.filter(i => i.variantId !== variantId)
-        : cart.items.map(i => i.variantId === variantId ? { ...i, quantity: qty } : i),
-    };
-    const total = updated.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const itemCount = updated.items.reduce((sum, item) => sum + item.quantity, 0);
-    const final = { ...updated, total, itemCount };
-    setCart(final);
-    saveCart(final);
-  };
-
-  const removeItem = (variantId: string) => updateQuantity(variantId, 0);
 
   if (!mounted) {
     return (
@@ -98,7 +63,7 @@ export default function CartPage() {
                   borderRadius: 'var(--radius-lg)',
                   border: '1px solid var(--wy-border)',
                 }}>
-                  {/* Product thumbnail placeholder */}
+                  {/* Product thumbnail */}
                   <div style={{
                     width: '80px',
                     height: '80px',
@@ -145,13 +110,13 @@ export default function CartPage() {
                       <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--wy-border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
                         <button
                           id={`qty-dec-${item.variantId}`}
-                          onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                          onClick={() => updateCartQuantity(item.variantId, item.quantity - 1)}
                           style={{ padding: '0.25rem 0.6rem', background: 'var(--wy-surface-raised)', border: 'none', color: 'var(--wy-text)', cursor: 'pointer' }}
                         >−</button>
                         <span style={{ padding: '0.25rem 0.75rem', color: 'var(--wy-text)', fontSize: '0.875rem', fontWeight: 600 }}>{item.quantity}</span>
                         <button
                           id={`qty-inc-${item.variantId}`}
-                          onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                          onClick={() => updateCartQuantity(item.variantId, item.quantity + 1)}
                           style={{ padding: '0.25rem 0.6rem', background: 'var(--wy-surface-raised)', border: 'none', color: 'var(--wy-text)', cursor: 'pointer' }}
                         >+</button>
                       </div>
@@ -162,7 +127,7 @@ export default function CartPage() {
                         </p>
                         <button
                           id={`remove-${item.variantId}`}
-                          onClick={() => removeItem(item.variantId)}
+                          onClick={() => removeCartItem(item.variantId)}
                           style={{ background: 'none', border: 'none', color: 'var(--wy-danger)', cursor: 'pointer', padding: '0.25rem' }}
                           aria-label="Remove item"
                         >

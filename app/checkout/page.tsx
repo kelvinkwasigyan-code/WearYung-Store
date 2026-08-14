@@ -1,29 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import type { CartItem } from '@/types/ecommerce';
+import Link from 'next/link';
 import { placeOrder } from '@/app/actions/orders';
-import type { Metadata } from 'next';
-
-export const dynamic = 'force-dynamic';
+import { useCart, clearCart } from '@/lib/cart';
 
 export default function CheckoutPage() {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const cart = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('wy-cart');
-      const data = raw ? JSON.parse(raw) : { items: [] };
-      const items: CartItem[] = data.items ?? [];
-      setCart(items);
-      setTotal(items.reduce((sum, i) => sum + i.price * i.quantity, 0));
-    } catch { /* empty */ }
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,12 +21,12 @@ export default function CheckoutPage() {
     setLoading(true);
     setError('');
     const formData = new FormData(e.currentTarget);
-    const result = await placeOrder(formData, cart);
+    const result = await placeOrder(formData, cart.items);
     if (result?.error) {
       setError(result.error);
       setLoading(false);
     } else {
-      localStorage.removeItem('wy-cart');
+      clearCart();
     }
   };
 
@@ -62,7 +52,13 @@ export default function CheckoutPage() {
     marginBottom: '0.4rem',
   };
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 40, height: 40 }} className="skeleton" />
+      </div>
+    );
+  }
 
   return (
     <div style={{ background: 'var(--wy-canvas)', minHeight: '100vh' }}>
@@ -76,10 +72,10 @@ export default function CheckoutPage() {
       </div>
 
       <div className="container-wy" style={{ padding: '2.5rem 1.5rem' }}>
-        {cart.length === 0 ? (
+        {cart.items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--wy-muted)' }}>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: '1rem' }}>Your cart is empty</p>
-            <a href="/shop" className="btn btn-primary">Continue Shopping</a>
+            <Link href="/shop" className="btn btn-primary">Continue Shopping</Link>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -161,7 +157,7 @@ export default function CheckoutPage() {
                 </h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                  {cart.map(item => (
+                  {cart.items.map(item => (
                     <div key={item.variantId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                       <span style={{ color: 'var(--wy-muted)' }}>
                         {item.productTitle} × {item.quantity}
@@ -176,7 +172,7 @@ export default function CheckoutPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', letterSpacing: '0.06em', color: 'var(--wy-text)' }}>TOTAL</span>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--wy-yellow)' }}>
-                    ₦{total.toLocaleString()}
+                    ₦{cart.total.toLocaleString()}
                   </span>
                 </div>
 

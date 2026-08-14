@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import ProductCard from '@/components/ui/ProductCard';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type Product, type ProductCategory } from '@/types/ecommerce';
@@ -101,7 +102,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               Categories
             </h3>
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <a
+              <Link
                 href="/shop"
                 id="filter-all"
                 style={{
@@ -119,9 +120,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 }}
               >
                 All
-              </a>
+              </Link>
               {ALL_CATEGORIES.map((cat) => (
-                <a
+                <Link
                   key={cat}
                   href={`/shop?category=${cat}`}
                   id={`filter-${cat}`}
@@ -140,7 +141,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                   }}
                 >
                   {CATEGORY_LABELS[cat]}
-                </a>
+                </Link>
               ))}
             </nav>
           </aside>
