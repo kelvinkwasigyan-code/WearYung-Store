@@ -314,42 +314,8 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 </div>
               </div>
 
-              {/* Category Links */}
-              <div style={{ marginBottom: '1.75rem' }}>
-                <p
-                  style={{
-                    fontSize: '0.7rem',
-                    letterSpacing: '0.15em',
-                    color: 'var(--wy-muted)',
-                    textTransform: 'uppercase',
-                    marginBottom: '0.75rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  CATEGORIES
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                  {ALL_CATEGORIES.map((cat) => (
-                    <Link
-                      key={cat}
-                      href={`/shop?category=${cat}`}
-                      onClick={() => setDrawerOpen(false)}
-                      className="transition-colors duration-200 text-zinc-300 hover:text-[#FFC800]"
-                      style={{
-                        fontSize: '0.88rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {CATEGORY_LABELS[cat as ProductCategory]}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
               {/* Support Utilities */}
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ marginBottom: '1.75rem' }}>
                 <p
                   style={{
                     fontSize: '0.7rem',
@@ -377,6 +343,40 @@ export default function Navbar({ cartCount }: NavbarProps) {
                       }}
                     >
                       {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Category Links */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <p
+                  style={{
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.15em',
+                    color: 'var(--wy-muted)',
+                    textTransform: 'uppercase',
+                    marginBottom: '0.75rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  CATEGORIES
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {ALL_CATEGORIES.map((cat) => (
+                    <Link
+                      key={cat}
+                      href={`/shop?category=${cat}`}
+                      onClick={() => setDrawerOpen(false)}
+                      className="transition-colors duration-200 text-zinc-300 hover:text-[#FFC800]"
+                      style={{
+                        fontSize: '0.88rem',
+                        fontWeight: 600,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {CATEGORY_LABELS[cat as ProductCategory]}
                     </Link>
                   ))}
                 </div>
