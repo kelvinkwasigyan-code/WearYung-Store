@@ -30,3 +30,8 @@
 - Output Policy: Omit conversational greetings, filler introductions, and polite sign-offs.
 - Complex Tasks: For multi-file changes or bug fixes, state a concise 2–3 bullet point strategy before outputting code.
 - Precision: Only modify affected code blocks rather than re-printing entire unchanged files.
+
+## CODE PRESERVATION RULES
+- DO NOT rewrite entire page files when adding new features.
+- Keep UI sections isolated inside `/components`.
+- When updating `app/page.tsx`, retain all existing components (`HeroSection`, `CategoryGrid`, `ValueProps`, `CallToActionBanner`, `AnnouncementMarquee`, `Footer`) and append new components modularly.

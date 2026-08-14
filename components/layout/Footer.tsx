@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
+import AnnouncementMarquee from '../AnnouncementMarquee';
 
 export default function Footer() {
   const categories = ALL_CATEGORIES;
@@ -9,37 +10,8 @@ export default function Footer() {
   return (
     <footer style={{ background: 'var(--wy-surface)', borderTop: '1px solid var(--wy-border)', marginTop: 'auto' }}>
       {/* Marquee Banner */}
-      <div style={{
-        background: 'var(--wy-yellow)',
-        overflow: 'hidden',
-        padding: '0.75rem 0',
-        borderTop: '2px solid var(--wy-canvas)',
-      }}>
-        <div
-          className="animate-marquee"
-          style={{
-            display: 'flex',
-            gap: '3rem',
-            width: 'max-content',
-          }}
-        >
-          {[...Array(2)].map((_, i) => (
-            <div key={i} style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
-              {['FREE DELIVERY ON ORDERS ABOVE ₦50K', 'AUTHENTIC STREETWEAR', 'PREMIUM QUALITY GUARANTEED', 'SHOP THE LATEST DROPS', 'EXCLUSIVE COLLECTIONS'].map((text) => (
-                <span key={text} style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '1rem',
-                  letterSpacing: '0.1em',
-                  color: 'var(--wy-canvas)',
-                  whiteSpace: 'nowrap',
-                }}>
-                  {text} <span style={{ margin: '0 0.5rem', opacity: 0.5 }}>★</span>
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+      <AnnouncementMarquee />
+
 
       <div className="container-wy" style={{ padding: '4rem 1.5rem 2rem' }}>
         <div style={{
