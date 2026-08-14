@@ -1,7 +1,44 @@
+'use client';
+
 import Link from 'next/link';
 import StatsBar from './StatsBar';
+import { motion, type Variants } from 'framer-motion';
+import { Fragment, useState, useEffect } from 'react';
 
 export default function HeroSection() {
+  const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimationKey(prev => prev + 1);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const words = [
+    { text: 'DRESS', color: '#FFFFFF', glow: false, br: false },
+    { text: 'LIKE', color: '#FFFFFF', glow: false, br: true },
+    { text: 'YOU', color: '#FFFFFF', glow: false, br: false },
+    { text: 'OWN', color: '#FFC800', glow: true, br: true },
+    { text: 'THE', color: '#FFC800', glow: true, br: false },
+    { text: 'ROOM', color: '#FFC800', glow: true, br: false },
+  ];
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  };
+
   return (
     <section
       style={{
@@ -78,20 +115,36 @@ export default function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1
+          <motion.h1
+            key={animationKey}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(3.5rem, 10vw, 7rem)',
               letterSpacing: '0.04em',
               lineHeight: 1,
-              color: 'var(--wy-text)',
               marginBottom: '1.5rem',
             }}
           >
-            DRESS LIKE<br />
-            YOU OWN<br />
-            <span className="text-gradient">THE ROOM</span>
-          </h1>
+            {words.map((word, i) => (
+              <Fragment key={i}>
+                <motion.span
+                  variants={itemVariants}
+                  style={{
+                    display: 'inline-block',
+                    color: word.color,
+                    textShadow: word.glow ? '0 0 15px rgba(255,200,0,0.3)' : 'none',
+                    marginRight: '0.25em',
+                  }}
+                >
+                  {word.text}
+                </motion.span>
+                {word.br && <br />}
+              </Fragment>
+            ))}
+          </motion.h1>
 
           <p
             style={{

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { useCartContext } from '@/context/CartContext';
-
+import Image from 'next/image';
 interface NavbarProps {
   cartCount?: number;
 }
@@ -53,15 +53,16 @@ export default function Navbar({ cartCount }: NavbarProps) {
           {/* Logo */}
           <Link
             href="/"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.75rem',
-              letterSpacing: '0.12em',
-              color: 'var(--wy-text)',
-              textTransform: 'uppercase',
-            }}
+            style={{ display: 'flex', alignItems: 'center' }}
           >
-            WEAR<span style={{ color: 'var(--wy-yellow)' }}>YUNG</span>
+            <Image
+              src="/logo.jpeg"
+              alt="WEAR YUNG"
+              width={200}
+              height={60}
+              style={{ objectFit: 'contain', maxHeight: '60px', width: 'auto' }}
+              priority
+            />
           </Link>
 
           {/* Desktop Nav Links */}
