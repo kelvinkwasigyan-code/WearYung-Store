@@ -1,0 +1,405 @@
+@import "tailwindcss";
+
+/* ============================================================
+   WEAR YUNG — Design System
+   Dark Mode First | Premium Streetwear E-Commerce
+   ============================================================ */
+
+/* ---- CSS Custom Properties ---- */
+:root {
+  /* Brand Colors */
+  --wy-yellow: #FFC800;
+  --wy-yellow-dim: #e6b400;
+  --wy-yellow-glow: rgba(255, 200, 0, 0.25);
+  --wy-canvas: #0D0D0D;
+  --wy-surface: #18181B;
+  --wy-surface-raised: #1e1e22;
+  --wy-border: #27272A;
+  --wy-border-light: #3f3f46;
+  --wy-text: #FFFFFF;
+  --wy-muted: #A1A1AA;
+  --wy-muted-dim: #71717a;
+  --wy-danger: #ef4444;
+  --wy-success: #22c55e;
+
+  /* Typography */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Spacing / Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* ---- Base Reset ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--wy-canvas);
+  color: var(--wy-text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ---- Typography ---- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--wy-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--wy-border-light);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--wy-muted-dim);
+}
+
+/* ---- Selection ---- */
+::selection {
+  background: var(--wy-yellow);
+  color: var(--wy-canvas);
+}
+
+/* ---- Focus Ring ---- */
+:focus-visible {
+  outline: 2px solid var(--wy-yellow);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Utility Classes ---- */
+
+/* Yellow gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, var(--wy-yellow) 0%, #ffb300 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass surface */
+.glass {
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--wy-border);
+}
+
+/* Yellow glow */
+.glow-yellow {
+  box-shadow: 0 0 20px var(--wy-yellow-glow), 0 0 60px rgba(255, 200, 0, 0.1);
+}
+
+/* Framed border */
+.framed {
+  border: 2px solid var(--wy-yellow);
+}
+
+/* ---- Animation Keyframes ---- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-yellow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--wy-yellow-glow); }
+  50%       { box-shadow: 0 0 0 8px transparent; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ---- Animation Utilities ---- */
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease forwards;
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+.animate-marquee {
+  animation: marquee 24s linear infinite;
+}
+
+/* ---- Skeleton Loading ---- */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--wy-surface) 25%,
+    var(--wy-surface-raised) 50%,
+    var(--wy-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ---- Container ---- */
+.container-wy {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container-wy {
+    padding: 0 2rem;
+  }
+}
+
+/* ---- Button Base ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--wy-yellow);
+  color: var(--wy-canvas);
+}
+.btn-primary:hover {
+  background: var(--wy-yellow-dim);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--wy-yellow-glow);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--wy-yellow);
+  border: 2px solid var(--wy-yellow);
+}
+.btn-outline:hover {
+  background: var(--wy-yellow);
+  color: var(--wy-canvas);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--wy-text);
+  border: 1px solid var(--wy-border);
+}
+.btn-ghost:hover {
+  border-color: var(--wy-border-light);
+  background: var(--wy-surface);
+}
+
+.btn-danger {
+  background: var(--wy-danger);
+  color: #fff;
+}
+.btn-danger:hover {
+  opacity: 0.9;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+/* ---- Input ---- */
+.input-wy {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--wy-surface);
+  border: 1px solid var(--wy-border);
+  border-radius: var(--radius-md);
+  color: var(--wy-text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast);
+}
+.input-wy::placeholder {
+  color: var(--wy-muted-dim);
+}
+.input-wy:focus {
+  outline: none;
+  border-color: var(--wy-yellow);
+  box-shadow: 0 0 0 3px var(--wy-yellow-glow);
+}
+
+/* ---- Card ---- */
+.card-wy {
+  background: var(--wy-surface);
+  border: 1px solid var(--wy-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+}
+.card-wy:hover {
+  border-color: var(--wy-yellow);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ---- Badge ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+.badge-yellow {
+  background: var(--wy-yellow);
+  color: var(--wy-canvas);
+}
+.badge-outline {
+  background: transparent;
+  border: 1px solid var(--wy-border-light);
+  color: var(--wy-muted);
+}
+.badge-surface {
+  background: var(--wy-surface-raised);
+  color: var(--wy-muted);
+}
+
+/* ---- Divider ---- */
+.divider {
+  border: none;
+  border-top: 1px solid var(--wy-border);
+  margin: 1.5rem 0;
+}
+
+/* ---- Page Section ---- */
+.section-wy {
+  padding: 5rem 0;
+}
+
+@media (max-width: 768px) {
+  .section-wy {
+    padding: 3rem 0;
+  }
+}
+
+/* ---- Page-specific utility classes ---- */
+
+/* Feature card on homepage — CSS-only hover border */
+.feature-card {
+  background: var(--wy-surface);
+  border: 1px solid var(--wy-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  transition: border-color 250ms ease;
+}
+.feature-card:hover {
+  border-color: var(--wy-yellow);
+}
+
+/* CTA dark button on homepage yellow banner */
+.cta-dark-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--wy-canvas);
+  color: var(--wy-yellow);
+  padding: 1rem 2.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.cta-dark-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Nav / Footer link hover (CSS-only) */
+.link-hover {
+  color: var(--wy-muted);
+  transition: color 150ms ease;
+}
+.link-hover:hover {
+  color: var(--wy-text);
+}
+.link-hover-yellow {
+  color: var(--wy-muted);
+  transition: color 150ms ease;
+}
+.link-hover-yellow:hover {
+  color: var(--wy-yellow);
+}
+
+/* ---- Product Card image zoom (CSS-only, no JS events needed) ---- */
+.product-img-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.product-img {
+  transition: transform 400ms ease !important;
+}
+.card-wy:hover .product-img {
+  transform: scale(1.06);
+}

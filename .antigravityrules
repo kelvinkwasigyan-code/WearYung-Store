@@ -1,0 +1,32 @@
+# WEAR YUNG - PROJECT CONTEXT & RULES
+
+## BRAND & UI DESIGN TOKENS
+- Identity: WEAR YUNG (Premium Streetwear & E-Commerce, Dark Mode First)
+- Colors: Yellow `#FFC800` | Canvas `#0D0D0D` | Surface `#18181B` | Border `#27272A` | Text `#FFFFFF` | Muted `#A1A1AA`
+- Aesthetics: High contrast, uppercase headers, yellow call-to-action buttons, framed yellow borders
+
+## STACK ARCHITECTURE
+- Web: Next.js (App Router), TypeScript, Tailwind CSS, `@supabase/ssr`
+- Mobile: Flutter (Android/Play Store), `supabase_flutter`, strict null safety
+- DB: Supabase Postgres (Auth, Realtime Streams, Row Level Security)
+
+## CATEGORIES & SCHEMA
+- Categories: `clothing`, `watches`, `sprays`, `accessories`, `sneakers`, `slides`, `bags`
+- Schema Structure: `products` -> `product_variants` (`sku`, `price`, `stock_quantity`, `attributes` JSONB)
+- Variant Attribute Mapping (JSONB):
+  * Clothing: `{"size": "XL", "color": "Black"}`
+  * Footwear (Sneakers/Slides): `{"size_eu": 42, "colorway": "Black/Gold"}`
+  * Bags: `{"bag_type": "Crossbody", "material": "Leather"}`
+  * Watches: `{"strap": "Steel", "dial_mm": 40}`
+  * Sprays: `{"volume": "100ml", "fragrance_notes": "Woody"}`
+
+## HARD CODING CONSTRAINTS
+1. Stock Deduction: NEVER write direct `UPDATE` queries for stock. ALWAYS call `decrement_stock(variant_id, qty)` RPC function to prevent race conditions.
+2. Security: Enforce Row Level Security (RLS) on all Supabase tables (Public SELECT, Admin Write).
+3. Component Structure: Keep UI components separate from page route handlers (`/components` vs `/app`).
+4. Type Safety: Ensure all variant data is strictly typed in Next.js (`types/ecommerce.ts`) and Flutter models.
+
+## AGENT WORKFLOW INSTRUCTIONS
+- Output Policy: Omit conversational greetings, filler introductions, and polite sign-offs.
+- Complex Tasks: For multi-file changes or bug fixes, state a concise 2–3 bullet point strategy before outputting code.
+- Precision: Only modify affected code blocks rather than re-printing entire unchanged files.
