@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import HeroSection from '@/components/HeroSection';
 import CategoryGrid from '@/components/CategoryGrid';
+import ProductGrid from '@/components/ProductGrid';
 import ValueProps from '@/components/ValueProps';
 import CallToActionBanner from '@/components/CallToActionBanner';
 
@@ -14,6 +15,7 @@ export default function HomePage() {
     <div>
       <HeroSection />
       <CategoryGrid />
+      <ProductGrid />
       <ValueProps />
       <CallToActionBanner />
     </div>
