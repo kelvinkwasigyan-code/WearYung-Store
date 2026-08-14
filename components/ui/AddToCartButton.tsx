@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { ProductVariant } from '@/types/ecommerce';
-import { addToCart } from '@/lib/cart';
+import { useCartContext } from '@/context/CartContext';
 
 interface AddToCartButtonProps {
   variants: ProductVariant[];
@@ -19,6 +19,7 @@ export default function AddToCartButton({
   productSlug,
   productImage,
 }: AddToCartButtonProps) {
+  const { addToCart } = useCartContext();
   const [selectedVariantId, setSelectedVariantId] = useState<string>(variants[0]?.id ?? '');
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);

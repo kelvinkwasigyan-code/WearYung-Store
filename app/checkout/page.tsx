@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { placeOrder } from '@/app/actions/orders';
-import { useCart, clearCart } from '@/lib/cart';
+import { useCartContext } from '@/context/CartContext';
 
 export default function CheckoutPage() {
-  const cart = useCart();
+  const { items, total, clearCart } = useCartContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
@@ -21,7 +21,7 @@ export default function CheckoutPage() {
     setLoading(true);
     setError('');
     const formData = new FormData(e.currentTarget);
-    const result = await placeOrder(formData, cart.items);
+    const result = await placeOrder(formData, items);
     if (result?.error) {
       setError(result.error);
       setLoading(false);
@@ -72,7 +72,7 @@ export default function CheckoutPage() {
       </div>
 
       <div className="container-wy" style={{ padding: '2.5rem 1.5rem' }}>
-        {cart.items.length === 0 ? (
+        {items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--wy-muted)' }}>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: '1rem' }}>Your cart is empty</p>
             <Link href="/shop" className="btn btn-primary">Continue Shopping</Link>
@@ -157,7 +157,7 @@ export default function CheckoutPage() {
                 </h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                  {cart.items.map(item => (
+                  {items.map(item => (
                     <div key={item.variantId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                       <span style={{ color: 'var(--wy-muted)' }}>
                         {item.productTitle} × {item.quantity}
@@ -172,7 +172,7 @@ export default function CheckoutPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', letterSpacing: '0.06em', color: 'var(--wy-text)' }}>TOTAL</span>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--wy-yellow)' }}>
-                    ₦{cart.total.toLocaleString()}
+                    ₦{total.toLocaleString()}
                   </span>
                 </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { Product, ProductVariant } from '@/types/ecommerce';
-import { addToCart } from '@/lib/cart';
+import { useCartContext } from '@/context/CartContext';
 
 interface QuickAddButtonProps {
   product: Product;
@@ -10,6 +10,7 @@ interface QuickAddButtonProps {
 }
 
 export default function QuickAddButton({ product, variant }: QuickAddButtonProps) {
+  const { addToCart } = useCartContext();
   const [added, setAdded] = useState(false);
   const targetVariant = variant || product.variants?.[0];
   const inStock = (targetVariant?.stock_quantity ?? 0) > 0;

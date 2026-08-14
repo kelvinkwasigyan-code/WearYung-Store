@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
-import { useCart } from '@/lib/cart';
+import { useCartContext } from '@/context/CartContext';
 
 interface NavbarProps {
   cartCount?: number;
@@ -14,8 +14,8 @@ export default function Navbar({ cartCount }: NavbarProps) {
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const cart = useCart();
-  const displayCartCount = cartCount ?? cart.itemCount;
+  const { itemCount, toggleCart } = useCartContext();
+  const displayCartCount = cartCount ?? itemCount;
 
   useEffect(() => {
     const supabase = createClient();
@@ -97,37 +97,50 @@ export default function Navbar({ cartCount }: NavbarProps) {
 
           {/* Right Controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Cart */}
-            <Link
-              href="/cart"
+            {/* Cart Button with Slide Drawer Trigger */}
+            <button
+              type="button"
+              onClick={toggleCart}
               id="nav-cart-btn"
-              style={{ position: 'relative', color: 'var(--wy-text)', display: 'flex', alignItems: 'center' }}
+              aria-label="Open Cart"
+              style={{
+                position: 'relative',
+                color: 'var(--wy-text)',
+                display: 'flex',
+                alignItems: 'center',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '0.4rem',
+              }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 01-8 0"/>
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 01-8 0" />
               </svg>
               {displayCartCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-8px',
-                  right: '-8px',
-                  background: 'var(--wy-yellow)',
-                  color: 'var(--wy-canvas)',
-                  borderRadius: '50%',
-                  width: '18px',
-                  height: '18px',
-                  fontSize: '0.65rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    background: 'var(--wy-yellow)',
+                    color: 'var(--wy-canvas)',
+                    borderRadius: '50%',
+                    width: '18px',
+                    height: '18px',
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   {displayCartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             {/* Auth */}
             {user ? (

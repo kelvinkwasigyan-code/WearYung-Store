@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useCart, updateCartQuantity, removeCartItem } from '@/lib/cart';
+import { useCartContext } from '@/context/CartContext';
 
 export default function CartPage() {
-  const cart = useCart();
+  const { items, total, itemCount, updateQuantity, removeFromCart } = useCartContext();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -31,13 +31,13 @@ export default function CartPage() {
             Your Cart
           </h1>
           <p style={{ color: 'var(--wy-muted)', fontSize: '0.9rem' }}>
-            {cart.itemCount} item{cart.itemCount !== 1 ? 's' : ''}
+            {itemCount} item{itemCount !== 1 ? 's' : ''}
           </p>
         </div>
       </div>
 
       <div className="container-wy" style={{ padding: '2.5rem 1.5rem' }}>
-        {cart.items.length === 0 ? (
+        {items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '6rem 2rem', color: 'var(--wy-muted)' }}>
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" style={{ margin: '0 auto 1.5rem', opacity: 0.3 }}>
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -54,7 +54,7 @@ export default function CartPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'start' }}>
             {/* Cart Items */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {cart.items.map(item => (
+              {items.map(item => (
                 <div key={item.variantId} style={{
                   display: 'flex',
                   gap: '1rem',
@@ -110,13 +110,13 @@ export default function CartPage() {
                       <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--wy-border)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
                         <button
                           id={`qty-dec-${item.variantId}`}
-                          onClick={() => updateCartQuantity(item.variantId, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
                           style={{ padding: '0.25rem 0.6rem', background: 'var(--wy-surface-raised)', border: 'none', color: 'var(--wy-text)', cursor: 'pointer' }}
                         >−</button>
                         <span style={{ padding: '0.25rem 0.75rem', color: 'var(--wy-text)', fontSize: '0.875rem', fontWeight: 600 }}>{item.quantity}</span>
                         <button
                           id={`qty-inc-${item.variantId}`}
-                          onClick={() => updateCartQuantity(item.variantId, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                           style={{ padding: '0.25rem 0.6rem', background: 'var(--wy-surface-raised)', border: 'none', color: 'var(--wy-text)', cursor: 'pointer' }}
                         >+</button>
                       </div>
@@ -127,7 +127,7 @@ export default function CartPage() {
                         </p>
                         <button
                           id={`remove-${item.variantId}`}
-                          onClick={() => removeCartItem(item.variantId)}
+                          onClick={() => removeFromCart(item.variantId)}
                           style={{ background: 'none', border: 'none', color: 'var(--wy-danger)', cursor: 'pointer', padding: '0.25rem' }}
                           aria-label="Remove item"
                         >
@@ -157,13 +157,13 @@ export default function CartPage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                  <span style={{ color: 'var(--wy-muted)' }}>Subtotal ({cart.itemCount} items)</span>
-                  <span style={{ color: 'var(--wy-text)' }}>₦{cart.total.toLocaleString()}</span>
+                  <span style={{ color: 'var(--wy-muted)' }}>Subtotal ({itemCount} items)</span>
+                  <span style={{ color: 'var(--wy-text)' }}>₦{total.toLocaleString()}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                   <span style={{ color: 'var(--wy-muted)' }}>Shipping</span>
-                  <span style={{ color: cart.total >= 50000 ? 'var(--wy-success)' : 'var(--wy-text)' }}>
-                    {cart.total >= 50000 ? 'Free' : 'Calculated at checkout'}
+                  <span style={{ color: total >= 50000 ? 'var(--wy-success)' : 'var(--wy-text)' }}>
+                    {total >= 50000 ? 'Free' : 'Calculated at checkout'}
                   </span>
                 </div>
               </div>
@@ -173,7 +173,7 @@ export default function CartPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', letterSpacing: '0.06em', color: 'var(--wy-text)' }}>TOTAL</span>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--wy-yellow)' }}>
-                  ₦{cart.total.toLocaleString()}
+                  ₦{total.toLocaleString()}
                 </span>
               </div>
 
