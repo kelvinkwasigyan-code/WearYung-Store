@@ -1,20 +1,11 @@
-﻿import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getProducts } from '@/lib/supabase/products';
 import type { Product } from '@/types/ecommerce';
 import QuickAddButton from './ui/QuickAddButton';
 
 export default async function ProductGrid() {
-  const supabase = await createClient();
-
-  const { data: products } = await supabase
-    .from('products')
-    .select('*, variants:product_variants(*)')
-    .eq('is_published', true)
-    .order('created_at', { ascending: false })
-    .limit(8);
-
-  const productList = (products as Product[]) ?? [];
+  const productList = await getProducts({ limit: 8 });
 
   if (productList.length === 0) {
     return null;

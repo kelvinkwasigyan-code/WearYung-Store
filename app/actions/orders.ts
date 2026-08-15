@@ -1,8 +1,7 @@
-'use server';
-
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { CartItem } from '@/types/ecommerce';
+import { initializePaystackTransaction } from '@/lib/payments/paystack';
+import { headers } from 'next/headers';
 
 export async function placeOrder(formData: FormData, cartItems: CartItem[]) {
   const supabase = await createClient();
@@ -15,6 +14,7 @@ export async function placeOrder(formData: FormData, cartItems: CartItem[]) {
   const city = formData.get('city') as string;
   const state = formData.get('state') as string;
   const postal_code = formData.get('postal_code') as string;
+  const payment_channel = (formData.get('payment_channel') as string) || 'all';
 
   if (!cartItems.length) {
     return { error: 'Your cart is empty.' };
@@ -78,5 +78,50 @@ export async function placeOrder(formData: FormData, cartItems: CartItem[]) {
     return { error: 'Failed to save order items.' };
   }
 
-  redirect(`/checkout/success?order=${order.id}`);
+  // 4. Initialize Payment Session (Paystack MoMo / Cards)
+  const headerList = await headers();
+  const host = headerList.get('host') || 'localhost:3000';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const callbackUrl = `${protocol}://${host}/checkout/success`;
+
+  const channels = payment_channel === 'mobile_money'
+    ? ['mobile_money']
+    : payment_channel === 'card'
+    ? ['card']
+    : ['card', 'mobile_money'];
+
+  const paymentInit = await initializePaystackTransaction({
+    email,
+    amountInGHS: total,
+    orderId: order.id,
+    callbackUrl,
+    channels,
+    metadata: {
+      customer_name: full_name,
+      customer_phone: phone,
+      cart_count: cartItems.length,
+    },
+  });
+
+  if (!paymentInit.success || !paymentInit.authorizationUrl) {
+    return {
+      error: paymentInit.error || 'Failed to connect to payment gateway. Please try again.',
+      orderId: order.id,
+    };
+  }
+
+  // Save the reference to the order
+  if (paymentInit.reference) {
+    await supabase
+      .from('orders')
+      .update({ payment_reference: paymentInit.reference })
+      .eq('id', order.id);
+  }
+
+  return {
+    success: true,
+    authorizationUrl: paymentInit.authorizationUrl,
+    reference: paymentInit.reference,
+    orderId: order.id,
+  };
 }
