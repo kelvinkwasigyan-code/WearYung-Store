@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, type Variants } from 'framer-motion';
-import { ShoppingBag, ArrowUpRight, Sparkles, Tag, Plus } from 'lucide-react';
+import { ShoppingBag, ArrowUpRight, Tag, Plus } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
 import { useState } from 'react';
 
@@ -29,7 +29,7 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     title: 'THE NOIR MATRIX',
     season: 'VOL. 01 — DROP 04',
     category: 'STREETWEAR & WATCHES',
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1550614000-4b95dd247594?auto=format&fit=crop&w=1000&q=80',
     aspect: 'tall',
     description: 'Heavyweight silhouette paired with metallic contrast accents for cold city nights.',
     items: [
@@ -42,7 +42,7 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     title: 'URBAN MINIMALIST',
     season: 'VOL. 01 — DROP 03',
     category: 'TAILORED ESSENTIALS',
-    image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1523398002811-999aa8e9ddaa?auto=format&fit=crop&w=1000&q=80',
     aspect: 'square',
     description: 'Deconstructed modern tailoring styled with luxury horology.',
     items: [
@@ -55,7 +55,7 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     title: 'NEO-STREET COMFORT',
     season: 'VOL. 01 — DROP 02',
     category: 'FOOTWEAR & BAGS',
-    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1000&q=80',
     aspect: 'wide',
     description: 'Aggressive runner sole profile balanced with utilitarian leather crossbody bag.',
     items: [
@@ -68,7 +68,7 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     title: 'MONOCHROME VELVET',
     season: 'VOL. 01 — DROP 04',
     category: 'ACCESSORIES & SCENTS',
-    image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1512353087810-254cb3617d12?auto=format&fit=crop&w=1000&q=80',
     aspect: 'tall',
     description: 'Layered tones finished with our signature amber and oud scent profile.',
     items: [
@@ -81,7 +81,7 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     title: 'POST-INDUSTRIAL CASUAL',
     season: 'VOL. 01 — DROP 01',
     category: 'SLIDES & APPAREL',
-    image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=80',
     aspect: 'wide',
     description: 'Relaxed resort wear engineered with durable streetwear sensibilities.',
     items: [
@@ -94,7 +94,7 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     title: 'HIGH ROLLER NOIR',
     season: 'VOL. 01 — DROP 04',
     category: 'FULL ENSEMBLE',
-    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?auto=format&fit=crop&w=1000&q=80',
     aspect: 'tall',
     description: 'The defining statement for red carpets, private lounges, and gallery drops.',
     items: [
@@ -129,7 +129,7 @@ export default function LookbookView() {
       <section
         style={{
           position: 'relative',
-          padding: '6rem 0 3.5rem',
+          padding: '3rem 0 2rem',
           borderBottom: '1px solid var(--wy-border)',
           background: 'radial-gradient(ellipse at 50% 0%, rgba(255,200,0,0.06) 0%, transparent 70%), #0D0D0D',
         }}
@@ -150,7 +150,7 @@ export default function LookbookView() {
               marginBottom: '1.25rem',
             }}
           >
-            <Sparkles size={14} className="text-[#FFC800]" />
+
             <span
               style={{
                 color: '#FFC800',
@@ -160,7 +160,7 @@ export default function LookbookView() {
                 textTransform: 'uppercase',
               }}
             >
-              AUTUMN / WINTER 2026
+              WE STYLE GHANA
             </span>
           </motion.div>
 
@@ -170,11 +170,11 @@ export default function LookbookView() {
             transition={{ duration: 0.6, delay: 0.1 }}
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
+              fontSize: 'clamp(1.5rem, 4vw, 3rem)',
               letterSpacing: '0.04em',
               lineHeight: 1.05,
               textTransform: 'uppercase',
-              marginBottom: '1rem',
+              marginBottom: '0.75rem',
             }}
           >
             WEAR YUNG EDITORIALS <span style={{ color: '#FFC800' }}>/ VOLUME 01</span>
@@ -187,7 +187,7 @@ export default function LookbookView() {
             style={{
               color: '#FFC800',
               fontFamily: 'var(--font-body)',
-              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+              fontSize: '1rem',
               fontWeight: 500,
               letterSpacing: '0.06em',
               maxWidth: '620px',
@@ -208,13 +208,13 @@ export default function LookbookView() {
             animate="show"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '2rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+              gap: '2.5rem',
             }}
           >
             {LOOKBOOK_ITEMS.map((look) => {
               const isTall = look.aspect === 'tall';
-              const minHeight = isTall ? '520px' : '400px';
+              const minHeight = isTall ? '550px' : '420px';
 
               return (
                 <motion.div
@@ -231,7 +231,7 @@ export default function LookbookView() {
                   onMouseLeave={() => setActiveLook(null)}
                 >
                   {/* Photo Container */}
-                  <div className="relative w-full h-full min-h-[380px] flex-1 overflow-hidden">
+                  <div className="relative w-full h-full min-h-[400px] flex-1 overflow-hidden">
                     <Image
                       src={look.image}
                       alt={look.title}

@@ -117,11 +117,12 @@ export default function Navbar({ cartCount }: NavbarProps) {
   }, [drawerOpen]);
 
   const mainHeaderLinks = [
+    { label: 'HOME', href: '/' },
     { label: 'SHOP', href: '/shop' },
     { label: 'JUST IN', href: '/?filter=just-in' },
     { label: 'LOOKBOOK', href: '/lookbook' },
     { label: 'ABOUT', href: '/about' },
-    { label: 'CONTACT SUPPORT', href: '/contact' },
+    { label: 'CONTACT', href: '/contact' },
   ];
 
   const supportUtilities = [
