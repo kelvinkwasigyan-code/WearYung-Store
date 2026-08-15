@@ -283,23 +283,6 @@ export default function CustomerDashboard({
                   }}>
                     {profile?.full_name || 'WEAR YUNG MEMBER'}
                   </h1>
-
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '999px',
-                    fontSize: '0.68rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    background: 'rgba(255, 200, 0, 0.1)',
-                    color: '#FFC800',
-                    border: '1px solid rgba(255, 200, 0, 0.3)',
-                  }}>
-                    <Sparkles size={11} /> VIP DROP ACCESS
-                  </span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', fontSize: '0.8rem', color: '#A1A1AA', flexWrap: 'wrap' }}>
