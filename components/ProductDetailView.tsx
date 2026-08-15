@@ -55,7 +55,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         return `EU ${attrs.size_eu ?? ''} ${attrs.colorway ? `· ${attrs.colorway}` : ''}`.trim() || variant.sku;
       case 'watches':
         return `${attrs.dial_mm ? `${attrs.dial_mm}mm` : ''} ${attrs.strap ? `· ${attrs.strap}` : ''}`.trim() || variant.sku;
-      case 'sprays':
+      case 'perfumes':
         return `${attrs.volume ?? ''} ${attrs.fragrance_notes ? `· ${attrs.fragrance_notes}` : ''}`.trim() || variant.sku;
       case 'bags':
         return `${attrs.bag_type ?? ''} ${attrs.material ? `· ${attrs.material}` : ''}`.trim() || variant.sku;
@@ -73,7 +73,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         return 'Select Shoe Size';
       case 'watches':
         return 'Select Dial & Strap';
-      case 'sprays':
+      case 'perfumes':
         return 'Select Volume';
       case 'bags':
         return 'Select Type & Material';

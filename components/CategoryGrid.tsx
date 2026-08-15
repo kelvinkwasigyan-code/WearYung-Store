@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
-import { Shirt, Watch, Sparkles, Gem, ShoppingBag } from 'lucide-react';
+import { Shirt, Watch, Gem, ShoppingBag } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 // Custom inline SVG icons for footwear with matching Lucide 2px stroke aesthetics
@@ -47,10 +47,40 @@ function SlideIcon({ size = 32, className = '' }: { size?: number; className?: s
   );
 }
 
+function PerfumeSprayIcon({ size = 32, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {/* Bottle body */}
+      <rect x="5" y="10" width="9" height="11" rx="2" />
+      {/* Bottle neck */}
+      <rect x="7" y="7" width="5" height="3" rx="0.5" />
+      {/* Nozzle arm extending right */}
+      <path d="M12 8.5h3" />
+      {/* Nozzle head */}
+      <rect x="15" y="7" width="2" height="3" rx="0.5" />
+      {/* Spray mist lines */}
+      <path d="M18 7.5 L20 6" />
+      <path d="M18 8.5 L21 8.5" />
+      <path d="M18 9.5 L20 11" />
+    </svg>
+  );
+}
+
 const categoryIcons: Record<ProductCategory, ReactNode> = {
   clothing: <Shirt className="w-8 h-8" size={32} strokeWidth={2} />,
   watches: <Watch className="w-8 h-8" size={32} strokeWidth={2} />,
-  sprays: <Sparkles className="w-8 h-8" size={32} strokeWidth={2} />,
+  perfumes: <PerfumeSprayIcon className="w-8 h-8" size={32} />,
   accessories: <Gem className="w-8 h-8" size={32} strokeWidth={2} />,
   sneakers: <SneakerIcon className="w-8 h-8" size={32} />,
   slides: <SlideIcon className="w-8 h-8" size={32} />,

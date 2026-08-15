@@ -11,14 +11,14 @@
 - DB: Supabase Postgres (Auth, Realtime Streams, Row Level Security)
 
 ## CATEGORIES & SCHEMA
-- Categories: `clothing`, `watches`, `sprays`, `accessories`, `sneakers`, `slides`, `bags`
+- Categories: `clothing`, `watches`, `perfumes`, `accessories`, `sneakers`, `slides`, `bags`
 - Schema Structure: `products` -> `product_variants` (`sku`, `price`, `stock_quantity`, `attributes` JSONB)
 - Variant Attribute Mapping (JSONB):
   * Clothing: `{"size": "XL", "color": "Black"}`
   * Footwear (Sneakers/Slides): `{"size_eu": 42, "colorway": "Black/Gold"}`
   * Bags: `{"bag_type": "Crossbody", "material": "Leather"}`
   * Watches: `{"strap": "Steel", "dial_mm": 40}`
-  * Sprays: `{"volume": "100ml", "fragrance_notes": "Woody"}`
+  * Perfumes: `{"volume": "100ml", "fragrance_notes": "Woody"}`
 
 ## HARD CODING CONSTRAINTS
 1. Stock Deduction: NEVER write direct `UPDATE` queries for stock. ALWAYS call `decrement_stock(variant_id, qty)` RPC function to prevent race conditions.

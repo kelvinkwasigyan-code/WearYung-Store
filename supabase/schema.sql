@@ -11,7 +11,7 @@ CREATE TYPE app_role AS ENUM ('customer', 'admin');
 CREATE TYPE product_category AS ENUM (
   'clothing', 
   'watches', 
-  'sprays', 
+  'perfumes', 
   'accessories', 
   'sneakers', 
   'slides', 
@@ -57,7 +57,7 @@ CREATE TABLE public.product_variants (
   -- Sneakers/Slides: {"size_eu": 42, "size_us": 9, "colorway": "Black/Gold"}
   -- Bags: {"bag_type": "Crossbody", "material": "Leather"}
   -- Watches: {"strap": "Steel", "dial_mm": 40}
-  -- Sprays: {"volume": "100ml", "fragrance_notes": "Woody/Citrus"}
+  -- Perfumes: {"volume": "100ml", "fragrance_notes": "Woody/Citrus"}
   attributes JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

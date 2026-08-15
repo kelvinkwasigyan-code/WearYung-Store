@@ -9,7 +9,7 @@ export type AppRole = 'customer' | 'admin';
 export type ProductCategory =
   | 'clothing'
   | 'watches'
-  | 'sprays'
+  | 'perfumes'
   | 'accessories'
   | 'sneakers'
   | 'slides'
@@ -104,7 +104,7 @@ export interface WatchAttributes {
   colorway?: string;
 }
 
-export interface SprayAttributes {
+export interface PerfumeAttributes {
   volume: string;
   fragrance_notes: string;
 }
@@ -120,7 +120,7 @@ export type VariantAttributes =
   | FootwearAttributes
   | BagAttributes
   | WatchAttributes
-  | SprayAttributes
+  | PerfumeAttributes
   | AccessoryAttributes
   | Record<string, unknown>;
 
@@ -174,7 +174,7 @@ export interface ActionResult<T = undefined> {
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   clothing: 'Clothing',
   watches: 'Watches',
-  sprays: 'Sprays',
+  perfumes: 'Perfumes',
   accessories: 'Accessories',
   sneakers: 'Sneakers',
   slides: 'Slides',
@@ -184,7 +184,7 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
 export const ALL_CATEGORIES: ProductCategory[] = [
   'clothing',
   'watches',
-  'sprays',
+  'perfumes',
   'accessories',
   'sneakers',
   'slides',

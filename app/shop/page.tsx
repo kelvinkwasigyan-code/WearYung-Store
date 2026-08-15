@@ -6,7 +6,7 @@ import { ALL_CATEGORIES, CATEGORY_LABELS, type Product, type ProductCategory } f
 
 export const metadata: Metadata = {
   title: 'Shop All Products',
-  description: 'Browse all WEAR YUNG products — clothing, sneakers, watches, bags, sprays, accessories and slides.',
+  description: 'Browse all WEAR YUNG products — clothing, sneakers, watches, bags, perfumes, accessories and slides.',
 };
 
 interface ShopPageProps {

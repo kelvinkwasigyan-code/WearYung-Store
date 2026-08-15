@@ -72,7 +72,7 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     aspect: 'tall',
     description: 'Layered tones finished with our signature amber and oud scent profile.',
     items: [
-      { name: 'Velvet Noir Extrait De Parfum', price: '₦32,000', category: 'sprays', slug: 'sprays' },
+      { name: 'Velvet Noir Extrait De Parfum', price: '₦32,000', category: 'perfumes', slug: 'perfumes' },
       { name: 'Titanium Cuban Link Chain', price: '₦35,000', category: 'accessories', slug: 'accessories' },
     ],
   },
