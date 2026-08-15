@@ -28,10 +28,11 @@ export async function updateSession(request: NextRequest) {
   // Refresh session — do not add logic between createServerClient and getUser()
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Protect /admin routes
-  if (!user && request.nextUrl.pathname.startsWith('/admin')) {
+  // Protect /admin and /account routes
+  if (!user && (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/account'))) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
+    url.searchParams.set('redirect', request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
 

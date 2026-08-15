@@ -297,14 +297,14 @@ export default function Navbar({ cartCount }: NavbarProps) {
             {/* Account / Auth */}
             {user ? (
               <Link
-                href="/admin"
+                href="/account"
                 id="nav-account-btn"
-                aria-label="Admin Portal"
+                aria-label="Account"
                 className="btn btn-ghost btn-sm hidden md:inline-flex"
-                style={{ gap: '0.35rem', color: '#FFC800' }}
+                style={{ gap: '0.35rem' }}
               >
                 <UserIcon size={14} />
-                <span>Admin</span>
+                <span>Account</span>
               </Link>
             ) : (
               <Link
@@ -544,12 +544,12 @@ export default function Navbar({ cartCount }: NavbarProps) {
                       Signed in as <span style={{ color: '#FFFFFF' }}>{user.email}</span>
                     </p>
                     <Link
-                      href="/admin"
+                      href="/account"
                       onClick={() => setDrawerOpen(false)}
                       className="btn btn-ghost btn-sm"
-                      style={{ width: '100%', color: '#FFC800' }}
+                      style={{ width: '100%' }}
                     >
-                      Admin Portal
+                      My Account
                     </Link>
                   </div>
                 ) : (

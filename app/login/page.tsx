@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Eye, EyeOff, ArrowRight, ArrowLeft, Mail } from 'lucide-react';
 import Image from 'next/image';
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get('redirect') || '/account';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -34,15 +37,14 @@ export default function LoginPage() {
         password,
         options: {
           data: { full_name: fullName, phone_number: phone },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTarget)}`,
         },
       });
       
       if (error) {
         setError(error.message);
       } else if (data.session) {
-        // If session exists, email confirmation is off. Auto-login successful!
-        router.push('/admin');
+        router.push(redirectTarget);
         router.refresh();
       } else {
         setSuccess('Check your email for the confirmation link.');
@@ -51,7 +53,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError(error.message);
       else {
-        router.push('/admin');
+        router.push(redirectTarget);
         router.refresh();
       }
     }
@@ -417,5 +419,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a]" />}>
+      <LoginForm />
+    </Suspense>
   );
 }
