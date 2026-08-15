@@ -12,19 +12,16 @@ export const metadata: Metadata = {
 };
 
 import { getProducts } from '@/lib/supabase/products';
-import ClothingSection from '@/components/ClothingSection';
+import UnifiedProductShowcase from '@/components/UnifiedProductShowcase';
 
 export default async function HomePage() {
   const allProducts = await getProducts();
-  const featuredDrops = allProducts.slice(0, 4);
 
   return (
     <div>
       <HeroSection />
       <CategoryGrid />
-      <ClothingSection products={allProducts} />
-      <FeaturedProducts products={featuredDrops} />
-      <ProductGrid />
+      <UnifiedProductShowcase products={allProducts} />
       <ValueProps />
       <CallToActionBanner />
     </div>

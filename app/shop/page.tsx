@@ -1,21 +1,22 @@
-import { getProducts } from '@/lib/supabase/products';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
 import ProductCard from '@/components/ui/ProductCard';
 import ShopFilters from '@/components/ShopFilters';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type Product, type ProductCategory } from '@/types/ecommerce';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Shop All Products',
   description: 'Browse all WEAR YUNG products — clothing, sneakers, watches, bags, perfumes, accessories and slides.',
 };
 
 interface ShopPageProps {
-  searchParams: Promise<{ category?: string; sub?: string; q?: string; minPrice?: string; maxPrice?: string; sort?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; minPrice?: string; maxPrice?: string; sort?: string }>;
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
   const activeCategory = params.category as ProductCategory | undefined;
-  const activeSub = params.sub || '';
   const query = params.q ?? '';
   const minPrice = params.minPrice ? parseFloat(params.minPrice) : null;
   const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : null;
@@ -37,55 +38,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     dbQuery = dbQuery.ilike('title', `%${query}%`);
   }
 
-  let { data: rawProducts } = await dbQuery;
-  
-  let products: Product[] = [];
+  let { data: rawProducts, error } = await dbQuery;
 
-  if (rawProducts && rawProducts.length > 0) {
-    products = rawProducts as Product[];
-  } else {
-    // Use fallback catalog
-    products = await getProducts({ category: activeCategory });
-    if (query) {
-      products = products.filter(p => p.title.toLowerCase().includes(query.toLowerCase()));
-    }
-  }
-
-  // Clothing Subcategory Filter
-  if (activeSub && (activeCategory === 'clothing' || !activeCategory)) {
-    products = products.filter((product) => {
-      if (product.category !== 'clothing') return false;
-      const variantType = product.variants?.[0]?.attributes?.clothing_type;
-      if (variantType === activeSub) return true;
-
-      const titleLower = product.title.toLowerCase();
-      const slugLower = product.slug.toLowerCase();
-
-      if (activeSub === 'hoodie') {
-        return titleLower.includes('hoodie') || titleLower.includes('sweat') || slugLower.includes('hoodie');
-      }
-      if (activeSub === 'jeans') {
-        return (
-          titleLower.includes('jean') ||
-          titleLower.includes('pant') ||
-          titleLower.includes('cargo') ||
-          titleLower.includes('denim') ||
-          slugLower.includes('pant') ||
-          slugLower.includes('jean')
-        );
-      }
-      if (activeSub === 'tops') {
-        return (
-          titleLower.includes('tee') ||
-          titleLower.includes('top') ||
-          titleLower.includes('shirt') ||
-          slugLower.includes('tee') ||
-          slugLower.includes('top')
-        );
-      }
-      return true;
-    });
-  }
+  let products = (rawProducts as Product[]) || [];
 
   // In-memory Price Filtering (since price is in nested variants JSON)
   if (minPrice !== null || maxPrice !== null) {
@@ -162,7 +117,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             {!products?.length && !error ? (
               <div style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--wy-muted)' }}>
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" style={{ margin: '0 auto 1rem', opacity: 0.4 }}>
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                 </svg>
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', letterSpacing: '0.06em' }}>
                   No products found

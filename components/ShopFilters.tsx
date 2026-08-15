@@ -48,10 +48,10 @@ export default function ShopFilters() {
     let params = new URLSearchParams(searchParams.toString());
     if (minPrice) params.set('minPrice', minPrice);
     else params.delete('minPrice');
-    
+
     if (maxPrice) params.set('maxPrice', maxPrice);
     else params.delete('maxPrice');
-    
+
     router.push(`${pathname}?${params.toString()}`);
   };
 
@@ -61,7 +61,7 @@ export default function ShopFilters() {
 
   return (
     <aside style={{ minWidth: '220px', flex: '0 0 220px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      
+
       {/* Search */}
       <div>
         <form onSubmit={handleSearch}>
@@ -85,7 +85,7 @@ export default function ShopFilters() {
               cursor: 'pointer',
             }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
             </button>
           </div>
@@ -104,7 +104,7 @@ export default function ShopFilters() {
         }}>
           Sort By
         </h3>
-        <select 
+        <select
           className="input-wy"
           value={currentSort}
           onChange={(e) => router.push(`${pathname}?${createQueryString('sort', e.target.value)}`)}
@@ -148,79 +148,28 @@ export default function ShopFilters() {
           >
             All Products
           </button>
-          {ALL_CATEGORIES.map((cat) => {
-            const isClothing = cat === 'clothing';
-            const isSelected = currentCategory === cat;
-            const currentSub = searchParams.get('sub') || '';
-
-            return (
-              <div key={cat} style={{ display: 'flex', flexDirection: 'column' }}>
-                <button
-                  onClick={() => {
-                    let params = new URLSearchParams(searchParams.toString());
-                    params.set('category', cat);
-                    params.delete('sub');
-                    router.push(`${pathname}?${params.toString()}`);
-                  }}
-                  style={{
-                    padding: '0.6rem 0.75rem',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.875rem',
-                    fontWeight: isSelected ? 700 : 500,
-                    color: isSelected ? 'var(--wy-yellow)' : 'var(--wy-muted)',
-                    background: isSelected ? 'rgba(255,200,0,0.1)' : 'transparent',
-                    transition: 'all 150ms',
-                    textAlign: 'left',
-                    border: 'none',
-                    cursor: 'pointer',
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {CATEGORY_LABELS[cat]}
-                </button>
-
-                {/* Subcategories for Clothing */}
-                {isClothing && isSelected && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', paddingLeft: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem', borderLeft: '2px solid rgba(255,200,0,0.3)' }}>
-                    {[
-                      { id: '', label: 'All Clothing' },
-                      { id: 'hoodie', label: 'Hoodies & Sweats' },
-                      { id: 'jeans', label: 'Jeans & Pants' },
-                      { id: 'tops', label: 'Tees & Tops' },
-                    ].map((sub) => {
-                      const isSubActive = (currentSub === sub.id) || (!currentSub && sub.id === '');
-                      return (
-                        <button
-                          key={sub.id}
-                          onClick={() => {
-                            let params = new URLSearchParams(searchParams.toString());
-                            if (sub.id) params.set('sub', sub.id);
-                            else params.delete('sub');
-                            router.push(`${pathname}?${params.toString()}`);
-                          }}
-                          style={{
-                            padding: '0.35rem 0.6rem',
-                            fontSize: '0.78rem',
-                            fontWeight: isSubActive ? 700 : 400,
-                            color: isSubActive ? '#FFC800' : '#A1A1AA',
-                            background: isSubActive ? 'rgba(255,200,0,0.08)' : 'transparent',
-                            borderRadius: '4px',
-                            border: 'none',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            transition: 'all 0.15s',
-                          }}
-                        >
-                          • {sub.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {ALL_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => router.push(`${pathname}?${createQueryString('category', cat)}`)}
+              style={{
+                padding: '0.6rem 0.75rem',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.875rem',
+                fontWeight: currentCategory === cat ? 700 : 500,
+                color: currentCategory === cat ? 'var(--wy-yellow)' : 'var(--wy-muted)',
+                background: currentCategory === cat ? 'rgba(255,200,0,0.1)' : 'transparent',
+                transition: 'all 150ms',
+                textAlign: 'left',
+                border: 'none',
+                cursor: 'pointer',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {CATEGORY_LABELS[cat]}
+            </button>
+          ))}
         </nav>
       </div>
 
@@ -237,25 +186,25 @@ export default function ShopFilters() {
           Price Range (GH₵)
         </h3>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '1rem' }}>
-          <input 
-            type="number" 
-            placeholder="Min" 
+          <input
+            type="number"
+            placeholder="Min"
             className="input-wy"
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
             style={{ width: '100%', padding: '0.5rem' }}
           />
           <span style={{ color: 'var(--wy-muted)' }}>-</span>
-          <input 
-            type="number" 
-            placeholder="Max" 
+          <input
+            type="number"
+            placeholder="Max"
             className="input-wy"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             style={{ width: '100%', padding: '0.5rem' }}
           />
         </div>
-        <button 
+        <button
           onClick={applyPriceFilter}
           style={{
             width: '100%',
@@ -283,7 +232,7 @@ export default function ShopFilters() {
       </div>
 
       {(currentCategory || currentQuery || currentMinPrice || currentMaxPrice || currentSort !== 'newest') && (
-        <button 
+        <button
           onClick={clearFilters}
           style={{
             background: 'none',
