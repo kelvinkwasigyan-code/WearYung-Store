@@ -1,11 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 import AnnouncementMarquee from '../AnnouncementMarquee';
 
 export default function Footer() {
+  const pathname = usePathname();
   const categories = ALL_CATEGORIES;
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <footer style={{ background: 'var(--wy-surface)', borderTop: '1px solid var(--wy-border)', marginTop: 'auto' }}>

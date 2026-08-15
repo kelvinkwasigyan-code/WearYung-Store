@@ -10,6 +10,8 @@ import { useCartContext } from '@/context/CartContext';
 import { Search, Heart, ShoppingBag, Menu, X, User as UserIcon } from 'lucide-react';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 
+import { usePathname } from 'next/navigation';
+
 interface NavbarProps {
   cartCount?: number;
 }
@@ -83,6 +85,7 @@ const drawerSectionVariants: Variants = {
 };
 
 export default function Navbar({ cartCount }: NavbarProps) {
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -131,6 +134,10 @@ export default function Navbar({ cartCount }: NavbarProps) {
     { label: 'SIZE GUIDE', href: '/size-guide' },
     { label: 'FAQ', href: '/faq' },
   ];
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>

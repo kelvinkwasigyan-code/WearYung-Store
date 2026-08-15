@@ -3,10 +3,12 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCartContext } from '@/context/CartContext';
 import { ShoppingBag, X, Trash2, ArrowRight } from 'lucide-react';
 
 export default function CartDrawer() {
+  const pathname = usePathname();
   const {
     items,
     total,
@@ -45,6 +47,10 @@ export default function CartDrawer() {
   const freeDeliveryThreshold = 3;
   const progressPercent = Math.min(100, Math.round((itemCount / freeDeliveryThreshold) * 100));
   const itemsNeeded = Math.max(0, freeDeliveryThreshold - itemCount);
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>
