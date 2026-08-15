@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [view, setView] = useState<'sign-in' | 'sign-up'>('sign-in');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,16 +29,24 @@ export default function LoginPage() {
     setSuccess(null);
 
     if (view === 'sign-up') {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { full_name: fullName },
+          data: { full_name: fullName, phone_number: phone },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
-      if (error) setError(error.message);
-      else setSuccess('Check your email for the confirmation link.');
+      
+      if (error) {
+        setError(error.message);
+      } else if (data.session) {
+        // If session exists, email confirmation is off. Auto-login successful!
+        router.push('/account');
+        router.refresh();
+      } else {
+        setSuccess('Check your email for the confirmation link.');
+      }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError(error.message);
@@ -53,6 +62,11 @@ export default function LoginPage() {
     setView(newView);
     setError(null);
     setSuccess(null);
+    setEmail('');
+    setPassword('');
+    setFullName('');
+    setPhone('');
+    setShowPassword(false);
   };
 
   return (
@@ -250,12 +264,21 @@ export default function LoginPage() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
                   >
                     <input
                       type="text"
                       placeholder="Full name"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
+                      className="input-wy"
+                      style={{ width: '100%' }}
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Phone number (e.g. +233 55 000 0000)"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       className="input-wy"
                       style={{ width: '100%' }}
                     />

@@ -195,10 +195,11 @@ CREATE POLICY "Anyone can insert reviews" ON public.product_reviews
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, role)
+  INSERT INTO public.profiles (id, full_name, phone_number, role)
   VALUES (
     new.id, 
     COALESCE(new.raw_user_meta_data->>'full_name', ''),
+    COALESCE(new.raw_user_meta_data->>'phone_number', ''),
     'customer'::app_role
   );
   RETURN new;

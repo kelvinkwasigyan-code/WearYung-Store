@@ -75,7 +75,17 @@ export default function AccountDashboard({ user, orders, wishlist }: AccountDash
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <h2 className="font-display text-3xl mb-6">PROFILE DETAILS</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-display text-3xl">PROFILE DETAILS</h2>
+                {user.profile?.role === 'admin' && (
+                  <a
+                    href="/admin"
+                    className="bg-wy-yellow text-black font-display px-4 py-2 rounded-md hover:bg-yellow-400 text-sm"
+                  >
+                    GO TO ADMIN PORTAL →
+                  </a>
+                )}
+              </div>
               <div className="space-y-6 max-w-lg">
                 <div>
                   <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-2">Email Address</label>
