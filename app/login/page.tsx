@@ -42,7 +42,7 @@ export default function LoginPage() {
         setError(error.message);
       } else if (data.session) {
         // If session exists, email confirmation is off. Auto-login successful!
-        router.push('/account');
+        router.push('/admin');
         router.refresh();
       } else {
         setSuccess('Check your email for the confirmation link.');
@@ -51,7 +51,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError(error.message);
       else {
-        router.push('/account');
+        router.push('/admin');
         router.refresh();
       }
     }

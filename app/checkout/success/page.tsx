@@ -48,9 +48,6 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
         )}
 
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/account" id="view-orders-btn" className="btn btn-outline">
-            View Orders
-          </Link>
           <Link href="/shop" id="continue-shopping-btn" className="btn btn-primary">
             Continue Shopping
           </Link>
