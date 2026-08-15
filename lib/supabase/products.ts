@@ -2,12 +2,13 @@ import { createClient } from '@/lib/supabase/server';
 import type { Product, ProductVariant, ProductReview } from '@/types/ecommerce';
 
 const FALLBACK_PRODUCTS: Product[] = [
+  // --- CLOTHING: HOODIES ---
   {
     id: 'a1b2c3d4-0000-0000-0000-111111111111',
     title: 'Heavyweight Oversized Hoodie',
     slug: 'heavyweight-oversized-hoodie',
     category: 'clothing',
-    description: 'The ultimate streetwear staple. 450GSM organic cotton with a boxy, dropped-shoulder fit.',
+    description: 'The ultimate streetwear staple. 450GSM organic French terry cotton with a relaxed boxy fit and double-layered hood.',
     images: [
       'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&w=1000&q=80'
@@ -24,12 +25,41 @@ const FALLBACK_PRODUCTS: Product[] = [
         sku: 'HOODIE-BLK-L',
         price: 750.00,
         stock_quantity: 50,
-        attributes: { size: 'L', color: 'Midnight Black' },
+        attributes: { size: 'L', color: 'Midnight Black', clothing_type: 'hoodie' },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
     ]
   },
+  {
+    id: 'a1b2c3d4-0000-0000-0000-111111111112',
+    title: 'Washed Boxy Zip Hoodie',
+    slug: 'washed-boxy-zip-hoodie',
+    category: 'clothing',
+    description: 'Sun-faded vintage treatment with heavy two-way custom silver zipper and dropped armholes.',
+    images: [
+      'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=1000&q=80'
+    ],
+    is_published: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    average_rating: 4.9,
+    review_count: 9,
+    variants: [
+      {
+        id: 'var-1b',
+        product_id: 'a1b2c3d4-0000-0000-0000-111111111112',
+        sku: 'ZIP-WASH-M',
+        price: 820.00,
+        stock_quantity: 35,
+        attributes: { size: 'M', color: 'Vintage Charcoal', clothing_type: 'hoodie' },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    ]
+  },
+
+  // --- CLOTHING: JEANS & PANTS ---
   {
     id: 'a1b2c3d4-0000-0000-0000-222222222222',
     title: 'Cargo Utility Tactical Pants',
@@ -51,12 +81,97 @@ const FALLBACK_PRODUCTS: Product[] = [
         sku: 'CARGO-OLV-M',
         price: 600.00,
         stock_quantity: 30,
-        attributes: { size: 'M', color: 'Military Olive' },
+        attributes: { size: 'M', color: 'Military Olive', clothing_type: 'jeans' },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
     ]
   },
+  {
+    id: 'a1b2c3d4-0000-0000-0000-222222222223',
+    title: 'Baggy Raw Denim Skater Jeans',
+    slug: 'baggy-raw-denim-jeans',
+    category: 'clothing',
+    description: '14oz rigid Japanese selvedge denim. Loose relaxed cut with heavy contrast gold stitching.',
+    images: [
+      'https://images.unsplash.com/photo-1542272604-780c96856592?auto=format&fit=crop&w=1000&q=80'
+    ],
+    is_published: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    average_rating: 5.0,
+    review_count: 11,
+    variants: [
+      {
+        id: 'var-2b',
+        product_id: 'a1b2c3d4-0000-0000-0000-222222222223',
+        sku: 'DENIM-RAW-32',
+        price: 680.00,
+        stock_quantity: 40,
+        attributes: { size: '32', color: 'Indigo Raw', clothing_type: 'jeans' },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    ]
+  },
+
+  // --- CLOTHING: TEES & TOPS ---
+  {
+    id: 'a1b2c3d4-0000-0000-0000-555555555555',
+    title: 'Graphic Acid-Wash Vintage Tee',
+    slug: 'graphic-acid-wash-tee',
+    category: 'clothing',
+    description: 'Custom mineral wash with high-density distressed screen-printed graphics. 240GSM heavyweight jersey.',
+    images: [
+      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1000&q=80'
+    ],
+    is_published: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    average_rating: 4.6,
+    review_count: 6,
+    variants: [
+      {
+        id: 'var-5',
+        product_id: 'a1b2c3d4-0000-0000-0000-555555555555',
+        sku: 'TEE-ACD-M',
+        price: 350.00,
+        stock_quantity: 100,
+        attributes: { size: 'M', color: 'Charcoal Acid', clothing_type: 'tops' },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    ]
+  },
+  {
+    id: 'a1b2c3d4-0000-0000-0000-555555555556',
+    title: 'Boxy Heavyweight Layering Tee',
+    slug: 'boxy-heavyweight-layering-tee',
+    category: 'clothing',
+    description: 'Ultra-clean 280GSM mock-neck silhouette engineered for perfect drape under jackets and hoodies.',
+    images: [
+      'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80'
+    ],
+    is_published: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    average_rating: 4.9,
+    review_count: 18,
+    variants: [
+      {
+        id: 'var-5b',
+        product_id: 'a1b2c3d4-0000-0000-0000-555555555556',
+        sku: 'TEE-WHT-L',
+        price: 320.00,
+        stock_quantity: 75,
+        attributes: { size: 'L', color: 'Chalk White', clothing_type: 'tops' },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    ]
+  },
+
+  // --- ACCESSORIES & FOOTWEAR ---
   {
     id: 'a1b2c3d4-0000-0000-0000-333333333333',
     title: 'Luxury Chrono Steel Watch',
@@ -106,33 +221,6 @@ const FALLBACK_PRODUCTS: Product[] = [
         price: 1200.00,
         stock_quantity: 45,
         attributes: { size_eu: 43, colorway: 'Pure White / Wolf Grey' },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }
-    ]
-  },
-  {
-    id: 'a1b2c3d4-0000-0000-0000-555555555555',
-    title: 'Graphic Acid-Wash Vintage Tee',
-    slug: 'graphic-acid-wash-tee',
-    category: 'clothing',
-    description: 'Custom mineral wash with high-density distressed screen-printed graphics. 240GSM heavyweight jersey.',
-    images: [
-      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1000&q=80'
-    ],
-    is_published: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    average_rating: 4.6,
-    review_count: 6,
-    variants: [
-      {
-        id: 'var-5',
-        product_id: 'a1b2c3d4-0000-0000-0000-555555555555',
-        sku: 'TEE-ACD-M',
-        price: 350.00,
-        stock_quantity: 100,
-        attributes: { size: 'M', color: 'Charcoal Acid' },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
