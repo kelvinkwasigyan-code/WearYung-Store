@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartContext } from '@/context/CartContext';
+import { ShoppingBag, X, Trash2, ArrowRight } from 'lucide-react';
 
 export default function CartDrawer() {
   const {
@@ -41,8 +42,9 @@ export default function CartDrawer() {
     };
   }, [isOpen]);
 
-  const freeDeliveryThreshold = 50000;
-  const progressPercent = Math.min(100, Math.round((total / freeDeliveryThreshold) * 100));
+  const freeDeliveryThreshold = 3;
+  const progressPercent = Math.min(100, Math.round((itemCount / freeDeliveryThreshold) * 100));
+  const itemsNeeded = Math.max(0, freeDeliveryThreshold - itemCount);
 
   return (
     <>
@@ -72,7 +74,7 @@ export default function CartDrawer() {
           bottom: 0,
           width: '100%',
           maxWidth: '440px',
-          background: '#0D0D0D',
+          background: '#18181B', // Requested surface background
           borderLeft: '1px solid #27272A',
           zIndex: 100,
           display: 'flex',
@@ -90,7 +92,6 @@ export default function CartDrawer() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: '#18181B',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -101,9 +102,10 @@ export default function CartDrawer() {
                 letterSpacing: '0.08em',
                 color: '#FFFFFF',
                 margin: 0,
+                textTransform: 'uppercase',
               }}
             >
-              YOUR CART
+              YOUR BAG
             </h2>
             <span
               style={{
@@ -122,7 +124,6 @@ export default function CartDrawer() {
           <button
             onClick={closeCart}
             aria-label="Close cart"
-            id="close-cart-drawer-btn"
             style={{
               background: 'transparent',
               border: 'none',
@@ -144,21 +145,18 @@ export default function CartDrawer() {
               e.currentTarget.style.background = 'transparent';
             }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <X size={20} strokeWidth={2} />
           </button>
         </div>
 
         {/* Free Shipping Progress Indicator */}
-        <div style={{ padding: '0.85rem 1.5rem', background: '#121214', borderBottom: '1px solid #27272A' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.4rem' }}>
+        <div style={{ padding: '1rem 1.5rem', background: '#18181B', borderBottom: '1px solid #27272A' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
             <span style={{ color: '#A1A1AA' }}>
-              {total >= freeDeliveryThreshold ? (
-                <span style={{ color: 'var(--wy-success)', fontWeight: 700 }}>🎉 You qualified for FREE Delivery!</span>
+              {itemCount >= freeDeliveryThreshold ? (
+                <span style={{ color: '#FFC800', fontWeight: 700 }}>You have qualified for Free Delivery!</span>
               ) : (
-                <>Add <strong style={{ color: '#FFC800' }}>₦{(freeDeliveryThreshold - total).toLocaleString()}</strong> for Free Delivery</>
+                <>Add <strong style={{ color: '#FFFFFF' }}>{itemsNeeded} more {itemsNeeded === 1 ? 'item' : 'items'}</strong> for Free Delivery</>
               )}
             </span>
             <span style={{ color: '#A1A1AA', fontWeight: 600 }}>{progressPercent}%</span>
@@ -168,7 +166,7 @@ export default function CartDrawer() {
               style={{
                 width: `${progressPercent}%`,
                 height: '100%',
-                background: total >= freeDeliveryThreshold ? 'var(--wy-success)' : '#FFC800',
+                background: '#FFC800',
                 transition: 'width 300ms ease',
               }}
             />
@@ -206,14 +204,10 @@ export default function CartDrawer() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 1.25rem',
-                  color: '#71717A',
+                  color: '#FFC800', // Yellow accent
                 }}
               >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 01-8 0" />
-                </svg>
+                <ShoppingBag size={28} strokeWidth={1.5} />
               </div>
               <p
                 style={{
@@ -221,21 +215,24 @@ export default function CartDrawer() {
                   fontSize: '1.25rem',
                   letterSpacing: '0.06em',
                   color: '#FFFFFF',
-                  marginBottom: '0.5rem',
+                  marginBottom: '1.5rem',
                 }}
               >
-                YOUR CART IS EMPTY
-              </p>
-              <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem', color: '#71717A' }}>
-                Discover our latest streetwear collections and drops.
+                Your bag is empty.
               </p>
               <Link
                 href="/shop"
                 onClick={closeCart}
-                className="btn btn-primary btn-sm"
-                style={{ background: '#FFC800', color: '#0D0D0D' }}
+                className="btn btn-primary"
+                style={{
+                  background: '#FFC800',
+                  color: '#0D0D0D',
+                  padding: '0.85rem 2rem',
+                  fontWeight: 700,
+                  display: 'inline-block',
+                }}
               >
-                Explore Shop
+                EXPLORE DROPS
               </Link>
             </div>
           ) : (
@@ -249,14 +246,15 @@ export default function CartDrawer() {
                   background: '#18181B',
                   borderRadius: 'var(--radius-md)',
                   border: '1px solid #27272A',
+                  transition: 'all 0.3s ease',
                 }}
               >
                 {/* Item Thumbnail */}
                 <div
                   style={{
                     position: 'relative',
-                    width: '72px',
-                    height: '72px',
+                    width: '80px',
+                    height: '80px',
                     borderRadius: 'var(--radius-sm)',
                     background: '#121214',
                     flexShrink: 0,
@@ -269,7 +267,7 @@ export default function CartDrawer() {
                       src={item.productImage}
                       alt={item.productTitle}
                       fill
-                      sizes="72px"
+                      sizes="80px"
                       style={{ objectFit: 'cover' }}
                     />
                   ) : (
@@ -283,11 +281,7 @@ export default function CartDrawer() {
                         color: '#3F3F46',
                       }}
                     >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <polyline points="21 15 16 10 5 21" />
-                      </svg>
+                      <ShoppingBag size={24} strokeWidth={1.5} />
                     </div>
                   )}
                 </div>
@@ -301,7 +295,7 @@ export default function CartDrawer() {
                         onClick={closeCart}
                         style={{
                           fontFamily: 'var(--font-display)',
-                          fontSize: '1rem',
+                          fontSize: '1.1rem',
                           letterSpacing: '0.04em',
                           color: '#FFFFFF',
                           overflow: 'hidden',
@@ -327,14 +321,11 @@ export default function CartDrawer() {
                         onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--wy-danger)')}
                         onMouseLeave={(e) => (e.currentTarget.style.color = '#71717A')}
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-                        </svg>
+                        <Trash2 size={16} strokeWidth={2} />
                       </button>
                     </div>
 
-                    <p style={{ color: '#71717A', fontSize: '0.75rem', marginTop: '0.15rem' }}>
+                    <p style={{ color: '#71717A', fontSize: '0.8rem', marginTop: '0.2rem' }}>
                       {Object.values(item.attributes as Record<string, unknown>).map(String).join(' / ')}
                     </p>
                   </div>
@@ -354,7 +345,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
                         style={{
-                          padding: '0.2rem 0.5rem',
+                          padding: '0.25rem 0.6rem',
                           background: 'transparent',
                           border: 'none',
                           color: '#FFFFFF',
@@ -366,11 +357,11 @@ export default function CartDrawer() {
                       </button>
                       <span
                         style={{
-                          padding: '0.2rem 0.5rem',
+                          padding: '0.25rem 0.6rem',
                           color: '#FFFFFF',
-                          fontSize: '0.75rem',
+                          fontSize: '0.8rem',
                           fontWeight: 700,
-                          minWidth: '24px',
+                          minWidth: '28px',
                           textAlign: 'center',
                         }}
                       >
@@ -379,7 +370,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                         style={{
-                          padding: '0.2rem 0.5rem',
+                          padding: '0.25rem 0.6rem',
                           background: 'transparent',
                           border: 'none',
                           color: '#FFFFFF',
@@ -391,8 +382,8 @@ export default function CartDrawer() {
                       </button>
                     </div>
 
-                    <span style={{ color: '#FFC800', fontWeight: 700, fontSize: '0.95rem' }}>
-                      ₦{(item.price * item.quantity).toLocaleString()}
+                    <span style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '1rem' }}>
+                      GH₵ {(item.price * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -405,7 +396,7 @@ export default function CartDrawer() {
         {items.length > 0 && (
           <div
             style={{
-              padding: '1.25rem 1.5rem',
+              padding: '1.5rem',
               background: '#18181B',
               borderTop: '1px solid #27272A',
               display: 'flex',
@@ -414,53 +405,68 @@ export default function CartDrawer() {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#A1A1AA', fontSize: '0.9rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              <span style={{ color: '#FFFFFF', fontSize: '1.1rem', fontWeight: 700, textTransform: 'uppercase' }}>
                 Subtotal
               </span>
               <span
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: '1.4rem',
+                  fontSize: '1.5rem',
                   color: '#FFC800',
                   letterSpacing: '0.04em',
                 }}
               >
-                ₦{total.toLocaleString()}
+                GH₵ {total.toLocaleString()}
               </span>
             </div>
+            
+            <p style={{ color: '#71717A', fontSize: '0.8rem', textAlign: 'center' }}>
+              Taxes and shipping calculated at checkout.
+            </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <Link
                 href="/checkout"
                 onClick={closeCart}
                 id="drawer-checkout-btn"
-                className="btn btn-primary"
                 style={{
                   width: '100%',
                   background: '#FFC800',
                   color: '#0D0D0D',
-                  padding: '0.85rem 1.5rem',
+                  padding: '1rem 1.5rem',
                   fontWeight: 700,
                   textAlign: 'center',
+                  borderRadius: '4px',
+                  textTransform: 'uppercase',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  transition: 'opacity 0.2s ease',
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
               >
-                Proceed to Checkout →
+                PROCEED TO CHECKOUT
+                <ArrowRight size={18} />
               </Link>
 
-              <Link
-                href="/cart"
+              <button
                 onClick={closeCart}
-                id="drawer-view-cart-btn"
-                className="btn btn-ghost btn-sm"
                 style={{
                   width: '100%',
                   textAlign: 'center',
-                  borderColor: '#27272A',
+                  background: 'transparent',
+                  border: 'none',
                   color: '#A1A1AA',
+                  cursor: 'pointer',
+                  padding: '0.5rem',
+                  fontSize: '0.9rem',
+                  textDecoration: 'underline',
                 }}
               >
-                View Full Cart
-              </Link>
+                Continue Shopping
+              </button>
             </div>
           </div>
         )}

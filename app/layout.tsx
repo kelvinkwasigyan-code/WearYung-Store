@@ -21,19 +21,19 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'WEAR YUNG — Premium Streetwear & Accessories',
-    template: '%s | WEAR YUNG',
+    default: "WEAR YUNG | Premium Streetwear & Accessories",
+    template: "%s | WEAR YUNG",
   },
-  description: 'Shop premium streetwear, sneakers, watches, bags, and accessories at WEAR YUNG. Authentic drops, curated for those who move different.',
+  description: "Curated premium streetwear, luxury watches, and sneakers.",
   keywords: ['streetwear', 'sneakers', 'watches', 'accessories', 'fashion', 'premium', 'Nigeria'],
   openGraph: {
-    title: 'WEAR YUNG — Premium Streetwear & Accessories',
-    description: 'Shop premium streetwear, sneakers, watches, bags, and accessories.',
+    title: "WEAR YUNG | Premium Streetwear & Accessories",
+    description: "Curated premium streetwear, luxury watches, and sneakers.",
     type: 'website',
     locale: 'en_NG',
   },
   icons: {
-    icon: '/favicon.jpeg',
+    icon: "/favicon.jpeg",
   },
 };
 

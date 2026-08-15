@@ -166,7 +166,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
           >
             <Link
               href="/"
-              style={{ display: 'flex', alignItems: 'center' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
               id="nav-brand-logo"
             >
               <Image
@@ -177,6 +177,14 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 style={{ objectFit: 'contain', maxHeight: '56px', width: 'auto' }}
                 priority
               />
+              <span style={{ 
+                fontFamily: 'var(--font-display)', 
+                fontSize: '1.75rem', 
+                color: 'var(--wy-text)', 
+                letterSpacing: '0.05em' 
+              }}>
+                WEAR YUNG
+              </span>
             </Link>
           </motion.div>
 
@@ -260,17 +268,9 @@ export default function Navbar({ cartCount }: NavbarProps) {
               onClick={toggleCart}
               id="nav-cart-btn"
               aria-label="Open Cart"
-              className="transition-colors duration-200 text-white hover:text-[#FFC800] p-2"
-              style={{
-                position: 'relative',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-              }}
+              className="group relative p-2 rounded-full hover:bg-zinc-900 transition-colors"
             >
-              <ShoppingBag size={20} strokeWidth={2} />
+              <ShoppingBag className="w-5 h-5 text-white group-hover:text-[#FFC800] transition-colors" />
               <AnimatePresence>
                 {displayCartCount > 0 && (
                   <motion.span
@@ -279,21 +279,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                    style={{
-                      position: 'absolute',
-                      top: '2px',
-                      right: '2px',
-                      background: 'var(--wy-yellow)',
-                      color: 'var(--wy-canvas)',
-                      borderRadius: '50%',
-                      width: '18px',
-                      height: '18px',
-                      fontSize: '0.65rem',
-                      fontWeight: 700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
+                    className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC800] text-[10px] font-bold text-black"
                   >
                     {displayCartCount}
                   </motion.span>
@@ -315,7 +301,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
               </Link>
             ) : (
               <Link
-                href="/auth/login"
+                href="/login"
                 id="nav-login-btn"
                 className="btn btn-outline btn-sm hidden md:inline-flex"
               >
@@ -394,13 +380,23 @@ export default function Navbar({ cartCount }: NavbarProps) {
                     marginBottom: '1.5rem',
                   }}
                 >
-                  <Image
-                    src="/logo.jpeg"
-                    alt="WEAR YUNG"
-                    width={150}
-                    height={45}
-                    style={{ objectFit: 'contain', maxHeight: '42px', width: 'auto' }}
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <Image
+                      src="/logo.jpeg"
+                      alt="WEAR YUNG"
+                      width={150}
+                      height={45}
+                      style={{ objectFit: 'contain', maxHeight: '42px', width: 'auto' }}
+                    />
+                    <span style={{ 
+                      fontFamily: 'var(--font-display)', 
+                      fontSize: '1.5rem', 
+                      color: 'var(--wy-text)', 
+                      letterSpacing: '0.05em' 
+                    }}>
+                      WEAR YUNG
+                    </span>
+                  </div>
                   <motion.button
                     type="button"
                     onClick={() => setDrawerOpen(false)}
@@ -552,7 +548,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 ) : (
                   <div style={{ display: 'flex', gap: '0.75rem' }}>
                     <Link
-                      href="/auth/login"
+                      href="/login"
                       onClick={() => setDrawerOpen(false)}
                       className="btn btn-primary btn-sm"
                       style={{ flex: 1 }}
@@ -560,7 +556,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                       Sign In
                     </Link>
                     <Link
-                      href="/auth/register"
+                      href="/login"
                       onClick={() => setDrawerOpen(false)}
                       className="btn btn-ghost btn-sm"
                       style={{ flex: 1 }}

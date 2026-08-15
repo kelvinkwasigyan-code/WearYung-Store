@@ -41,6 +41,17 @@ export interface Product {
   updated_at: string;
   // Joined relation
   variants?: ProductVariant[];
+  average_rating?: number;
+  review_count?: number;
+}
+
+export interface ProductReview {
+  id: string;
+  product_id: string;
+  author_name: string;
+  rating: number; // 1 to 5
+  comment: string;
+  created_at: string;
 }
 
 export interface ProductVariant {

@@ -87,10 +87,29 @@ CREATE TABLE public.order_items (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 7. PRODUCT REVIEWS TABLE
+CREATE TABLE public.product_reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  author_name TEXT NOT NULL,
+  rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ========================================================
 -- REALTIME SUBSCRIPTIONS
 -- ========================================================
 ALTER PUBLICATION supabase_realtime ADD TABLE public.product_variants;
+
+-- 9. USER WISHLISTS TABLE
+CREATE TABLE public.user_wishlists (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, product_id)
+);
 
 -- ========================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -100,6 +119,8 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.product_variants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_wishlists ENABLE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
@@ -110,6 +131,18 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ========================================================
+-- SECURITY POLICIES FOR USER WISHLISTS
+-- ========================================================
+CREATE POLICY "Users can view their own wishlists" ON public.user_wishlists
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert into their own wishlists" ON public.user_wishlists
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete from their own wishlists" ON public.user_wishlists
+  FOR DELETE USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id OR public.is_admin());
@@ -148,6 +181,12 @@ CREATE POLICY "Users can view own order items" ON public.order_items
   );
 
 CREATE POLICY "Anyone can insert order items" ON public.order_items
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Anyone can view reviews" ON public.product_reviews
+  FOR SELECT USING (true);
+
+CREATE POLICY "Anyone can insert reviews" ON public.product_reviews
   FOR INSERT WITH CHECK (true);
 
 -- ========================================================

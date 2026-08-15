@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import ProductCard from '@/components/ui/ProductCard';
+import ShopFilters from '@/components/ShopFilters';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type Product, type ProductCategory } from '@/types/ecommerce';
 
 export const metadata: Metadata = {
@@ -10,13 +11,16 @@ export const metadata: Metadata = {
 };
 
 interface ShopPageProps {
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; minPrice?: string; maxPrice?: string; sort?: string }>;
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
   const activeCategory = params.category as ProductCategory | undefined;
   const query = params.q ?? '';
+  const minPrice = params.minPrice ? parseFloat(params.minPrice) : null;
+  const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : null;
+  const sort = params.sort ?? 'newest';
 
   const supabase = await createClient();
 
@@ -34,8 +38,38 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     dbQuery = dbQuery.ilike('title', `%${query}%`);
   }
 
-  const { data: products, error } = await dbQuery;
+  let { data: rawProducts, error } = await dbQuery;
+  
+  let products = (rawProducts as Product[]) || [];
 
+  // In-memory Price Filtering (since price is in nested variants JSON)
+  if (minPrice !== null || maxPrice !== null) {
+    products = products.filter(product => {
+      if (!product.variants || product.variants.length === 0) return false;
+      const price = product.variants[0].price;
+      if (minPrice !== null && price < minPrice) return false;
+      if (maxPrice !== null && price > maxPrice) return false;
+      return true;
+    });
+  }
+
+  // In-memory Sorting
+  if (sort === 'price-asc') {
+    products.sort((a, b) => {
+      const priceA = a.variants?.[0]?.price ?? 0;
+      const priceB = b.variants?.[0]?.price ?? 0;
+      return priceA - priceB;
+    });
+  } else if (sort === 'price-desc') {
+    products.sort((a, b) => {
+      const priceA = a.variants?.[0]?.price ?? 0;
+      const priceB = b.variants?.[0]?.price ?? 0;
+      return priceB - priceA;
+    });
+  } else {
+    // 'newest' (already sorted by DB, but we can enforce it just in case)
+    products.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }
   return (
     <div style={{ minHeight: '100vh', background: 'var(--wy-canvas)' }}>
       {/* Header */}
@@ -61,90 +95,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
       <div className="container-wy section-wy" style={{ paddingTop: '2rem' }}>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-          {/* Sidebar: Category Filter */}
-          <aside style={{ minWidth: '180px', flex: '0 0 180px' }}>
-            <form method="GET" action="/shop" style={{ marginBottom: '1.5rem' }}>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="text"
-                  name="q"
-                  defaultValue={query}
-                  placeholder="Search products..."
-                  className="input-wy"
-                  id="shop-search"
-                  style={{ paddingRight: '2.5rem' }}
-                />
-                <button type="submit" style={{
-                  position: 'absolute',
-                  right: '0.75rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--wy-muted)',
-                  cursor: 'pointer',
-                }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                  </svg>
-                </button>
-              </div>
-            </form>
-
-            <h3 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '0.85rem',
-              letterSpacing: '0.12em',
-              color: 'var(--wy-muted)',
-              marginBottom: '1rem',
-              textTransform: 'uppercase',
-            }}>
-              Categories
-            </h3>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <Link
-                href="/shop"
-                id="filter-all"
-                style={{
-                  padding: '0.6rem 0.75rem',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: '0.875rem',
-                  fontWeight: !activeCategory ? 700 : 500,
-                  color: !activeCategory ? 'var(--wy-yellow)' : 'var(--wy-muted)',
-                  background: !activeCategory ? 'rgba(255,200,0,0.1)' : 'transparent',
-                  transition: 'all 150ms',
-                  textDecoration: 'none',
-                  display: 'block',
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                All
-              </Link>
-              {ALL_CATEGORIES.map((cat) => (
-                <Link
-                  key={cat}
-                  href={`/shop?category=${cat}`}
-                  id={`filter-${cat}`}
-                  style={{
-                    padding: '0.6rem 0.75rem',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.875rem',
-                    fontWeight: activeCategory === cat ? 700 : 500,
-                    color: activeCategory === cat ? 'var(--wy-yellow)' : 'var(--wy-muted)',
-                    background: activeCategory === cat ? 'rgba(255,200,0,0.1)' : 'transparent',
-                    transition: 'all 150ms',
-                    textDecoration: 'none',
-                    display: 'block',
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {CATEGORY_LABELS[cat]}
-                </Link>
-              ))}
-            </nav>
-          </aside>
+          {/* Sidebar: Filters & Search */}
+          <ShopFilters />
 
           {/* Product Grid */}
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -180,7 +132,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
                 gap: '1.25rem',
               }}>
-                {(products as Product[])?.map(product => (
+                {products.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>

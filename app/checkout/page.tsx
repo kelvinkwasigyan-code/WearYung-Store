@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -162,7 +162,7 @@ export default function CheckoutPage() {
                       <span style={{ color: 'var(--wy-muted)' }}>
                         {item.productTitle} × {item.quantity}
                       </span>
-                      <span style={{ color: 'var(--wy-text)' }}>₦{(item.price * item.quantity).toLocaleString()}</span>
+                      <span style={{ color: 'var(--wy-text)' }}>GH₵ {(item.price * item.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -172,7 +172,7 @@ export default function CheckoutPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', letterSpacing: '0.06em', color: 'var(--wy-text)' }}>TOTAL</span>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--wy-yellow)' }}>
-                    ₦{total.toLocaleString()}
+                    GH₵ {total.toLocaleString()}
                   </span>
                 </div>
 
@@ -197,3 +197,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

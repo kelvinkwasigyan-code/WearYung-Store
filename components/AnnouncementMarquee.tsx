@@ -1,6 +1,6 @@
-export default function AnnouncementMarquee() {
+﻿export default function AnnouncementMarquee() {
   const announcements = [
-    'FREE DELIVERY ON ORDERS ABOVE ₦50K',
+    'FREE DELIVERY ON ORDERS ABOVE GH₵ 500',
     'AUTHENTIC STREETWEAR',
     'PREMIUM QUALITY GUARANTEED',
     'SHOP THE LATEST DROPS',
@@ -46,3 +46,4 @@ export default function AnnouncementMarquee() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import type { ProductVariant } from '@/types/ecommerce';
@@ -104,7 +104,7 @@ export default function AddToCartButton({
       {/* Price */}
       <div style={{ marginBottom: '1.5rem' }}>
         <p style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', color: 'var(--wy-yellow)', letterSpacing: '0.04em' }}>
-          ₦{selectedVariant?.price.toLocaleString() ?? '—'}
+          GH₵ {selectedVariant?.price.toLocaleString() ?? '—'}
         </p>
         <p style={{ color: 'var(--wy-muted)', fontSize: '0.75rem', marginTop: '0.25rem' }}>
           SKU: {selectedVariant?.sku ?? '—'} · Stock: {selectedVariant?.stock_quantity ?? 0} left
@@ -172,3 +172,4 @@ export default function AddToCartButton({
     </div>
   );
 }
+

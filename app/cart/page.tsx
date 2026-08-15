@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -123,7 +123,7 @@ export default function CartPage() {
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <p style={{ color: 'var(--wy-yellow)', fontWeight: 700, fontSize: '0.95rem' }}>
-                          ₦{(item.price * item.quantity).toLocaleString()}
+                          GH₵ {(item.price * item.quantity).toLocaleString()}
                         </p>
                         <button
                           id={`remove-${item.variantId}`}
@@ -158,7 +158,7 @@ export default function CartPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                   <span style={{ color: 'var(--wy-muted)' }}>Subtotal ({itemCount} items)</span>
-                  <span style={{ color: 'var(--wy-text)' }}>₦{total.toLocaleString()}</span>
+                  <span style={{ color: 'var(--wy-text)' }}>GH₵ {total.toLocaleString()}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                   <span style={{ color: 'var(--wy-muted)' }}>Shipping</span>
@@ -173,7 +173,7 @@ export default function CartPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', letterSpacing: '0.06em', color: 'var(--wy-text)' }}>TOTAL</span>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--wy-yellow)' }}>
-                  ₦{total.toLocaleString()}
+                  GH₵ {total.toLocaleString()}
                 </span>
               </div>
 
@@ -191,3 +191,4 @@ export default function CartPage() {
     </div>
   );
 }
+

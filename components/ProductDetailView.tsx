@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import type { Product, ProductVariant } from '@/types/ecommerce';
 import { useCartContext } from '@/context/CartContext';
+import ProductReviews from './ProductReviews';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -22,8 +23,10 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const stock = selectedVariant?.stock_quantity ?? 0;
   const inStock = stock > 0;
   const isLowStock = inStock && stock <= 5;
-  const images = product.images?.length ? product.images : [];
-  const currentImage = images[selectedImageIndex] ?? null;
+  const images = product.images?.length ? product.images : ['https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=80'];
+  const currentImage = images[selectedImageIndex];
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const handleAddToCart = () => {
     if (!selectedVariant || !inStock) return;
@@ -83,98 +86,76 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   };
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-        gap: '3.5rem',
-        alignItems: 'start',
-      }}
-    >
+    <>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gap: '3.5rem',
+          alignItems: 'start',
+        }}
+      >
       {/* LEFT: Product Gallery */}
       <div>
         {/* Main Display Image */}
-        <div
-          style={{
-            position: 'relative',
-            aspectRatio: '4/5',
-            background: 'var(--wy-surface)',
-            borderRadius: 'var(--radius-lg)',
-            overflow: 'hidden',
-            border: '1px solid var(--wy-border)',
+        <div 
+          className="group relative w-full overflow-hidden rounded-3xl bg-[#0a0a0a] border border-zinc-800/50 cursor-crosshair"
+          style={{ aspectRatio: '4/5' }}
+          onMouseEnter={() => setIsZoomed(true)}
+          onMouseLeave={() => setIsZoomed(false)}
+          onMouseMove={(e) => {
+            const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+            const x = ((e.clientX - left) / width) * 100;
+            const y = ((e.clientY - top) / height) * 100;
+            setMousePos({ x, y });
           }}
         >
           {currentImage ? (
-            <div className="product-img-wrap">
+            <>
               <Image
                 src={currentImage}
                 alt={product.title}
                 fill
                 priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                style={{ objectFit: 'cover' }}
-                className="product-img"
+                style={{ 
+                  objectFit: 'cover',
+                  opacity: isZoomed ? 0 : 1,
+                  transition: 'opacity 300ms ease'
+                }}
               />
-            </div>
+              {/* Zoom Overlay */}
+              <div
+                className="absolute inset-0 z-10 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  opacity: isZoomed ? 1 : 0,
+                  backgroundImage: `url(${currentImage})`,
+                  backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
+                  backgroundSize: '200%',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              />
+            </>
           ) : (
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                color: 'var(--wy-border-light)',
-                gap: '1rem',
-              }}
-            >
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
-              <p style={{ fontSize: '0.85rem', color: 'var(--wy-muted-dim)' }}>No image available</p>
+            <div className="flex h-full w-full items-center justify-center text-zinc-600">
+              No image available
             </div>
           )}
-
+          
           {/* Category Tag Overlay */}
-          <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 2 }}>
+          <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 20 }}>
             <span className="badge badge-yellow" style={{ fontSize: '0.75rem', padding: '0.35rem 0.8rem' }}>
               {product.category}
             </span>
           </div>
 
-          {/* Out of Stock Overlay */}
-          {!inStock && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'rgba(13,13,13,0.75)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 3,
-              }}
-            >
-              <span
-                style={{
-                  background: 'rgba(239,68,68,0.2)',
-                  border: '1px solid var(--wy-danger)',
-                  color: 'var(--wy-danger)',
-                  padding: '0.6rem 1.5rem',
-                  borderRadius: 'var(--radius-sm)',
-                  fontWeight: 700,
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Out of Stock
-              </span>
-            </div>
-          )}
+          {/* Low Stock Badges Overlay */}
+          <div className="absolute top-12 left-4 z-20 flex flex-col gap-2 pointer-events-none mt-2">
+            {isLowStock && (
+              <div className="rounded-full bg-red-600/90 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-md shadow-[0_0_15px_rgba(220,38,38,0.5)] animate-pulse">
+                ONLY {stock} LEFT
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Thumbnail Selector */}
@@ -247,7 +228,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                 letterSpacing: '0.04em',
               }}
             >
-              ₦{(selectedVariant?.price ?? 0).toLocaleString()}
+              GH₵ {(selectedVariant?.price ?? 0).toLocaleString()}
             </p>
             {selectedVariant?.sku && (
               <span style={{ color: 'var(--wy-muted-dim)', fontSize: '0.8rem', fontFamily: 'monospace' }}>
@@ -501,7 +482,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             </svg>
             <div>
               <p style={{ color: '#FFFFFF', fontSize: '0.8rem', fontWeight: 700 }}>Fast Shipping</p>
-              <p style={{ color: 'var(--wy-muted-dim)', fontSize: '0.7rem' }}>Free above ₦50k</p>
+              <p style={{ color: 'var(--wy-muted-dim)', fontSize: '0.7rem' }}>Free above GH₵ 500</p>
             </div>
           </div>
         </div>
@@ -544,5 +525,8 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         )}
       </div>
     </div>
+    <ProductReviews productId={product.id} />
+    </>
   );
 }
+

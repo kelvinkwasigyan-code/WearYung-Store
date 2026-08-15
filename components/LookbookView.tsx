@@ -33,8 +33,8 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     aspect: 'tall',
     description: 'Heavyweight silhouette paired with metallic contrast accents for cold city nights.',
     items: [
-      { name: 'Pitch Black Heavyweight Hoodie', price: '₦45,000', category: 'clothing', slug: 'clothing' },
-      { name: 'Aura Gold Chrono Watch', price: '₦120,000', category: 'watches', slug: 'watches' },
+      { name: 'Pitch Black Heavyweight Hoodie', price: 'GH₵ 45,000', category: 'clothing', slug: 'heavyweight-oversized-hoodie' },
+      { name: 'Aura Gold Chrono Watch', price: 'GH₵ 120,000', category: 'watches', slug: 'luxury-chrono-watch' },
     ],
   },
   {
@@ -46,8 +46,8 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     aspect: 'square',
     description: 'Deconstructed modern tailoring styled with luxury horology.',
     items: [
-      { name: 'Oversized Raw Edge Blazer', price: '₦78,000', category: 'clothing', slug: 'clothing' },
-      { name: 'Obsidian Diver Automatic', price: '₦165,000', category: 'watches', slug: 'watches' },
+      { name: 'Oversized Raw Edge Blazer', price: 'GH₵ 78,000', category: 'clothing', slug: 'clothing' },
+      { name: 'Obsidian Diver Automatic', price: 'GH₵ 165,000', category: 'watches', slug: 'watches' },
     ],
   },
   {
@@ -59,8 +59,8 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     aspect: 'wide',
     description: 'Aggressive runner sole profile balanced with utilitarian leather crossbody bag.',
     items: [
-      { name: 'Vortex Runner V2 Triple White', price: '₦85,000', category: 'sneakers', slug: 'sneakers' },
-      { name: 'Tactical Leather Crossbody Bag', price: '₦42,000', category: 'bags', slug: 'bags' },
+      { name: 'Vortex Runner V2 Triple White', price: 'GH₵ 85,000', category: 'sneakers', slug: 'sneakers' },
+      { name: 'Tactical Leather Crossbody Bag', price: 'GH₵ 42,000', category: 'bags', slug: 'bags' },
     ],
   },
   {
@@ -72,8 +72,8 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     aspect: 'tall',
     description: 'Layered tones finished with our signature amber and oud scent profile.',
     items: [
-      { name: 'Velvet Noir Extrait De Parfum', price: '₦32,000', category: 'perfumes', slug: 'perfumes' },
-      { name: 'Titanium Cuban Link Chain', price: '₦35,000', category: 'accessories', slug: 'accessories' },
+      { name: 'Velvet Noir Extrait De Parfum', price: 'GH₵ 32,000', category: 'perfumes', slug: 'perfumes' },
+      { name: 'Titanium Cuban Link Chain', price: 'GH₵ 35,000', category: 'accessories', slug: 'accessories' },
     ],
   },
   {
@@ -85,8 +85,8 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     aspect: 'wide',
     description: 'Relaxed resort wear engineered with durable streetwear sensibilities.',
     items: [
-      { name: 'Cloudfoam Molded Slide Sandals', price: '₦25,000', category: 'slides', slug: 'slides' },
-      { name: 'Acid Wash Boxy Graphic Tee', price: '₦28,000', category: 'clothing', slug: 'clothing' },
+      { name: 'Cloudfoam Molded Slide Sandals', price: 'GH₵ 25,000', category: 'slides', slug: 'slides' },
+      { name: 'Acid Wash Boxy Graphic Tee', price: 'GH₵ 28,000', category: 'clothing', slug: 'clothing' },
     ],
   },
   {
@@ -98,8 +98,8 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
     aspect: 'tall',
     description: 'The defining statement for red carpets, private lounges, and gallery drops.',
     items: [
-      { name: 'Double-Breasted Wool Coat', price: '₦110,000', category: 'clothing', slug: 'clothing' },
-      { name: 'Diamond Pavé Signet Ring', price: '₦48,000', category: 'accessories', slug: 'accessories' },
+      { name: 'Double-Breasted Wool Coat', price: 'GH₵ 110,000', category: 'clothing', slug: 'clothing' },
+      { name: 'Diamond Pavé Signet Ring', price: 'GH₵ 48,000', category: 'accessories', slug: 'accessories' },
     ],
   },
 ];
@@ -352,3 +352,4 @@ export default function LookbookView() {
     </div>
   );
 }
+

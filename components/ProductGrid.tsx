@@ -1,4 +1,4 @@
-import Image from 'next/image';
+﻿import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import type { Product } from '@/types/ecommerce';
@@ -181,7 +181,7 @@ export default async function ProductGrid() {
                           marginBottom: '1rem',
                         }}
                       >
-                        ₦{minPrice.toLocaleString()}
+                        GH₵ {minPrice.toLocaleString()}
                       </p>
                     )}
                   </div>
@@ -197,3 +197,4 @@ export default async function ProductGrid() {
     </section>
   );
 }
+
