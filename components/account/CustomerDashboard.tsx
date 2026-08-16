@@ -865,7 +865,7 @@ export default function CustomerDashboard({
 
                 {/* Get Directions Link */}
                 <a
-                  href="https://www.google.com/maps/dir/?api=1&destination=6.049186,-0.2265678"
+                  href="https://www.google.com/maps/dir/?api=1&destination=6.094672706386784,-0.2603865047343695"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{

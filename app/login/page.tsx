@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Eye, EyeOff, ArrowRight, ArrowLeft, Mail } from 'lucide-react';
 import Image from 'next/image';
+import { notifyNewUserAction } from '@/app/actions/auth';
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -43,11 +44,21 @@ function LoginForm() {
       
       if (error) {
         setError(error.message);
-      } else if (data.session) {
-        router.push(redirectTarget);
-        router.refresh();
       } else {
-        setSuccess('Check your email for the confirmation link.');
+        if (data?.user) {
+          notifyNewUserAction({
+            email: data.user.email || email,
+            name: fullName || data.user.user_metadata?.full_name || 'Anonymous User',
+            userId: data.user.id,
+          }).catch(console.error);
+        }
+
+        if (data.session) {
+          router.push(redirectTarget);
+          router.refresh();
+        } else {
+          setSuccess('Check your email for the confirmation link.');
+        }
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });

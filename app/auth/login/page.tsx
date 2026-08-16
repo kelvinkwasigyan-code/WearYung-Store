@@ -33,7 +33,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <Link href="/" style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', letterSpacing: '0.12em', color: 'var(--wy-text)' }}>
-            WEAR<span style={{ color: 'var(--wy-yellow)' }}>YUNG</span>
+            WEAR <span style={{ color: 'var(--wy-yellow)' }}>YUNG</span>
           </Link>
           <p style={{ color: 'var(--wy-muted)', marginTop: '0.5rem', fontSize: '0.9rem' }}>
             Sign in to your account

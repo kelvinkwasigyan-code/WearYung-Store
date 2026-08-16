@@ -252,10 +252,21 @@ export default function HeroSection() {
                 View Sneakers
               </Link>
             </div>
+
+            {/* Stats Bar positioned directly under hero CTA */}
+            <StatsBar style={{ marginTop: '2rem' }} />
           </div>
 
-          {/* Right Column: Upper Location Card & Synchronized 1x2 Grid Carousel */}
+          {/* Right Column: 1x2 Grid Carousel with Location Card */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', width: '100%' }}>
+            {/* 1x2 Grid Image Carousel (synchronized) */}
+            <HeroGridCarousel
+              currentSlideIndex={currentSlideIndex}
+              onSlideChange={setCurrentSlideIndex}
+              isHovered={isCarouselHovered}
+              setIsHovered={setIsCarouselHovered}
+            />
+
             {/* Store Location & Hours Pill Card */}
             <div
               style={{
@@ -281,7 +292,7 @@ export default function HeroSection() {
                 </div>
 
                 <a
-                  href="https://www.google.com/maps/dir/?api=1&destination=6.049186,-0.2265678"
+                  href="https://www.google.com/maps/dir/?api=1&destination=6.094672706386784,-0.2603865047343695"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -321,18 +332,8 @@ export default function HeroSection() {
                 </div>
               </div>
             </div>
-
-            {/* 1x2 Grid Image Carousel (synchronized) */}
-            <HeroGridCarousel
-              currentSlideIndex={currentSlideIndex}
-              onSlideChange={setCurrentSlideIndex}
-              isHovered={isCarouselHovered}
-              setIsHovered={setIsCarouselHovered}
-            />
           </div>
         </div>
-
-        <StatsBar style={{ marginTop: '1.5rem' }} />
       </div>
     </section>
   );

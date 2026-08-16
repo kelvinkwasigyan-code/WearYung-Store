@@ -43,7 +43,7 @@ export default function Footer() {
               textDecoration: 'none',
               lineHeight: 1,
             }}>
-              WEAR<span style={{ color: 'var(--wy-yellow)' }}>YUNG</span>
+              WEAR <span style={{ color: 'var(--wy-yellow)' }}>YUNG</span>
             </Link>
             <span style={{ color: '#52525B', fontSize: '0.85rem' }}>•</span>
             <span style={{ color: '#A1A1AA', fontSize: '0.85rem', letterSpacing: '0.04em' }}>

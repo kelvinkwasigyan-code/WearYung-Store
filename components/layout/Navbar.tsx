@@ -206,7 +206,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 fontWeight: 800,
                 lineHeight: 1,
               }}>
-                WEAR<span style={{ color: '#FFC800' }}>YUNG</span>
+                WEAR <span style={{ color: '#FFC800' }}>YUNG</span>
               </span>
             </Link>
           </motion.div>
@@ -268,10 +268,10 @@ export default function Navbar({ cartCount }: NavbarProps) {
               href="/wishlist"
               id="nav-wishlist-btn"
               aria-label="Wishlist"
-              className="transition-colors duration-200 text-black hover:text-zinc-900 p-2"
-              style={{ display: 'flex', alignItems: 'center' }}
+              className="transition-opacity duration-200 hover:opacity-75 p-2"
+              style={{ display: 'flex', alignItems: 'center', color: '#000000' }}
             >
-              <Heart size={20} strokeWidth={2.4} />
+              <Heart size={20} strokeWidth={2.5} color="#000000" />
             </Link>
 
             {/* Cart Button */}
@@ -431,7 +431,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                       color: 'var(--wy-text)', 
                       letterSpacing: '0.05em' 
                     }}>
-                      WEAR<span style={{ color: '#FFC800' }}>YUNG</span>
+                      WEAR <span style={{ color: '#FFC800' }}>YUNG</span>
                     </span>
                   </div>
                   <motion.button
