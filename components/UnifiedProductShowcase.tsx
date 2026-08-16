@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, ArrowRight, Sparkles, Filter } from 'lucide-react';
+import { Heart, ShoppingBag, ArrowRight, Filter } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
 import type { CartItem, Product } from '@/types/ecommerce';
 
@@ -129,19 +129,11 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                color: '#FFC800',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                marginBottom: '0.5rem',
-              }}>
-                <Sparkles size={13} />
-                <span>Curated Catalog</span>
-              </div>
+                width: '40px',
+                height: '3px',
+                background: '#FFC800',
+                marginBottom: '0.75rem',
+              }} />
 
               <h2 style={{
                 fontFamily: 'var(--font-display)',

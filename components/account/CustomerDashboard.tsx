@@ -9,7 +9,6 @@ import {
   User,
   ShoppingBag,
   MapPin,
-  Sparkles,
   CreditCard,
   HelpCircle,
   MessageCircle,
