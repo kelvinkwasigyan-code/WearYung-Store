@@ -162,11 +162,11 @@ export default function Navbar({ cartCount }: NavbarProps) {
         variants={navVariants}
         initial="hidden"
         animate="show"
-        className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 shadow-sm"
+        className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 shadow-xl"
         style={{
-          background: '#FFFFFF',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #E4E4E7',
+          background: 'linear-gradient(90deg, #09090B 0%, #141417 55%, #FFC800 100%)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255, 200, 0, 0.3)',
           transition: 'background 300ms ease, border-color 300ms ease',
         }}
       >
@@ -201,11 +201,11 @@ export default function Navbar({ cartCount }: NavbarProps) {
               <span style={{ 
                 fontFamily: 'var(--font-display)', 
                 fontSize: '1.75rem', 
-                color: '#000000', 
+                color: '#FFFFFF', 
                 letterSpacing: '0.05em',
                 fontWeight: 800
               }}>
-                WEAR YUNG
+                WEAR<span style={{ color: '#FFC800' }}>YUNG</span>
               </span>
             </Link>
           </motion.div>
@@ -227,17 +227,17 @@ export default function Navbar({ cartCount }: NavbarProps) {
               <motion.li key={link.href} variants={navLinkVariants}>
                 <Link
                   href={link.href}
-                  className="transition-colors duration-200 hover:text-zinc-800 relative group"
+                  className="transition-colors duration-200 hover:text-[#FFC800] relative group"
                   style={{
                     fontSize: '0.82rem',
                     fontWeight: 800,
                     letterSpacing: '0.12em',
                     textTransform: 'uppercase',
-                    color: '#000000',
+                    color: '#FFFFFF',
                   }}
                 >
                   {link.label}
-                  {/* Black underline accent on hover */}
+                  {/* Yellow underline accent on hover */}
                   <span
                     style={{
                       position: 'absolute',
@@ -245,7 +245,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                       left: 0,
                       width: 0,
                       height: '2px',
-                      background: '#000000',
+                      background: '#FFC800',
                       transition: 'width 250ms ease',
                     }}
                     className="group-hover:!w-full"
@@ -267,10 +267,10 @@ export default function Navbar({ cartCount }: NavbarProps) {
               href="/shop"
               id="nav-search-btn"
               aria-label="Search"
-              className="transition-colors duration-200 text-black hover:text-zinc-700 p-2"
+              className="transition-colors duration-200 text-black hover:text-zinc-900 p-2"
               style={{ display: 'flex', alignItems: 'center' }}
             >
-              <Search size={20} strokeWidth={2.2} />
+              <Search size={20} strokeWidth={2.4} />
             </Link>
 
             {/* Wishlist Icon */}
@@ -278,10 +278,10 @@ export default function Navbar({ cartCount }: NavbarProps) {
               href="/wishlist"
               id="nav-wishlist-btn"
               aria-label="Wishlist"
-              className="transition-colors duration-200 text-black hover:text-zinc-700 p-2"
+              className="transition-colors duration-200 text-black hover:text-zinc-900 p-2"
               style={{ display: 'flex', alignItems: 'center' }}
             >
-              <Heart size={20} strokeWidth={2.2} />
+              <Heart size={20} strokeWidth={2.4} />
             </Link>
 
             {/* Cart Button */}
@@ -290,9 +290,9 @@ export default function Navbar({ cartCount }: NavbarProps) {
               onClick={toggleCart}
               id="nav-cart-btn"
               aria-label="Open Cart"
-              className="group relative p-2 rounded-full hover:bg-black/10 transition-colors"
+              className="group relative p-2 rounded-full hover:bg-black/15 transition-colors"
             >
-              <ShoppingBag className="w-5 h-5 text-black group-hover:text-zinc-800 transition-colors" strokeWidth={2.2} />
+              <ShoppingBag className="w-5 h-5 text-black group-hover:text-zinc-900 transition-colors" strokeWidth={2.4} />
               <AnimatePresence>
                 {displayCartCount > 0 && (
                   <motion.span
@@ -334,7 +334,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   id="nav-account-btn"
                   aria-label="Account"
                   className="btn btn-ghost btn-sm hidden md:inline-flex"
-                  style={{ gap: '0.35rem', color: '#000000', fontWeight: 700 }}
+                  style={{ gap: '0.35rem', color: '#000000', fontWeight: 800 }}
                 >
                   <UserIcon size={14} />
                   <span>Account</span>
@@ -347,9 +347,9 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 className="btn btn-sm hidden md:inline-flex"
                 style={{
                   background: '#000000',
-                  color: '#FFFFFF',
+                  color: '#FFC800',
                   fontWeight: 800,
-                  border: 'none'
+                  border: '1px solid #000000'
                 }}
               >
                 Sign In
@@ -362,7 +362,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
               type="button"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open navigation drawer"
-              className="transition-colors duration-200 text-black hover:text-zinc-700 p-2"
+              className="transition-colors duration-200 text-black hover:text-zinc-900 p-2"
               style={{
                 background: 'none',
                 border: 'none',
