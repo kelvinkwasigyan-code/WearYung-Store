@@ -49,7 +49,7 @@ export default function Footer() {
             </p>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
               {/* Instagram */}
-              <a href="#" aria-label="Instagram" style={{ color: 'var(--wy-muted)', transition: 'color 150ms' }}
+              <a href="https://instagram.com/wearyung1" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'var(--wy-muted)', transition: 'color 150ms' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-yellow)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted)')}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -58,12 +58,20 @@ export default function Footer() {
                   <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
                 </svg>
               </a>
-              {/* Twitter / X */}
-              <a href="#" aria-label="Twitter" style={{ color: 'var(--wy-muted)', transition: 'color 150ms' }}
+              {/* TikTok */}
+              <a href="https://tiktok.com/@wearyung1" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: 'var(--wy-muted)', transition: 'color 150ms' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-yellow)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted)')}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.78-1.15 5.54-3.33 7.31-1.92 1.56-4.6 2.01-6.94 1.2-2.73-.95-4.73-3.41-4.9-6.33-.14-2.67 1.19-5.38 3.55-6.73 2.1-1.2 4.7-1.4 6.94-.53v4.22c-1.22-.59-2.73-.62-3.95-.12-1.34.55-2.22 2.05-1.95 3.51.25 1.34 1.52 2.37 2.87 2.38 1.48 0 2.75-1.13 2.89-2.61.16-1.74.05-3.49.1-5.24.03-5.24.01-10.48.02-15.72"/>
+                </svg>
+              </a>
+              {/* Snapchat */}
+              <a href="https://snapchat.com/add/wear_yung" target="_blank" rel="noopener noreferrer" aria-label="Snapchat" style={{ color: 'var(--wy-muted)', transition: 'color 150ms' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-yellow)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted)')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.012 1.267c-1.579 0-3.094.137-4.463.951C5.787 3.2 4.8 5.176 4.8 7.337v1.072c0 1.408-.047 2.822-.191 4.218-.087.954-.26 1.879-.475 2.802-.21.9-.494 1.802-1.025 2.518-.415.556-.995.952-1.65 1.173-.637.218-1.312.253-1.966.241-.532 0-.986-.263-1.316-.713a.754.754 0 0 1-.22-.685c.01-.194.067-.39.16-.566.136-.232.378-.42.63-.51.272-.102.573-.092.842.012.208.082.383.242.502.438.077.139.112.302.122.476.012.242-.08.473-.23.645-.11.127-.253.208-.418.243.393.22.868.29 1.317.243.559-.057 1.085-.313 1.5-.694.6-.568 1.06-1.282 1.368-2.079.418-1.077.69-2.208.82-3.348.163-1.41.196-2.83.196-4.249v-1.27c0-2.164 1.144-4.078 2.92-5.086C9.176 1.458 10.96 1.267 12.012 1.267c1.05 0 2.835.19 4.606 1.01 1.775 1.008 2.919 2.922 2.919 5.087v1.27c0 1.42.033 2.84.195 4.25.131 1.14.402 2.27.82 3.347.308.797.768 1.511 1.369 2.08.414.38.94.636 1.5.694.448.046.924-.023 1.317-.243-.165-.035-.308-.116-.418-.243-.15-.172-.242-.403-.23-.645.01-.174.045-.337.122-.476a1.05 1.05 0 0 1 .502-.438c.269-.104.57-.114.842-.012.253.09.495.278.63.51.093.176.15.372.16.566.01.27-.08.528-.22.685-.33.45-.783.713-1.315.713-.654.012-1.33-.023-1.967-.241-.655-.221-1.235-.617-1.65-1.173-.53-.716-.814-1.618-1.024-2.518-.215-.923-.388-1.848-.475-2.802-.144-1.396-.192-2.81-.192-4.218v-1.072c0-2.16-1.012-4.137-2.73-5.22C15.013 1.4 13.393 1.266 12.01 1.266zM7.228 17.522c.691-.122 1.488.135 1.942.502.825.688 2.015 1.127 2.842 1.127.828 0 2.017-.44 2.843-1.127.454-.367 1.25-.624 1.942-.502.97.168 1.564 1.026 1.155 2.155-.544 1.503-1.82 2.386-4.004 2.802l-1.936.33-1.936-.33c-2.184-.416-3.46-1.3-4.004-2.802-.41-1.13.184-1.987 1.156-2.155z"/>
                 </svg>
               </a>
               {/* WhatsApp */}
