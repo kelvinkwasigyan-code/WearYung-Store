@@ -49,6 +49,17 @@ export default function CustomerDashboard({
   const router = useRouter();
   const supabase = createClient();
 
+  // ADMIN GUARD: admins must never see the customer dashboard
+  const isAdmin = initialProfile?.role === 'admin' || initialUser.email === 'admin@wearyung.com';
+  if (isAdmin) {
+    router.replace('/admin');
+    return (
+      <div style={{ minHeight: '100vh', background: '#080808', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFC800', fontFamily: 'var(--font-display)', fontSize: '1.2rem', letterSpacing: '0.08em' }}>
+        Redirecting to Admin Dashboard...
+      </div>
+    );
+  }
+
   const [profile, setProfile] = useState(initialProfile);
   const [orders] = useState(initialOrders || []);
 

@@ -27,8 +27,18 @@ export default async function AccountPage() {
     .eq('id', user.id)
     .maybeSingle();
 
+  // Admin check: role-based OR email-based (admin@wearyung.com)
+  const isAdmin = profile?.role === 'admin' || user.email === 'admin@wearyung.com';
+
   // If user is an Admin, redirect to the Admin Dashboard (admins do not have customer account)
-  if (profile?.role === 'admin') {
+  if (isAdmin) {
+    // Auto-fix: ensure admin role is set in the database
+    if (profile && profile.role !== 'admin') {
+      await supabase
+        .from('profiles')
+        .update({ role: 'admin' })
+        .eq('id', user.id);
+    }
     redirect('/admin');
   }
 

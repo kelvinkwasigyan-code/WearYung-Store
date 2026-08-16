@@ -45,13 +45,20 @@ export async function updateSession(request: NextRequest) {
 
   // If authenticated admin visits /account, redirect to /admin
   if (user && request.nextUrl.pathname.startsWith('/account')) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
+    // Check by email first (immediate), then by DB role
+    const isAdminByEmail = user.email === 'admin@wearyung.com';
 
-    if (profile?.role === 'admin') {
+    let isAdminByRole = false;
+    if (!isAdminByEmail) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+      isAdminByRole = profile?.role === 'admin';
+    }
+
+    if (isAdminByEmail || isAdminByRole) {
       const url = request.nextUrl.clone();
       url.pathname = '/admin';
       return NextResponse.redirect(url);
