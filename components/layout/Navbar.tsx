@@ -162,11 +162,11 @@ export default function Navbar({ cartCount }: NavbarProps) {
         variants={navVariants}
         initial="hidden"
         animate="show"
-        className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 shadow-md"
+        className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 shadow-sm"
         style={{
-          background: '#FFC800',
+          background: '#FFFFFF',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #e6b400',
+          borderBottom: '1px solid #E4E4E7',
           transition: 'background 300ms ease, border-color 300ms ease',
         }}
       >
