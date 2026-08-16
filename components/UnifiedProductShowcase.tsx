@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, ArrowRight, Filter } from 'lucide-react';
+import { Heart, ShoppingBag, ArrowRight, Filter, Search, X } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
 import type { CartItem, Product } from '@/types/ecommerce';
 
@@ -13,52 +13,103 @@ interface UnifiedProductShowcaseProps {
 }
 
 type MainCategory = 'all' | 'clothing' | 'sneakers' | 'watches' | 'bags';
-type ClothingSubFilter = 'all' | 'hoodie' | 'jeans' | 'tops';
+type ClothingPrimaryGroup = 'all' | 'tops_sleeves' | 'jeans_pants' | 'hoodie';
+type TopsSleevesSub = 'all' | 'tops' | 'sleeves';
+type JeansSub = 'all' | 'baggy' | 'slim';
 
 export default function UnifiedProductShowcase({ products }: UnifiedProductShowcaseProps) {
   const { addToCart } = useCartContext();
   const [selectedCategory, setSelectedCategory] = useState<MainCategory>('all');
-  const [selectedClothingSub, setSelectedClothingSub] = useState<ClothingSubFilter>('all');
+  const [selectedClothingGroup, setSelectedClothingGroup] = useState<ClothingPrimaryGroup>('all');
+  const [selectedTopsSub, setSelectedTopsSub] = useState<TopsSleevesSub>('all');
+  const [selectedJeansSub, setSelectedJeansSub] = useState<JeansSub>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
 
-  // Filter products based on selected main category & clothing subcategory
+  // Filter products based on selected main category, subcategory & search query
   const displayedProducts = products.filter((product) => {
-    // 1. Filter by main category
+    // 1. Filter by search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const attrs = (product.variants?.[0]?.attributes as any) || {};
+      const clothingType = (attrs.clothing_type || '').toLowerCase();
+      const sleeveType = (attrs.sleeve_type || '').toLowerCase();
+      const fit = (attrs.fit || '').toLowerCase();
+      const t = product.title.toLowerCase();
+      const slug = product.slug.toLowerCase();
+      const desc = (product.description || '').toLowerCase();
+      const cat = product.category.toLowerCase();
+
+      const matches =
+        t.includes(q) ||
+        slug.includes(q) ||
+        desc.includes(q) ||
+        cat.includes(q) ||
+        clothingType.includes(q) ||
+        sleeveType.includes(q) ||
+        fit.includes(q);
+
+      if (!matches) return false;
+    }
+
+    // 2. Filter by main category
     if (selectedCategory !== 'all' && product.category !== selectedCategory) {
       return false;
     }
 
-    // 2. If viewing clothing (or all with clothing active filter), apply clothing subcategory
-    if (selectedCategory === 'clothing' && selectedClothingSub !== 'all') {
-      const variantType = (product.variants?.[0]?.attributes as any)?.clothing_type;
-      if (variantType === selectedClothingSub) return true;
+    // 2. If viewing clothing, apply hierarchical clothing subcategory filters
+    if (selectedCategory === 'clothing' && selectedClothingGroup !== 'all') {
+      const attrs = (product.variants?.[0]?.attributes as any) || {};
+      const clothingType = attrs.clothing_type;
+      const sleeveType = attrs.sleeve_type;
+      const fit = attrs.fit;
+      const t = product.title.toLowerCase();
+      const s = product.slug.toLowerCase();
 
-      const titleLower = product.title.toLowerCase();
-      const slugLower = product.slug.toLowerCase();
+      if (selectedClothingGroup === 'tops_sleeves') {
+        const isTopsOrSleeves =
+          clothingType === 'tops_sleeves' ||
+          clothingType === 'tops' ||
+          clothingType === 'sleeves' ||
+          sleeveType === 'tops' ||
+          sleeveType === 'sleeves' ||
+          t.includes('tee') || t.includes('top') || t.includes('sleeve') || t.includes('shirt') || t.includes('sweatshirt') || s.includes('tee') || s.includes('top') || s.includes('sleeve');
 
-      if (selectedClothingSub === 'hoodie') {
-        return titleLower.includes('hoodie') || titleLower.includes('sweat') || slugLower.includes('hoodie');
+        if (!isTopsOrSleeves) return false;
+
+        if (selectedTopsSub === 'tops') {
+          return sleeveType === 'tops' || (!sleeveType && (clothingType === 'tops' || (!t.includes('sleeve') && !t.includes('sweatshirt'))));
+        }
+        if (selectedTopsSub === 'sleeves') {
+          return sleeveType === 'sleeves' || clothingType === 'sleeves' || t.includes('sleeve') || t.includes('sweatshirt') || s.includes('sleeve');
+        }
+        return true;
       }
-      if (selectedClothingSub === 'jeans') {
-        return (
-          titleLower.includes('jean') ||
-          titleLower.includes('pant') ||
-          titleLower.includes('cargo') ||
-          titleLower.includes('denim') ||
-          slugLower.includes('pant') ||
-          slugLower.includes('jean')
-        );
+
+      if (selectedClothingGroup === 'jeans_pants') {
+        const isJeansOrPants =
+          clothingType === 'jeans_pants' ||
+          clothingType === 'baggy_jeans' ||
+          clothingType === 'slim_jeans' ||
+          clothingType === 'jeans' ||
+          t.includes('jean') || t.includes('pant') || t.includes('denim') || t.includes('cargo') || s.includes('jean') || s.includes('pant');
+
+        if (!isJeansOrPants) return false;
+
+        if (selectedJeansSub === 'baggy') {
+          return fit === 'baggy' || clothingType === 'baggy_jeans' || t.includes('baggy') || t.includes('loose') || t.includes('skater') || t.includes('wide') || s.includes('baggy');
+        }
+        if (selectedJeansSub === 'slim') {
+          return fit === 'slim' || clothingType === 'slim_jeans' || t.includes('slim') || t.includes('skinny') || t.includes('tapered') || s.includes('slim');
+        }
+        return true;
       }
-      if (selectedClothingSub === 'tops') {
-        return (
-          titleLower.includes('tee') ||
-          titleLower.includes('top') ||
-          titleLower.includes('shirt') ||
-          slugLower.includes('tee') ||
-          slugLower.includes('top')
-        );
+
+      if (selectedClothingGroup === 'hoodie') {
+        return clothingType === 'hoodie' || t.includes('hoodie') || t.includes('sweat') || s.includes('hoodie');
       }
+
       return false;
     }
 
@@ -106,11 +157,11 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
     { id: 'bags', label: 'BAGS', count: products.filter((p) => p.category === 'bags').length },
   ];
 
-  const clothingSubFilters: { id: ClothingSubFilter; label: string }[] = [
+  const clothingPrimaryFilters: { id: ClothingPrimaryGroup; label: string }[] = [
     { id: 'all', label: 'All Clothing' },
+    { id: 'tops_sleeves', label: 'Tops & Sleeves' },
+    { id: 'jeans_pants', label: 'Jeans & Pants' },
     { id: 'hoodie', label: 'Hoodies & Sweats' },
-    { id: 'jeans', label: 'Jeans & Pants' },
-    { id: 'tops', label: 'Tees & Tops' },
   ];
 
   return (
@@ -166,59 +217,140 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
             </Link>
           </div>
 
-          {/* Primary Category Navigation Bar */}
+          {/* Primary Category Navigation Bar + Search Tab */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.65rem',
+            justifyContent: 'space-between',
+            gap: '1rem',
             flexWrap: 'wrap',
             width: '100%',
-            paddingBottom: selectedCategory === 'clothing' ? '0.5rem' : '0',
+            paddingBottom: selectedCategory === 'clothing' ? '0.75rem' : '0',
             borderBottom: selectedCategory === 'clothing' ? '1px solid #1E1E22' : 'none',
           }}>
-            {mainCategories.map((cat) => {
-              const isSelected = selectedCategory === cat.id;
-              return (
+            {/* Category Filter Pills */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              flexWrap: 'wrap',
+            }}>
+              {mainCategories.map((cat) => {
+                const isSelected = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setSelectedCategory(cat.id);
+                      if (cat.id !== 'clothing') {
+                        setSelectedClothingGroup('all');
+                        setSelectedTopsSub('all');
+                        setSelectedJeansSub('all');
+                      }
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.65rem 1.25rem',
+                      borderRadius: '10px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                      background: isSelected ? '#FFC800' : '#141416',
+                      color: isSelected ? '#000000' : '#A1A1AA',
+                      border: isSelected ? '1px solid #FFC800' : '1px solid #27272A',
+                      boxShadow: isSelected ? '0 0 16px rgba(255, 200, 0, 0.25)' : 'none',
+                    }}
+                  >
+                    <span>{cat.label}</span>
+                    <span
+                      style={{
+                        padding: '0.15rem 0.45rem',
+                        borderRadius: '100px',
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        background: isSelected ? '#000000' : '#222226',
+                        color: isSelected ? '#FFC800' : '#71717A',
+                      }}
+                    >
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Search Input Tab */}
+            <div style={{
+              position: 'relative',
+              minWidth: '240px',
+              maxWidth: '360px',
+              flex: '1 1 240px',
+            }}>
+              <Search
+                size={16}
+                style={{
+                  position: 'absolute',
+                  left: '0.9rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: searchQuery ? '#FFC800' : '#71717A',
+                  pointerEvents: 'none',
+                  transition: 'color 0.2s',
+                }}
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search releases, sneakers, tees..."
+                style={{
+                  width: '100%',
+                  padding: '0.65rem 2.25rem 0.65rem 2.45rem',
+                  background: '#141416',
+                  border: searchQuery ? '1px solid #FFC800' : '1px solid #27272A',
+                  borderRadius: '10px',
+                  color: '#FFFFFF',
+                  fontSize: '0.82rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s, background 0.2s',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#FFC800';
+                  e.currentTarget.style.background = '#1A1A1E';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = searchQuery ? '#FFC800' : '#27272A';
+                  e.currentTarget.style.background = '#141416';
+                }}
+              />
+              {searchQuery && (
                 <button
-                  key={cat.id}
-                  onClick={() => {
-                    setSelectedCategory(cat.id);
-                    if (cat.id !== 'clothing') {
-                      setSelectedClothingSub('all');
-                    }
-                  }}
+                  type="button"
+                  onClick={() => setSearchQuery('')}
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.65rem 1.25rem',
-                    borderRadius: '10px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
+                    position: 'absolute',
+                    right: '0.75rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: '#A1A1AA',
                     cursor: 'pointer',
-                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                    background: isSelected ? '#FFC800' : '#141416',
-                    color: isSelected ? '#000000' : '#A1A1AA',
-                    border: isSelected ? '1px solid #FFC800' : '1px solid #27272A',
-                    boxShadow: isSelected ? '0 0 16px rgba(255, 200, 0, 0.25)' : 'none',
+                    padding: '2px',
+                    display: 'flex',
+                    alignItems: 'center',
                   }}
+                  title="Clear search"
                 >
-                  <span>{cat.label}</span>
-                  <span style={{
-                    fontSize: '0.68rem',
-                    padding: '0.1rem 0.45rem',
-                    borderRadius: '999px',
-                    background: isSelected ? 'rgba(0,0,0,0.25)' : '#222226',
-                    color: isSelected ? '#000000' : '#71717A',
-                    fontWeight: 800,
-                  }}>
-                    {cat.count}
-                  </span>
+                  <X size={15} />
                 </button>
-              );
-            })}
+              )}
+            </div>
           </div>
 
           {/* Clothing Sub-Filter Bar (Active when CLOTHING is chosen) */}
@@ -231,50 +363,158 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                 transition={{ duration: 0.2 }}
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  flexWrap: 'wrap',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
                   width: '100%',
                 }}
               >
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontSize: '0.72rem',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  color: '#FFC800',
-                  marginRight: '0.5rem',
-                }}>
-                  <Filter size={13} />
-                  <span>Filter Clothing:</span>
+                {/* Primary Clothing Group Tabs */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    flexWrap: 'wrap',
+                    width: '100%',
+                  }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    color: '#FFC800',
+                    marginRight: '0.5rem',
+                  }}>
+                    <Filter size={13} />
+                    <span>Filter Clothing:</span>
+                  </div>
+
+                  {clothingPrimaryFilters.map((sub) => {
+                    const isSubActive = selectedClothingGroup === sub.id;
+                    return (
+                      <button
+                        key={sub.id}
+                        onClick={() => setSelectedClothingGroup(sub.id)}
+                        style={{
+                          padding: '0.45rem 1rem',
+                          borderRadius: '999px',
+                          fontSize: '0.75rem',
+                          fontWeight: isSubActive ? 700 : 500,
+                          letterSpacing: '0.06em',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          background: isSubActive ? '#FFC800' : '#1A1A1E',
+                          color: isSubActive ? '#000000' : '#D4D4D8',
+                          border: isSubActive ? '1px solid #FFC800' : '1px solid #3F3F46',
+                        }}
+                      >
+                        {sub.label}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {clothingSubFilters.map((sub) => {
-                  const isSubActive = selectedClothingSub === sub.id;
-                  return (
-                    <button
-                      key={sub.id}
-                      onClick={() => setSelectedClothingSub(sub.id)}
-                      style={{
-                        padding: '0.45rem 1rem',
-                        borderRadius: '999px',
-                        fontSize: '0.75rem',
-                        fontWeight: isSubActive ? 700 : 500,
-                        letterSpacing: '0.06em',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                        background: isSubActive ? '#FFC800' : '#1A1A1E',
-                        color: isSubActive ? '#000000' : '#D4D4D8',
-                        border: isSubActive ? '1px solid #FFC800' : '1px solid #3F3F46',
-                      }}
-                    >
-                      {sub.label}
-                    </button>
-                  );
-                })}
+                {/* Secondary Sub-Pills for Tops & Sleeves */}
+                {selectedClothingGroup === 'tops_sleeves' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      flexWrap: 'wrap',
+                      padding: '0.45rem 0.85rem',
+                      background: 'rgba(26, 26, 30, 0.65)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 200, 0, 0.25)',
+                      width: 'fit-content',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.68rem', color: '#FFC800', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '0.25rem' }}>
+                      Style:
+                    </span>
+                    {[
+                      { id: 'all', label: 'All Tops & Sleeves' },
+                      { id: 'tops', label: 'Tops (Short Sleeve)' },
+                      { id: 'sleeves', label: 'Sleeves (Long Sleeve)' },
+                    ].map((opt) => {
+                      const isActive = selectedTopsSub === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => setSelectedTopsSub(opt.id as any)}
+                          style={{
+                            padding: '0.3rem 0.75rem',
+                            borderRadius: '100px',
+                            fontSize: '0.7rem',
+                            fontWeight: isActive ? 700 : 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                            background: isActive ? 'rgba(255, 200, 0, 0.2)' : 'transparent',
+                            color: isActive ? '#FFC800' : '#A1A1AA',
+                            border: isActive ? '1px solid #FFC800' : '1px solid transparent',
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+
+                {/* Secondary Sub-Pills for Jeans & Pants */}
+                {selectedClothingGroup === 'jeans_pants' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      flexWrap: 'wrap',
+                      padding: '0.45rem 0.85rem',
+                      background: 'rgba(26, 26, 30, 0.65)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 200, 0, 0.25)',
+                      width: 'fit-content',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.68rem', color: '#FFC800', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '0.25rem' }}>
+                      Fit Cut:
+                    </span>
+                    {[
+                      { id: 'all', label: 'All Jeans & Pants' },
+                      { id: 'baggy', label: 'Baggy Jeans' },
+                      { id: 'slim', label: 'Slim Fit Jeans' },
+                    ].map((opt) => {
+                      const isActive = selectedJeansSub === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => setSelectedJeansSub(opt.id as any)}
+                          style={{
+                            padding: '0.3rem 0.75rem',
+                            borderRadius: '100px',
+                            fontSize: '0.7rem',
+                            fontWeight: isActive ? 700 : 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                            background: isActive ? 'rgba(255, 200, 0, 0.2)' : 'transparent',
+                            color: isActive ? '#FFC800' : '#A1A1AA',
+                            border: isActive ? '1px solid #FFC800' : '1px solid transparent',
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -293,20 +533,50 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
             {displayedProducts.length === 0 ? (
               <div style={{
                 gridColumn: '1 / -1',
-                padding: '4rem 1rem',
+                padding: '4.5rem 1rem',
                 textAlign: 'center',
                 color: '#71717A',
                 background: '#141416',
                 borderRadius: '16px',
                 border: '1px solid #27272A',
               }}>
-                <ShoppingBag size={36} color="#52525B" style={{ margin: '0 auto 1rem' }} />
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: '#FFFFFF', letterSpacing: '0.04em' }}>
-                  No items found in this section
+                <ShoppingBag size={38} color="#52525B" style={{ margin: '0 auto 1rem' }} />
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', color: '#FFFFFF', letterSpacing: '0.04em' }}>
+                  {searchQuery ? `No releases found matching "${searchQuery}"` : 'No items found in this section'}
                 </p>
-                <p style={{ fontSize: '0.8rem', color: '#71717A', marginTop: '0.25rem' }}>
-                  Try switching filters or check back for the next drop.
+                <p style={{ fontSize: '0.82rem', color: '#71717A', marginTop: '0.35rem' }}>
+                  {searchQuery ? 'Try checking your spelling or clearing search to view all drops.' : 'Try switching filters or check back for the next drop.'}
                 </p>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    style={{
+                      marginTop: '1.25rem',
+                      padding: '0.5rem 1.25rem',
+                      borderRadius: '8px',
+                      background: 'rgba(255, 200, 0, 0.1)',
+                      border: '1px solid rgba(255, 200, 0, 0.3)',
+                      color: '#FFC800',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#FFC800';
+                      e.currentTarget.style.color = '#000000';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(255, 200, 0, 0.1)';
+                      e.currentTarget.style.color = '#FFC800';
+                    }}
+                  >
+                    Clear Search
+                  </button>
+                )}
               </div>
             ) : (
               displayedProducts.map((product) => {
@@ -318,12 +588,24 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                 // Category badge text
                 let badgeText = product.category.toUpperCase();
                 if (product.category === 'clothing') {
-                  if (subType === 'hoodie' || product.title.toLowerCase().includes('hoodie')) {
-                    badgeText = 'HOODIE';
-                  } else if (subType === 'jeans' || product.title.toLowerCase().includes('jeans') || product.title.toLowerCase().includes('pants') || product.title.toLowerCase().includes('cargo')) {
+                  const attrs = (product.variants?.[0]?.attributes as any) || {};
+                  const subType = attrs.clothing_type;
+                  const sleeveType = attrs.sleeve_type;
+                  const fit = attrs.fit;
+                  const t = product.title.toLowerCase();
+
+                  if (sleeveType === 'sleeves' || subType === 'sleeves' || t.includes('sleeve') || t.includes('sweatshirt')) {
+                    badgeText = 'SLEEVES';
+                  } else if (sleeveType === 'tops' || subType === 'tops' || ((subType === 'tops_sleeves' || !subType) && (t.includes('tee') || t.includes('top')))) {
+                    badgeText = 'TOPS';
+                  } else if (fit === 'baggy' || subType === 'baggy_jeans' || (t.includes('baggy') && (t.includes('jean') || t.includes('denim')))) {
+                    badgeText = 'BAGGY JEANS';
+                  } else if (fit === 'slim' || subType === 'slim_jeans' || (t.includes('slim') && (t.includes('jean') || t.includes('denim')))) {
+                    badgeText = 'SLIM FIT JEANS';
+                  } else if (subType === 'jeans_pants' || subType === 'jeans' || t.includes('jean') || t.includes('pants') || t.includes('cargo')) {
                     badgeText = 'JEANS & PANTS';
-                  } else if (subType === 'tops' || product.title.toLowerCase().includes('tee') || product.title.toLowerCase().includes('top')) {
-                    badgeText = 'TEES & TOPS';
+                  } else if (subType === 'hoodie' || t.includes('hoodie')) {
+                    badgeText = 'HOODIES';
                   }
                 }
 
@@ -405,20 +687,20 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                           top: '12px',
                           right: '12px',
                           zIndex: 10,
-                          width: '32px',
-                          height: '32px',
+                          width: '34px',
+                          height: '34px',
                           borderRadius: '50%',
-                          background: 'rgba(0,0,0,0.6)',
-                          backdropFilter: 'blur(4px)',
-                          border: 'none',
+                          background: '#000000',
+                          border: isWishlisted ? '1px solid #FFC800' : '1px solid #27272A',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           color: isWishlisted ? '#FFC800' : '#FFFFFF',
                           cursor: 'pointer',
+                          transition: 'all 150ms ease',
                         }}
                       >
-                        <Heart size={15} fill={isWishlisted ? '#FFC800' : 'none'} />
+                        <Heart size={16} fill={isWishlisted ? '#FFC800' : 'none'} />
                       </button>
                     </Link>
 

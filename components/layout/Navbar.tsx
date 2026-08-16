@@ -7,7 +7,7 @@ import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { useCartContext } from '@/context/CartContext';
-import { Search, Heart, ShoppingBag, Menu, X, User as UserIcon, Shield } from 'lucide-react';
+import { Heart, ShoppingBag, Menu, X, User as UserIcon, Shield } from 'lucide-react';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 
 import { usePathname } from 'next/navigation';
@@ -176,7 +176,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: '72px',
+            height: '82px',
           }}
         >
           {/* Logo */}
@@ -187,23 +187,24 @@ export default function Navbar({ cartCount }: NavbarProps) {
           >
             <Link
               href="/"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}
               id="nav-brand-logo"
             >
               <Image
                 src="/logo.jpeg"
                 alt="WEAR YUNG"
-                width={200}
-                height={60}
-                style={{ objectFit: 'contain', maxHeight: '56px', width: 'auto' }}
+                width={260}
+                height={80}
+                style={{ objectFit: 'contain', maxHeight: '66px', width: 'auto', borderRadius: '8px' }}
                 priority
               />
               <span style={{ 
                 fontFamily: 'var(--font-display)', 
-                fontSize: '1.75rem', 
+                fontSize: '2.1rem', 
                 color: '#FFFFFF', 
                 letterSpacing: '0.05em',
-                fontWeight: 800
+                fontWeight: 800,
+                lineHeight: 1,
               }}>
                 WEAR<span style={{ color: '#FFC800' }}>YUNG</span>
               </span>
@@ -262,17 +263,6 @@ export default function Navbar({ cartCount }: NavbarProps) {
             animate="show"
             style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
           >
-            {/* Search Icon */}
-            <Link
-              href="/shop"
-              id="nav-search-btn"
-              aria-label="Search"
-              className="transition-colors duration-200 text-black hover:text-zinc-900 p-2"
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
-              <Search size={20} strokeWidth={2.4} />
-            </Link>
-
             {/* Wishlist Icon */}
             <Link
               href="/wishlist"
@@ -427,21 +417,21 @@ export default function Navbar({ cartCount }: NavbarProps) {
                     marginBottom: '1.5rem',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                     <Image
                       src="/logo.jpeg"
                       alt="WEAR YUNG"
-                      width={150}
-                      height={45}
-                      style={{ objectFit: 'contain', maxHeight: '42px', width: 'auto' }}
+                      width={180}
+                      height={55}
+                      style={{ objectFit: 'contain', maxHeight: '52px', width: 'auto', borderRadius: '6px' }}
                     />
                     <span style={{ 
                       fontFamily: 'var(--font-display)', 
-                      fontSize: '1.5rem', 
+                      fontSize: '1.75rem', 
                       color: 'var(--wy-text)', 
                       letterSpacing: '0.05em' 
                     }}>
-                      WEAR YUNG
+                      WEAR<span style={{ color: '#FFC800' }}>YUNG</span>
                     </span>
                   </div>
                   <motion.button

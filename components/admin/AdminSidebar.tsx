@@ -10,7 +10,8 @@ import {
   Star,
   ExternalLink,
   LogOut,
-  Images
+  Images,
+  Settings,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ const navItems = [
   { href: '/admin/customers', label: 'Customers', icon: <Users size={18} /> },
   { href: '/admin/lookbook', label: 'Lookbook', icon: <Images size={18} /> },
   { href: '/admin/reviews', label: 'Reviews', icon: <Star size={18} /> },
+  { href: '/admin/settings', label: 'Settings', icon: <Settings size={18} /> },
 ];
 
 export default function AdminSidebar() {

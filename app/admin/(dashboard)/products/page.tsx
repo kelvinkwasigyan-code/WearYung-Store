@@ -238,7 +238,9 @@ export default function AdminProductsPage() {
     price: '', compare_at_price: '',
     stock_quantity: '',
     sku: '',
-    clothing_type: '',
+    clothing_type: 'tops_sleeves',
+    sleeve_type: 'tops',
+    fit: 'baggy',
     size: '',
     color: '',
   });
@@ -246,13 +248,24 @@ export default function AdminProductsPage() {
 
   const categories = ['clothing', 'watches', 'perfumes', 'accessories', 'sneakers', 'slides', 'bags'];
 
-  const clothingTypes = [
-    { value: '', label: 'Select type...' },
+  const clothingCategories = [
+    { value: '', label: 'Select clothing category...' },
+    { value: 'tops_sleeves', label: 'Tops & Sleeves' },
+    { value: 'jeans_pants', label: 'Jeans & Pants' },
     { value: 'hoodie', label: 'Hoodies & Sweats' },
-    { value: 'jeans', label: 'Jeans & Pants' },
-    { value: 'tops', label: 'Tees & Tops' },
     { value: 'jacket', label: 'Jackets & Outerwear' },
     { value: 'shorts', label: 'Shorts' },
+  ];
+
+  const topsSleevesSubOptions = [
+    { value: 'tops', label: 'Tops (Short Sleeve Tees / Crop Tops)' },
+    { value: 'sleeves', label: 'Sleeves (Long Sleeves & Sweaters)' },
+  ];
+
+  const jeansSubOptions = [
+    { value: 'baggy', label: 'Baggy Jeans (Loose / Skater Fit)' },
+    { value: 'slim', label: 'Slim Fit Jeans (Tapered / Skinny)' },
+    { value: 'regular', label: 'Regular / Straight Fit Jeans' },
   ];
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
@@ -277,7 +290,9 @@ export default function AdminProductsPage() {
       price: '', compare_at_price: '',
       stock_quantity: '',
       sku: '',
-      clothing_type: '',
+      clothing_type: 'tops_sleeves',
+      sleeve_type: 'tops',
+      fit: 'baggy',
       size: '',
       color: '',
     });
@@ -289,6 +304,10 @@ export default function AdminProductsPage() {
     setEditingProduct(p);
     const variant = p.product_variants?.[0];
     const attrs = variant?.attributes || {};
+    let resolvedType = attrs.clothing_type || '';
+    if (resolvedType === 'tops' || resolvedType === 'sleeves') resolvedType = 'tops_sleeves';
+    if (resolvedType === 'baggy_jeans' || resolvedType === 'slim_jeans' || resolvedType === 'jeans') resolvedType = 'jeans_pants';
+
     setForm({
       title: p.title,
       slug: p.slug,
@@ -299,7 +318,9 @@ export default function AdminProductsPage() {
       compare_at_price: '',
       stock_quantity: variant?.stock_quantity?.toString() || '',
       sku: variant?.sku || '',
-      clothing_type: attrs.clothing_type || '',
+      clothing_type: resolvedType || 'tops_sleeves',
+      sleeve_type: attrs.sleeve_type || (attrs.clothing_type === 'sleeves' ? 'sleeves' : 'tops'),
+      fit: attrs.fit || (attrs.clothing_type === 'slim_jeans' ? 'slim' : attrs.clothing_type === 'baggy_jeans' ? 'baggy' : 'baggy'),
       size: attrs.size || attrs.size_eu?.toString() || '',
       color: attrs.color || attrs.colorway || '',
     });
@@ -335,7 +356,12 @@ export default function AdminProductsPage() {
       if (form.color) attributes.color = form.color;
       if (form.category === 'clothing') {
         if (form.size) attributes.size = form.size;
-        if (form.clothing_type) attributes.clothing_type = form.clothing_type;
+        attributes.clothing_type = form.clothing_type;
+        if (form.clothing_type === 'tops_sleeves') {
+          attributes.sleeve_type = form.sleeve_type || 'tops';
+        } else if (form.clothing_type === 'jeans_pants') {
+          attributes.fit = form.fit || 'baggy';
+        }
       } else if (['sneakers', 'slides'].includes(form.category)) {
         if (form.size) attributes.size_eu = parseInt(form.size);
         if (form.color) attributes.colorway = form.color;
@@ -759,21 +785,58 @@ export default function AdminProductsPage() {
 
                   {/* Clothing-specific fields */}
                   {form.category === 'clothing' && (
-                    <div style={ROW}>
+                    <>
                       <div>
-                        <label style={LABEL}>Clothing Type</label>
+                        <label style={LABEL}>Clothing Category *</label>
                         <select
                           value={form.clothing_type}
                           onChange={e => setForm(f => ({ ...f, clothing_type: e.target.value }))}
                           style={{ ...INPUT, cursor: 'pointer' }}
                         >
-                          {clothingTypes.map(ct => (
+                          {clothingCategories.map(ct => (
                             <option key={ct.value} value={ct.value} style={{ background: '#18181B' }}>
                               {ct.label}
                             </option>
                           ))}
                         </select>
                       </div>
+
+                      {/* Dynamic Sub-Selector for Tops & Sleeves */}
+                      {form.clothing_type === 'tops_sleeves' && (
+                        <div style={{ background: '#141416', padding: '0.85rem', borderRadius: '8px', border: '1px solid rgba(255, 200, 0, 0.25)' }}>
+                          <label style={{ ...LABEL, color: '#FFC800' }}>Sleeve / Top Type *</label>
+                          <select
+                            value={form.sleeve_type}
+                            onChange={e => setForm(f => ({ ...f, sleeve_type: e.target.value }))}
+                            style={{ ...INPUT, cursor: 'pointer' }}
+                          >
+                            {topsSleevesSubOptions.map(opt => (
+                              <option key={opt.value} value={opt.value} style={{ background: '#18181B' }}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      {/* Dynamic Sub-Selector for Jeans & Pants */}
+                      {form.clothing_type === 'jeans_pants' && (
+                        <div style={{ background: '#141416', padding: '0.85rem', borderRadius: '8px', border: '1px solid rgba(255, 200, 0, 0.25)' }}>
+                          <label style={{ ...LABEL, color: '#FFC800' }}>Jeans & Pants Style / Cut *</label>
+                          <select
+                            value={form.fit}
+                            onChange={e => setForm(f => ({ ...f, fit: e.target.value }))}
+                            style={{ ...INPUT, cursor: 'pointer' }}
+                          >
+                            {jeansSubOptions.map(opt => (
+                              <option key={opt.value} value={opt.value} style={{ background: '#18181B' }}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
                       <div>
                         <label style={LABEL}>Size</label>
                         <select
@@ -787,7 +850,7 @@ export default function AdminProductsPage() {
                           ))}
                         </select>
                       </div>
-                    </div>
+                    </>
                   )}
 
                   {/* Footwear-specific fields */}

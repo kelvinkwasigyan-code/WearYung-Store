@@ -34,24 +34,26 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     fetchReviews();
   }, [fetchReviews]);
 
-  const [newReview, setNewReview] = useState({ name: '', comment: '', rating: 5 });
+  const [newReview, setNewReview] = useState({ name: '', comment: '', rating: 0 });
+  const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newReview.name || !newReview.comment) return;
+    if (!newReview.name.trim() || !newReview.comment.trim() || newReview.rating === 0) return;
 
     setIsSubmitting(true);
     
     const { error } = await supabase.from('product_reviews').insert({
       product_id: productId,
-      author_name: newReview.name,
+      author_name: newReview.name.trim(),
       rating: newReview.rating,
-      comment: newReview.comment
+      comment: newReview.comment.trim()
     });
 
     if (!error) {
-      setNewReview({ name: '', comment: '', rating: 5 });
+      setNewReview({ name: '', comment: '', rating: 0 });
+      setHoverRating(0);
       fetchReviews();
     } else {
       console.error('Error submitting review:', error);
@@ -93,21 +95,31 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-[#141416] border border-zinc-800 p-5 rounded-2xl">
             <h4 className="font-display text-lg tracking-wide text-white uppercase mb-2">Write a Review</h4>
             
-            <div className="flex items-center gap-2 mb-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setNewReview({ ...newReview, rating: star })}
-                  className="transition-transform hover:scale-110"
-                >
-                  <Star
-                    size={24}
-                    fill={star <= newReview.rating ? 'currentColor' : 'none'}
-                    className={star <= newReview.rating ? 'text-[#FFC800]' : 'text-zinc-600'}
-                  />
-                </button>
-              ))}
+            <div className="flex items-center gap-2 mb-2" onMouseLeave={() => setHoverRating(0)}>
+              {[1, 2, 3, 4, 5].map((star) => {
+                const isFilled = star <= (hoverRating || newReview.rating);
+                return (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setNewReview({ ...newReview, rating: star })}
+                    onMouseEnter={() => setHoverRating(star)}
+                    className="transition-transform hover:scale-110 focus:outline-none"
+                    aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                  >
+                    <Star
+                      size={24}
+                      fill={isFilled ? '#FFC800' : 'none'}
+                      className={isFilled ? 'text-[#FFC800]' : 'text-zinc-600 hover:text-zinc-400'}
+                    />
+                  </button>
+                );
+              })}
+              {newReview.rating > 0 && (
+                <span className="text-xs text-zinc-400 ml-1 font-bold">
+                  {newReview.rating} / 5
+                </span>
+              )}
             </div>
 
             <input
@@ -130,8 +142,8 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
             
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="mt-2 w-full bg-[#FFC800] text-black font-display font-bold text-sm tracking-widest uppercase py-3 rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50"
+              disabled={isSubmitting || newReview.rating === 0}
+              className="mt-2 w-full bg-[#FFC800] text-black font-display font-bold text-sm tracking-widest uppercase py-3 rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Submitting...' : 'Submit Review'}
             </button>

@@ -21,7 +21,14 @@ import {
   Package,
   Clock,
   CheckCircle2,
+  AlertCircle,
   ExternalLink,
+  Lock,
+  Key,
+  Eye,
+  EyeOff,
+  Mail,
+  Shield,
 } from 'lucide-react';
 
 interface CustomerDashboardProps {
@@ -65,6 +72,7 @@ export default function CustomerDashboard({
 
   // Modal states
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [profileActiveTab, setProfileActiveTab] = useState<'profile' | 'credentials'>('profile');
   const [isEditAddressOpen, setIsEditAddressOpen] = useState(false);
   const [isOrdersModalOpen, setIsOrdersModalOpen] = useState(false);
   const [isMomoModalOpen, setIsMomoModalOpen] = useState(false);
@@ -76,6 +84,19 @@ export default function CustomerDashboard({
   const [fullNameInput, setFullNameInput] = useState(profile?.full_name || '');
   const [phoneInput, setPhoneInput] = useState(profile?.phone_number || '');
   const [savingProfile, setSavingProfile] = useState(false);
+
+  // Email update state
+  const [newEmailInput, setNewEmailInput] = useState(initialUser.email || '');
+  const [savingEmail, setSavingEmail] = useState(false);
+
+  // Password update state
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  // Feedback notification
+  const [accountFeedback, setAccountFeedback] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Address form state
   const currentAddress = profile?.address || {};
@@ -107,6 +128,7 @@ export default function CustomerDashboard({
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingProfile(true);
+    setAccountFeedback(null);
 
     const { data, error } = await supabase
       .from('profiles')
@@ -120,9 +142,65 @@ export default function CustomerDashboard({
 
     if (!error && data) {
       setProfile((prev: any) => ({ ...prev, ...data }));
-      setIsEditProfileOpen(false);
+      setAccountFeedback({ text: 'Profile details saved successfully!', type: 'success' });
+      setTimeout(() => setIsEditProfileOpen(false), 1200);
+    } else if (error) {
+      setAccountFeedback({ text: error.message || 'Failed to save profile', type: 'error' });
     }
     setSavingProfile(false);
+  };
+
+  const handleSaveEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEmailInput.trim()) return;
+    if (newEmailInput.trim().toLowerCase() === initialUser.email.toLowerCase()) {
+      setAccountFeedback({ text: 'New email matches your current email.', type: 'info' });
+      return;
+    }
+    setSavingEmail(true);
+    setAccountFeedback(null);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: newEmailInput.trim().toLowerCase(),
+      });
+      if (error) throw error;
+      setAccountFeedback({
+        text: 'Confirmation email sent! Please check your new email inbox to verify.',
+        type: 'info',
+      });
+    } catch (err: any) {
+      setAccountFeedback({ text: err.message || 'Failed to update email address', type: 'error' });
+    } finally {
+      setSavingEmail(false);
+    }
+  };
+
+  const handleSavePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPasswordInput) return;
+    if (newPasswordInput.length < 6) {
+      setAccountFeedback({ text: 'Password must be at least 6 characters long.', type: 'error' });
+      return;
+    }
+    if (newPasswordInput !== confirmPasswordInput) {
+      setAccountFeedback({ text: 'Passwords do not match. Please try again.', type: 'error' });
+      return;
+    }
+    setSavingPassword(true);
+    setAccountFeedback(null);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPasswordInput,
+      });
+      if (error) throw error;
+      setNewPasswordInput('');
+      setConfirmPasswordInput('');
+      setAccountFeedback({ text: 'Password changed successfully! Keep your new credentials safe.', type: 'success' });
+    } catch (err: any) {
+      setAccountFeedback({ text: err.message || 'Failed to change password', type: 'error' });
+    } finally {
+      setSavingPassword(false);
+    }
   };
 
   const handleSaveAddress = async (e: React.FormEvent) => {
@@ -312,7 +390,11 @@ export default function CustomerDashboard({
             {/* Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button
-                onClick={() => setIsEditProfileOpen(true)}
+                onClick={() => {
+                  setProfileActiveTab('profile');
+                  setAccountFeedback(null);
+                  setIsEditProfileOpen(true);
+                }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -340,6 +422,41 @@ export default function CustomerDashboard({
               >
                 <Edit3 size={13} />
                 <span>Edit Profile</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setProfileActiveTab('credentials');
+                  setAccountFeedback(null);
+                  setIsEditProfileOpen(true);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.65rem 1.15rem',
+                  borderRadius: '10px',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  background: 'rgba(255, 200, 0, 0.1)',
+                  border: '1px solid rgba(255, 200, 0, 0.35)',
+                  color: '#FFC800',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#FFC800';
+                  e.currentTarget.style.color = '#000000';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 200, 0, 0.1)';
+                  e.currentTarget.style.color = '#FFC800';
+                }}
+              >
+                <Lock size={13} />
+                <span>Credentials & Security</span>
               </button>
             </div>
           </div>
@@ -746,6 +863,42 @@ export default function CustomerDashboard({
                   <ExternalLink size={13} color="#71717A" />
                 </a>
 
+                {/* Get Directions Link */}
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=6.049186,-0.2265678"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '10px',
+                    background: '#1A1A1E',
+                    border: '1px solid #27272A',
+                    color: '#E4E4E7',
+                    fontSize: '0.8rem',
+                    fontWeight: 500,
+                    textDecoration: 'none',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#FFC800';
+                    e.currentTarget.style.background = '#222226';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#27272A';
+                    e.currentTarget.style.background = '#1A1A1E';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <MapPin size={14} color="#FFC800" />
+                    <span>Store: Koforidua, Behind B Foster Bakery</span>
+                  </div>
+                  <span style={{ fontSize: '0.7rem', color: '#FFC800', fontWeight: 700, textTransform: 'uppercase' }}>Directions ↗</span>
+                </a>
+
                 {/* Drop Alerts Switch */}
                 <div style={{
                   display: 'flex',
@@ -890,7 +1043,7 @@ export default function CustomerDashboard({
       {/* MODALS */}
       {/* ========================================================================= */}
 
-      {/* Edit Profile Modal */}
+      {/* Edit Profile & Credentials Settings Modal */}
       <AnimatePresence>
         {isEditProfileOpen && (
           <div style={{
@@ -913,15 +1066,21 @@ export default function CustomerDashboard({
                 border: '1px solid #27272A',
                 borderRadius: '16px',
                 width: '100%',
-                maxWidth: '460px',
+                maxWidth: '520px',
                 padding: '1.75rem',
                 boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+                maxHeight: '90vh',
+                overflowY: 'auto',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', paddingBottom: '0.75rem', borderBottom: '1px solid #27272A' }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: '#FFFFFF', letterSpacing: '0.04em' }}>
-                  Edit Personal Details
-                </h3>
+              {/* Modal Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid #27272A' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Shield size={18} color="#FFC800" />
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', color: '#FFFFFF', letterSpacing: '0.04em' }}>
+                    Account Settings & Credentials
+                  </h3>
+                </div>
                 <button
                   onClick={() => setIsEditProfileOpen(false)}
                   style={{ background: 'none', border: 'none', color: '#71717A', cursor: 'pointer', padding: '4px' }}
@@ -930,91 +1089,294 @@ export default function CustomerDashboard({
                 </button>
               </div>
 
-              <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={fullNameInput}
-                    onChange={(e) => setFullNameInput(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="input-wy"
-                    style={{ width: '100%' }}
-                    required
-                  />
-                </div>
+              {/* Tab Navigation */}
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', background: '#0D0D0E', padding: '4px', borderRadius: '10px', border: '1px solid #27272A' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileActiveTab('profile');
+                    setAccountFeedback(null);
+                  }}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    padding: '0.55rem',
+                    borderRadius: '8px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    background: profileActiveTab === 'profile' ? '#FFC800' : 'transparent',
+                    color: profileActiveTab === 'profile' ? '#000000' : '#A1A1AA',
+                    border: 'none',
+                  }}
+                >
+                  <User size={14} />
+                  <span>Profile Info</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileActiveTab('credentials');
+                    setAccountFeedback(null);
+                  }}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    padding: '0.55rem',
+                    borderRadius: '8px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    background: profileActiveTab === 'credentials' ? '#FFC800' : 'transparent',
+                    color: profileActiveTab === 'credentials' ? '#000000' : '#A1A1AA',
+                    border: 'none',
+                  }}
+                >
+                  <Key size={14} />
+                  <span>Credentials & Security</span>
+                </button>
+              </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={phoneInput}
-                    onChange={(e) => setPhoneInput(e.target.value)}
-                    placeholder="+233 55 000 0000"
-                    className="input-wy"
-                    style={{ width: '100%' }}
-                  />
+              {/* Feedback Banner */}
+              {accountFeedback && (
+                <div style={{
+                  padding: '0.75rem 1rem',
+                  borderRadius: '10px',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.5rem',
+                  fontSize: '0.78rem',
+                  fontWeight: 500,
+                  background: accountFeedback.type === 'error' ? 'rgba(239, 68, 68, 0.15)' : accountFeedback.type === 'info' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                  border: accountFeedback.type === 'error' ? '1px solid rgba(239, 68, 68, 0.3)' : accountFeedback.type === 'info' ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                  color: accountFeedback.type === 'error' ? '#FCA5A5' : accountFeedback.type === 'info' ? '#93C5FD' : '#6EE7B7',
+                }}>
+                  {accountFeedback.type === 'error' ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
+                  <span>{accountFeedback.text}</span>
                 </div>
+              )}
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={initialUser.email}
-                    disabled
-                    className="input-wy"
-                    style={{ width: '100%', opacity: 0.5, cursor: 'not-allowed' }}
-                  />
-                  <span style={{ display: 'block', fontSize: '0.7rem', color: '#71717A', marginTop: '0.35rem' }}>
-                    Email cannot be changed directly for security.
-                  </span>
-                </div>
+              {/* TAB 1: Profile Details */}
+              {profileActiveTab === 'profile' && (
+                <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem', fontWeight: 700 }}>
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={fullNameInput}
+                      onChange={(e) => setFullNameInput(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="input-wy"
+                      style={{ width: '100%' }}
+                      required
+                    />
+                  </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditProfileOpen(false)}
-                    style={{
-                      flex: 1,
-                      padding: '0.75rem',
-                      borderRadius: '10px',
-                      background: '#1A1A1E',
-                      color: '#A1A1AA',
-                      border: '1px solid #27272A',
-                      fontWeight: 700,
-                      fontSize: '0.75rem',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={savingProfile}
-                    style={{
-                      flex: 1,
-                      padding: '0.75rem',
-                      borderRadius: '10px',
-                      background: '#FFC800',
-                      color: '#000000',
-                      border: 'none',
-                      fontWeight: 700,
-                      fontSize: '0.75rem',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {savingProfile ? 'Saving...' : 'Save Changes'}
-                  </button>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem', fontWeight: 700 }}>
+                      Phone / Mobile Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={phoneInput}
+                      onChange={(e) => setPhoneInput(e.target.value)}
+                      placeholder="+233 55 000 0000"
+                      className="input-wy"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem', fontWeight: 700 }}>
+                      Active Login Email
+                    </label>
+                    <input
+                      type="email"
+                      value={initialUser.email}
+                      disabled
+                      className="input-wy"
+                      style={{ width: '100%', opacity: 0.6, cursor: 'not-allowed' }}
+                    />
+                    <span style={{ display: 'block', fontSize: '0.7rem', color: '#71717A', marginTop: '0.35rem' }}>
+                      To update your login email or password, switch to the <strong>Credentials & Security</strong> tab above.
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditProfileOpen(false)}
+                      style={{
+                        flex: 1,
+                        padding: '0.75rem',
+                        borderRadius: '10px',
+                        background: '#1A1A1E',
+                        color: '#A1A1AA',
+                        border: '1px solid #27272A',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={savingProfile}
+                      style={{
+                        flex: 1,
+                        padding: '0.75rem',
+                        borderRadius: '10px',
+                        background: '#FFC800',
+                        color: '#000000',
+                        border: 'none',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {savingProfile ? 'Saving...' : 'Save Profile'}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* TAB 2: Credentials & Security */}
+              {profileActiveTab === 'credentials' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  {/* Email Update Form */}
+                  <form onSubmit={handleSaveEmail} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', background: '#1A1A1E', borderRadius: '12px', border: '1px solid #27272A' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#FFC800', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      <Mail size={14} />
+                      <span>Change Login Email</span>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
+                        New Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={newEmailInput}
+                        onChange={(e) => setNewEmailInput(e.target.value)}
+                        placeholder="Enter new email address"
+                        className="input-wy"
+                        style={{ width: '100%' }}
+                        required
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={savingEmail}
+                      style={{
+                        padding: '0.6rem 1rem',
+                        borderRadius: '8px',
+                        background: '#FFC800',
+                        color: '#000000',
+                        border: 'none',
+                        fontWeight: 700,
+                        fontSize: '0.72rem',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        alignSelf: 'flex-start',
+                      }}
+                    >
+                      {savingEmail ? 'Sending Link...' : 'Update Email Address'}
+                    </button>
+                  </form>
+
+                  {/* Password Change Form */}
+                  <form onSubmit={handleSavePassword} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', background: '#1A1A1E', borderRadius: '12px', border: '1px solid #27272A' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#FFC800', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      <Lock size={14} />
+                      <span>Change Password</span>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
+                        New Password (min 6 characters)
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={newPasswordInput}
+                          onChange={(e) => setNewPasswordInput(e.target.value)}
+                          placeholder="Enter new password"
+                          className="input-wy"
+                          style={{ width: '100%', paddingRight: '2.5rem' }}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: 'absolute',
+                            right: '0.75rem',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            color: '#71717A',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}
+                        >
+                          {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
+                        Confirm New Password
+                      </label>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={confirmPasswordInput}
+                        onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                        placeholder="Re-enter new password"
+                        className="input-wy"
+                        style={{ width: '100%' }}
+                        required
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={savingPassword}
+                      style={{
+                        padding: '0.6rem 1rem',
+                        borderRadius: '8px',
+                        background: '#FFC800',
+                        color: '#000000',
+                        border: 'none',
+                        fontWeight: 700,
+                        fontSize: '0.72rem',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        alignSelf: 'flex-start',
+                      }}
+                    >
+                      {savingPassword ? 'Updating Password...' : 'Save New Password'}
+                    </button>
+                  </form>
                 </div>
-              </form>
+              )}
             </motion.div>
           </div>
         )}

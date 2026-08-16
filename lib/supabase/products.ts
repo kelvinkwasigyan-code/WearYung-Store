@@ -62,18 +62,18 @@ export const FALLBACK_PRODUCTS: Product[] = [
   // --- CLOTHING: JEANS & PANTS ---
   {
     id: 'a1b2c3d4-0000-0000-0000-222222222222',
-    title: 'Cargo Utility Tactical Pants',
-    slug: 'cargo-utility-pants',
+    title: 'Slim Stretch Cargo Combat Pants',
+    slug: 'slim-stretch-cargo-pants',
     category: 'clothing',
-    description: 'Tactical design meets everyday comfort. Deep snap-closure cargo pockets with ankle drawstring toggles.',
+    description: 'Tapered slim fit cargo trousers featuring tactical utility pockets, reinforced knee panels, and adjustable ankle cuffs.',
     images: [
       'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=1000&q=80'
     ],
     is_published: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    average_rating: 4.9,
-    review_count: 8,
+    average_rating: 4.8,
+    review_count: 14,
     variants: [
       {
         id: 'var-2',
@@ -81,7 +81,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
         sku: 'CARGO-OLV-M',
         price: 600.00,
         stock_quantity: 30,
-        attributes: { size: 'M', color: 'Military Olive', clothing_type: 'jeans' },
+        attributes: { size: 'M', color: 'Military Olive', clothing_type: 'jeans_pants', fit: 'slim' },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
@@ -108,14 +108,14 @@ export const FALLBACK_PRODUCTS: Product[] = [
         sku: 'DENIM-RAW-32',
         price: 680.00,
         stock_quantity: 40,
-        attributes: { size: '32', color: 'Indigo Raw', clothing_type: 'jeans' },
+        attributes: { size: '32', color: 'Indigo Raw', clothing_type: 'jeans_pants', fit: 'baggy' },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
     ]
   },
 
-  // --- CLOTHING: TEES & TOPS ---
+  // --- CLOTHING: TOPS & SLEEVES ---
   {
     id: 'a1b2c3d4-0000-0000-0000-555555555555',
     title: 'Graphic Acid-Wash Vintage Tee',
@@ -137,7 +137,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
         sku: 'TEE-ACD-M',
         price: 350.00,
         stock_quantity: 100,
-        attributes: { size: 'M', color: 'Charcoal Acid', clothing_type: 'tops' },
+        attributes: { size: 'M', color: 'Charcoal Acid', clothing_type: 'tops_sleeves', sleeve_type: 'tops' },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
@@ -145,10 +145,10 @@ export const FALLBACK_PRODUCTS: Product[] = [
   },
   {
     id: 'a1b2c3d4-0000-0000-0000-555555555556',
-    title: 'Boxy Heavyweight Layering Tee',
-    slug: 'boxy-heavyweight-layering-tee',
+    title: 'Heavyweight Long Sleeve Waffle Shirt',
+    slug: 'heavyweight-long-sleeve-waffle-shirt',
     category: 'clothing',
-    description: 'Ultra-clean 280GSM mock-neck silhouette engineered for perfect drape under jackets and hoodies.',
+    description: 'Thermal textured 320GSM long sleeve shirt featuring ribbed cuffs and a relaxed streetwear silhouette.',
     images: [
       'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=80'
     ],
@@ -161,10 +161,10 @@ export const FALLBACK_PRODUCTS: Product[] = [
       {
         id: 'var-5b',
         product_id: 'a1b2c3d4-0000-0000-0000-555555555556',
-        sku: 'TEE-WHT-L',
-        price: 320.00,
+        sku: 'SLV-WHT-L',
+        price: 420.00,
         stock_quantity: 75,
-        attributes: { size: 'L', color: 'Chalk White', clothing_type: 'tops' },
+        attributes: { size: 'L', color: 'Chalk White', clothing_type: 'tops_sleeves', sleeve_type: 'sleeves' },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }

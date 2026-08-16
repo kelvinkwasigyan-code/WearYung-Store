@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { MapPin, Clock, Navigation } from 'lucide-react';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 export default function Footer() {
   const pathname = usePathname();
@@ -19,125 +20,105 @@ export default function Footer() {
   }
 
   return (
-    <footer suppressHydrationWarning style={{ background: 'var(--wy-surface)', borderTop: '1px solid var(--wy-border)', marginTop: 'auto' }}>
-      <div className="container-wy" style={{ padding: '4rem 1.5rem 2rem' }}>
+    <footer suppressHydrationWarning style={{ background: '#0D0D0E', borderTop: '1px solid #1E1E22', marginTop: 'auto' }}>
+      <div className="container-wy" style={{ padding: '2.75rem 1.5rem 2.25rem' }}>
+        
+        {/* Main Row: Brand + Nav Links + Socials */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '3rem',
-          marginBottom: '3rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1.5rem',
+          paddingBottom: '1.5rem',
+          borderBottom: '1px solid #1E1E22',
         }}>
-          {/* Brand */}
-          <div>
+          {/* Brand & Tagline */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <Link href="/" style={{
               fontFamily: 'var(--font-display)',
-              fontSize: '2rem',
+              fontSize: '1.65rem',
               letterSpacing: '0.12em',
               color: 'var(--wy-text)',
-              display: 'block',
-              marginBottom: '1rem',
+              textDecoration: 'none',
+              lineHeight: 1,
             }}>
               WEAR<span style={{ color: 'var(--wy-yellow)' }}>YUNG</span>
             </Link>
-            <p style={{ color: 'var(--wy-muted)', fontSize: '0.875rem', lineHeight: 1.7, maxWidth: '260px' }}>
-              Premium streetwear and accessories for those who move different.
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', alignItems: 'center' }}>
-              {/* Instagram */}
-              <a href="https://instagram.com/wearyung1" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ transition: 'opacity 150ms' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                <Image src="/icons/instagram-icon.png" alt="Instagram" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-              </a>
-              {/* TikTok */}
-              <a href="https://tiktok.com/@wearyung1" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ transition: 'opacity 150ms' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                <Image src="/icons/tiktok-icon.png" alt="TikTok" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-              </a>
-              {/* Snapchat */}
-              <a href="https://snapchat.com/add/wear_yung" target="_blank" rel="noopener noreferrer" aria-label="Snapchat" style={{ transition: 'opacity 150ms' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                <Image src="/icons/snapchat-icon.jpg" alt="Snapchat" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-              </a>
-              {/* WhatsApp */}
-              <a href="https://wa.me/233545355585" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ transition: 'opacity 150ms' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                <Image src="/icons/whatsapp-icon.png" alt="WhatsApp" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-              </a>
-            </div>
+            <span style={{ color: '#52525B', fontSize: '0.85rem' }}>•</span>
+            <span style={{ color: '#A1A1AA', fontSize: '0.85rem', letterSpacing: '0.04em' }}>
+              Modern Menswear &bull; Koforidua, Ghana
+            </span>
           </div>
 
-          {/* Shop Links */}
-          <div>
-            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', letterSpacing: '0.12em', color: 'var(--wy-yellow)', marginBottom: '1.25rem' }}>
-              SHOP
-            </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <li>
-                <Link href="/shop" style={{ color: 'var(--wy-muted)', fontSize: '0.875rem', transition: 'color 150ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-text)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted)')}>
-                  All Products
-                </Link>
-              </li>
-              {categories.map((cat) => (
-                <li key={cat}>
-                  <Link href={`/shop?category=${cat}`}
-                    style={{ color: 'var(--wy-muted)', fontSize: '0.875rem', transition: 'color 150ms' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-text)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted)')}>
-                    {CATEGORY_LABELS[cat as ProductCategory]}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Quick Categories & Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.85rem' }}>
+            <Link href="/shop" style={{ color: '#E4E4E7', textDecoration: 'none', fontWeight: 600, transition: 'color 150ms' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#FFC800')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#E4E4E7')}>
+              All Products
+            </Link>
+            {categories.slice(0, 4).map((cat) => (
+              <Link key={cat} href={`/shop?category=${cat}`}
+                style={{ color: '#A1A1AA', textDecoration: 'none', transition: 'color 150ms' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#FFC800')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#A1A1AA')}>
+                {CATEGORY_LABELS[cat as ProductCategory]}
+              </Link>
+            ))}
+            <a href="https://wa.me/233545355585" target="_blank" rel="noopener noreferrer"
+              style={{ color: '#A1A1AA', textDecoration: 'none', transition: 'color 150ms' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#FFC800')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#A1A1AA')}>
+              Support
+            </a>
           </div>
 
-          {/* Help */}
-          <div>
-            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', letterSpacing: '0.12em', color: 'var(--wy-yellow)', marginBottom: '1.25rem' }}>
-              HELP
-            </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {['Shipping Policy', 'Returns & Exchanges', 'Size Guide', 'FAQ', 'Contact Us'].map((item) => (
-                <li key={item}>
-                  <a href="#" style={{ color: 'var(--wy-muted)', fontSize: '0.875rem', transition: 'color 150ms' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-text)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted)')}>
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          {/* Social Icons */}
+          <div style={{ display: 'flex', gap: '0.95rem', alignItems: 'center' }}>
+            {/* Instagram */}
+            <a href="https://instagram.com/wearyung1" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ transition: 'opacity 150ms' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+              <Image src="/icons/instagram-icon.png" alt="Instagram" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+            </a>
+            {/* TikTok */}
+            <a href="https://tiktok.com/@wearyung1" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ transition: 'opacity 150ms' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+              <Image src="/icons/tiktok-icon.png" alt="TikTok" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+            </a>
+            {/* Snapchat */}
+            <a href="https://snapchat.com/add/wear_yung" target="_blank" rel="noopener noreferrer" aria-label="Snapchat" style={{ transition: 'opacity 150ms' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+              <Image src="/icons/snapchat-icon.jpg" alt="Snapchat" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+            </a>
+            {/* WhatsApp */}
+            <a href="https://wa.me/233545355585" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ transition: 'opacity 150ms' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+              <Image src="/icons/whatsapp-icon.png" alt="WhatsApp" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+            </a>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div style={{
-          borderTop: '1px solid var(--wy-border)',
-          paddingTop: '1.5rem',
+          paddingTop: '1.25rem',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'space-between',
           alignItems: 'center',
           gap: '1rem',
+          fontSize: '0.8rem',
         }}>
-          <p suppressHydrationWarning style={{ color: 'var(--wy-muted-dim)', fontSize: '0.8rem' }}>
+          <p suppressHydrationWarning style={{ color: '#71717A', margin: 0 }}>
             © {new Date().getFullYear()} WEAR YUNG. All rights reserved.
           </p>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-            {['Privacy Policy', 'Terms of Service'].map((item) => (
-              <a key={item} href="#" style={{ color: 'var(--wy-muted-dim)', fontSize: '0.8rem', transition: 'color 150ms' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-muted)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted-dim)')}>
-                {item}
-              </a>
-            ))}
-            
-            {/* Development Admin Portal Button */}
+            <span style={{ color: '#71717A' }}>Behind B Foster Bakery, Koforidua</span>
             <Link
               href="/admin/login"
               style={{
@@ -165,13 +146,14 @@ export default function Footer() {
                 e.currentTarget.style.color = '#FFC800';
               }}
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
-              <span>Admin Portal</span>
+              <span>Admin</span>
             </Link>
           </div>
         </div>
+
       </div>
     </footer>
   );

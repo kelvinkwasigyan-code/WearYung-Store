@@ -48,17 +48,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const p = product as Product;
 
   return (
-    <div style={{ background: 'var(--wy-canvas)', minHeight: '100vh', paddingBottom: '5rem' }}>
-      <div className="container-wy" style={{ padding: '2.5rem 1.5rem' }}>
+    <div style={{ background: 'var(--wy-canvas)', minHeight: '100vh', paddingBottom: '3rem' }}>
+      <div className="container-wy" style={{ padding: '1.25rem 1.5rem 2.5rem' }}>
         {/* Breadcrumb */}
         <nav
           aria-label="Breadcrumb"
           style={{
             display: 'flex',
-            gap: '0.6rem',
+            gap: '0.5rem',
             alignItems: 'center',
-            marginBottom: '2.5rem',
-            fontSize: '0.85rem',
+            marginBottom: '1.15rem',
+            fontSize: '0.8rem',
             color: 'var(--wy-muted)',
             flexWrap: 'wrap',
           }}

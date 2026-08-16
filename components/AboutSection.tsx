@@ -1,0 +1,253 @@
+'use client';
+
+import Image from 'next/image';
+import { MapPin, Clock, Navigation, ArrowRight, MessageCircle } from 'lucide-react';
+
+export default function AboutSection() {
+  return (
+    <section style={{
+      background: '#09090B',
+      padding: '5rem 0',
+      borderTop: '1px solid #1E1E22',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Background glow */}
+      <div style={{
+        position: 'absolute',
+        top: '20%',
+        left: '-10%',
+        width: '400px',
+        height: '400px',
+        background: 'radial-gradient(circle, rgba(255, 200, 0, 0.04) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      <div className="container-wy">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: 'clamp(2rem, 4vw, 3.5rem)',
+          alignItems: 'center',
+          maxWidth: '1100px',
+          margin: '0 auto',
+        }}>
+          {/* LEFT: CEO Portrait Frame */}
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: 'clamp(380px, 52vh, 480px)',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              background: '#141416',
+              border: '1px solid #27272A',
+              boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 200, 0, 0.06)',
+            }}>
+              <Image
+                src="/Ceo-about.jpeg"
+                alt="Daniel Mante — CEO & Founder of Wear Yung Collections"
+                fill
+                sizes="(max-width: 768px) 100vw, 500px"
+                style={{ objectFit: 'cover' }}
+                priority
+              />
+
+              {/* Gradient Scrim at bottom */}
+              <div style={{
+                position: 'absolute',
+                inset: '0',
+                background: 'linear-gradient(to top, rgba(9, 9, 11, 0.92) 0%, rgba(9, 9, 11, 0.3) 40%, transparent 70%)',
+                pointerEvents: 'none',
+              }} />
+
+              {/* CEO Badge Overlay */}
+              <div style={{
+                position: 'absolute',
+                bottom: '1.25rem',
+                left: '1.25rem',
+                right: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.85rem 1.15rem',
+                borderRadius: '12px',
+                background: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 200, 0, 0.3)',
+              }}>
+                <div>
+                  <h4 style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '1.1rem',
+                    color: '#FFFFFF',
+                    letterSpacing: '0.04em',
+                    margin: '0 0 0.15rem',
+                    lineHeight: 1.1,
+                  }}>
+                    DANIEL MANTE
+                  </h4>
+                  <p style={{
+                    fontSize: '0.72rem',
+                    color: '#FFC800',
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    margin: 0,
+                  }}>
+                    CEO & Founder &bull; Wear Yung Collections
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: About Narrative & Mission */}
+          <div>
+            {/* Tagline pill */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '999px',
+              background: 'rgba(255, 200, 0, 0.08)',
+              border: '1px solid rgba(255, 200, 0, 0.25)',
+              color: '#FFC800',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginBottom: '1rem',
+            }}>
+              <span>Behind The Brand</span>
+            </div>
+
+            {/* Headline */}
+            <h2 style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              color: '#FFFFFF',
+              letterSpacing: '0.04em',
+              lineHeight: 1.15,
+              marginBottom: '1.25rem',
+              textTransform: 'uppercase',
+            }}>
+              MODERN MENSWEAR FOR <br />
+              <span style={{ color: '#FFC800' }}>THE TRENDY GENTLEMAN</span>
+            </h2>
+
+            {/* Founder Note */}
+            <div style={{
+              position: 'relative',
+              paddingLeft: '1.25rem',
+              borderLeft: '3px solid #FFC800',
+              marginBottom: '1.75rem',
+            }}>
+              <p suppressHydrationWarning style={{
+                fontSize: 'clamp(0.95rem, 1.8vw, 1.08rem)',
+                color: '#E4E4E7',
+                lineHeight: 1.7,
+                margin: 0,
+              }}>
+                &ldquo;My name is <strong>Daniel Mante</strong>, CEO of Wear Yung Collections. In Koforidua, Ghana, I bring modern and stylish menswear designed for the youthful and trendy gentleman. I offer quality, affordable fashion that keeps you looking sharp, confident, and effortlessly stylish.&rdquo;
+              </p>
+            </div>
+
+            {/* Location & Hours meta card */}
+            <div suppressHydrationWarning style={{
+              background: '#141416',
+              borderRadius: '12px',
+              border: '1px solid #27272A',
+              padding: '1rem 1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              marginBottom: '1.75rem',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#FFFFFF' }}>
+                <MapPin size={16} style={{ color: '#FFC800', flexShrink: 0 }} />
+                <span>Koforidua, Behind B Foster Bakery</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: '#A1A1AA' }}>
+                <Clock size={15} style={{ color: '#FFC800', flexShrink: 0 }} />
+                <span>Mon–Sat 8:30am–10:30pm &bull; Sun 1pm–10pm</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=6.049186,-0.2265678"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 200, 0, 0.1)',
+                  border: '1px solid rgba(255, 200, 0, 0.35)',
+                  color: '#FFC800',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#FFC800';
+                  e.currentTarget.style.color = '#000000';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 200, 0, 0.1)';
+                  e.currentTarget.style.color = '#FFC800';
+                }}
+              >
+                <Navigation size={13} style={{ transform: 'rotate(45deg)' }} />
+                <span>Get Directions</span>
+              </a>
+
+              <a
+                href="https://wa.me/233545355585?text=Hello%20Daniel%20Mante%20%26%20Wear%20Yung%20Team,%20I%20need%20assistance"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '8px',
+                  background: '#18181B',
+                  border: '1px solid #3F3F46',
+                  color: '#FFFFFF',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#FFC800';
+                  e.currentTarget.style.color = '#FFC800';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#3F3F46';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+              >
+                <MessageCircle size={15} style={{ color: '#10B981' }} />
+                <span>Support</span>
+                <ArrowRight size={14} />
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

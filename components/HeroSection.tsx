@@ -5,7 +5,7 @@ import StatsBar from './StatsBar';
 import HeroGridCarousel, { GRID_SLIDES_1X2 } from './HeroGridCarousel';
 import { motion, type Variants } from 'framer-motion';
 import { Fragment, useState, useEffect } from 'react';
-import { MapPin, Clock } from 'lucide-react';
+import { MapPin, Clock, Navigation } from 'lucide-react';
 
 export default function HeroSection() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -261,24 +261,59 @@ export default function HeroSection() {
               style={{
                 width: '100%',
                 maxWidth: '720px',
-                padding: '0.75rem 1.35rem',
-                background: 'rgba(24, 24, 27, 0.85)',
+                padding: '0.85rem 1.35rem',
+                background: 'rgba(24, 24, 27, 0.88)',
                 border: '1px solid rgba(255, 200, 0, 0.35)',
                 backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
                 boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.45rem',
+                gap: '0.55rem',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#FFFFFF', fontSize: '0.82rem' }}>
-                <MapPin size={15} style={{ color: 'var(--wy-yellow)', flexShrink: 0, marginTop: '2px' }} />
-                <span style={{ lineHeight: 1.35 }}>
-                  <strong style={{ color: 'var(--wy-yellow)' }}>Visit Us:</strong> Koforidua, behind B Foster Bakery
-                </span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.65rem' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#FFFFFF', fontSize: '0.82rem', flex: 1, minWidth: '250px' }}>
+                  <MapPin size={16} style={{ color: 'var(--wy-yellow)', flexShrink: 0, marginTop: '2px' }} />
+                  <span suppressHydrationWarning style={{ lineHeight: 1.35 }}>
+                    <strong style={{ color: 'var(--wy-yellow)' }}>Visit Us:</strong> Koforidua, Behind B Foster Bakery
+                  </span>
+                </div>
+
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=6.049186,-0.2265678"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.35rem 0.85rem',
+                    borderRadius: '8px',
+                    background: 'var(--wy-yellow)',
+                    color: '#000000',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none',
+                    transition: 'all 0.15s',
+                    whiteSpace: 'nowrap',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#FFFFFF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--wy-yellow)';
+                  }}
+                >
+                  <Navigation size={12} style={{ transform: 'rotate(45deg)' }} />
+                  <span>Get Directions</span>
+                </a>
               </div>
+
               <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.1)', width: '100%' }} />
+
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#D4D4D8', fontSize: '0.8rem' }}>
                 <Clock size={15} style={{ color: 'var(--wy-yellow)', flexShrink: 0, marginTop: '2px' }} />
                 <div style={{ lineHeight: 1.35 }}>

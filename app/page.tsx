@@ -3,6 +3,7 @@ import HeroSection from '@/components/HeroSection';
 import CategoryGrid from '@/components/CategoryGrid';
 import AnnouncementMarquee from '@/components/AnnouncementMarquee';
 import UnifiedProductShowcase from '@/components/UnifiedProductShowcase';
+import AboutSection from '@/components/AboutSection';
 import ValueProps from '@/components/ValueProps';
 import CallToActionBanner from '@/components/CallToActionBanner';
 
@@ -22,6 +23,7 @@ export default async function HomePage() {
       <CategoryGrid />
       <AnnouncementMarquee />
       <UnifiedProductShowcase products={allProducts} />
+      <AboutSection />
       <ValueProps />
       <CallToActionBanner />
     </div>

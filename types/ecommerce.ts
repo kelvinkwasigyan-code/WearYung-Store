@@ -95,7 +95,9 @@ export interface OrderItem {
 export interface ClothingAttributes {
   size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | '3XL' | string;
   color: string;
-  clothing_type?: 'hoodie' | 'jeans' | 'tops' | string;
+  clothing_type?: 'tops_sleeves' | 'jeans_pants' | 'hoodie' | 'jacket' | 'shorts' | 'tops' | 'sleeves' | 'baggy_jeans' | 'slim_jeans' | 'jeans' | string;
+  sleeve_type?: 'tops' | 'sleeves' | string;
+  fit?: 'baggy' | 'slim' | 'oversized' | 'regular' | string;
 }
 
 export interface FootwearAttributes {
