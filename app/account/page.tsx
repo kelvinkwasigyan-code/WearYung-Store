@@ -27,6 +27,11 @@ export default async function AccountPage() {
     .eq('id', user.id)
     .maybeSingle();
 
+  // If user is an Admin, redirect to the Admin Dashboard (admins do not have customer account)
+  if (profile?.role === 'admin') {
+    redirect('/admin');
+  }
+
   // 3. Fetch Orders History
   const { data: orders } = await supabase
     .from('orders')

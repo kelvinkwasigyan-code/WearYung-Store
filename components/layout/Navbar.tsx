@@ -7,7 +7,7 @@ import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { useCartContext } from '@/context/CartContext';
-import { Search, Heart, ShoppingBag, Menu, X, User as UserIcon } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Menu, X, User as UserIcon, Shield } from 'lucide-react';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 
 import { usePathname } from 'next/navigation';
@@ -87,6 +87,7 @@ const drawerSectionVariants: Variants = {
 export default function Navbar({ cartCount }: NavbarProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { itemCount, toggleCart } = useCartContext();
@@ -94,9 +95,24 @@ export default function Navbar({ cartCount }: NavbarProps) {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+
+    const checkUserRole = async (currentUser: User | null) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .maybeSingle();
+        setIsAdmin(profile?.role === 'admin');
+      } else {
+        setIsAdmin(false);
+      }
+    };
+
+    supabase.auth.getUser().then(({ data }) => checkUserRole(data.user));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null);
+      checkUserRole(session?.user ?? null);
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -296,16 +312,35 @@ export default function Navbar({ cartCount }: NavbarProps) {
 
             {/* Account / Auth */}
             {user ? (
-              <Link
-                href="/account"
-                id="nav-account-btn"
-                aria-label="Account"
-                className="btn btn-ghost btn-sm hidden md:inline-flex"
-                style={{ gap: '0.35rem' }}
-              >
-                <UserIcon size={14} />
-                <span>Account</span>
-              </Link>
+              isAdmin ? (
+                <Link
+                  href="/admin"
+                  id="nav-admin-btn"
+                  aria-label="Admin Portal"
+                  className="btn btn-sm hidden md:inline-flex"
+                  style={{
+                    background: 'rgba(255, 200, 0, 0.15)',
+                    border: '1px solid #FFC800',
+                    color: '#FFC800',
+                    gap: '0.35rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  <Shield size={14} />
+                  <span>Admin</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/account"
+                  id="nav-account-btn"
+                  aria-label="Account"
+                  className="btn btn-ghost btn-sm hidden md:inline-flex"
+                  style={{ gap: '0.35rem' }}
+                >
+                  <UserIcon size={14} />
+                  <span>Account</span>
+                </Link>
+              )
             ) : (
               <Link
                 href="/login"
@@ -542,15 +577,28 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <p style={{ fontSize: '0.78rem', color: 'var(--wy-muted)' }}>
                       Signed in as <span style={{ color: '#FFFFFF' }}>{user.email}</span>
+                      {isAdmin && <span style={{ color: '#FFC800', marginLeft: '0.4rem', fontWeight: 700 }}>(ADMIN)</span>}
                     </p>
-                    <Link
-                      href="/account"
-                      onClick={() => setDrawerOpen(false)}
-                      className="btn btn-ghost btn-sm"
-                      style={{ width: '100%' }}
-                    >
-                      My Account
-                    </Link>
+                    {isAdmin ? (
+                      <Link
+                        href="/admin"
+                        onClick={() => setDrawerOpen(false)}
+                        className="btn btn-primary btn-sm"
+                        style={{ width: '100%', gap: '0.4rem', justifyContent: 'center' }}
+                      >
+                        <Shield size={14} />
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/account"
+                        onClick={() => setDrawerOpen(false)}
+                        className="btn btn-ghost btn-sm"
+                        style={{ width: '100%' }}
+                      >
+                        My Account
+                      </Link>
+                    )}
                   </div>
                 ) : (
                   <div style={{ display: 'flex', gap: '0.75rem' }}>
