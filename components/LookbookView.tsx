@@ -5,112 +5,14 @@ import Link from 'next/link';
 import { motion, type Variants } from 'framer-motion';
 import { ShoppingBag, ArrowUpRight, Tag, Plus } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
-import { useState } from 'react';
-
-interface LookbookItem {
-  id: string;
-  title: string;
-  season: string;
-  category: string;
-  image: string;
-  aspect: 'tall' | 'wide' | 'square';
-  items: {
-    name: string;
-    price: string;
-    category: string;
-    slug: string;
-  }[];
-  description: string;
-}
-
-const LOOKBOOK_ITEMS: LookbookItem[] = [
-  {
-    id: 'look-01',
-    title: 'THE NOIR MATRIX',
-    season: 'VOL. 01 — DROP 04',
-    category: 'STREETWEAR & WATCHES',
-    image: 'https://images.unsplash.com/photo-1550614000-4b95dd247594?auto=format&fit=crop&w=1000&q=80',
-    aspect: 'tall',
-    description: 'Heavyweight silhouette paired with metallic contrast accents for cold city nights.',
-    items: [
-      { name: 'Pitch Black Heavyweight Hoodie', price: 'GH₵ 45,000', category: 'clothing', slug: 'heavyweight-oversized-hoodie' },
-      { name: 'Aura Gold Chrono Watch', price: 'GH₵ 120,000', category: 'watches', slug: 'luxury-chrono-watch' },
-    ],
-  },
-  {
-    id: 'look-02',
-    title: 'URBAN MINIMALIST',
-    season: 'VOL. 01 — DROP 03',
-    category: 'TAILORED ESSENTIALS',
-    image: 'https://images.unsplash.com/photo-1523398002811-999aa8e9ddaa?auto=format&fit=crop&w=1000&q=80',
-    aspect: 'square',
-    description: 'Deconstructed modern tailoring styled with luxury horology.',
-    items: [
-      { name: 'Oversized Raw Edge Blazer', price: 'GH₵ 78,000', category: 'clothing', slug: 'clothing' },
-      { name: 'Obsidian Diver Automatic', price: 'GH₵ 165,000', category: 'watches', slug: 'watches' },
-    ],
-  },
-  {
-    id: 'look-03',
-    title: 'NEO-STREET COMFORT',
-    season: 'VOL. 01 — DROP 02',
-    category: 'FOOTWEAR & BAGS',
-    image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1000&q=80',
-    aspect: 'wide',
-    description: 'Aggressive runner sole profile balanced with utilitarian leather crossbody bag.',
-    items: [
-      { name: 'Vortex Runner V2 Triple White', price: 'GH₵ 85,000', category: 'sneakers', slug: 'sneakers' },
-      { name: 'Tactical Leather Crossbody Bag', price: 'GH₵ 42,000', category: 'bags', slug: 'bags' },
-    ],
-  },
-  {
-    id: 'look-04',
-    title: 'MONOCHROME VELVET',
-    season: 'VOL. 01 — DROP 04',
-    category: 'ACCESSORIES & SCENTS',
-    image: 'https://images.unsplash.com/photo-1512353087810-254cb3617d12?auto=format&fit=crop&w=1000&q=80',
-    aspect: 'tall',
-    description: 'Layered tones finished with our signature amber and oud scent profile.',
-    items: [
-      { name: 'Velvet Noir Extrait De Parfum', price: 'GH₵ 32,000', category: 'perfumes', slug: 'perfumes' },
-      { name: 'Titanium Cuban Link Chain', price: 'GH₵ 35,000', category: 'accessories', slug: 'accessories' },
-    ],
-  },
-  {
-    id: 'look-05',
-    title: 'POST-INDUSTRIAL CASUAL',
-    season: 'VOL. 01 — DROP 01',
-    category: 'SLIDES & APPAREL',
-    image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=80',
-    aspect: 'wide',
-    description: 'Relaxed resort wear engineered with durable streetwear sensibilities.',
-    items: [
-      { name: 'Cloudfoam Molded Slide Sandals', price: 'GH₵ 25,000', category: 'slides', slug: 'slides' },
-      { name: 'Acid Wash Boxy Graphic Tee', price: 'GH₵ 28,000', category: 'clothing', slug: 'clothing' },
-    ],
-  },
-  {
-    id: 'look-06',
-    title: 'HIGH ROLLER NOIR',
-    season: 'VOL. 01 — DROP 04',
-    category: 'FULL ENSEMBLE',
-    image: 'https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?auto=format&fit=crop&w=1000&q=80',
-    aspect: 'tall',
-    description: 'The defining statement for red carpets, private lounges, and gallery drops.',
-    items: [
-      { name: 'Double-Breasted Wool Coat', price: 'GH₵ 110,000', category: 'clothing', slug: 'clothing' },
-      { name: 'Diamond Pavé Signet Ring', price: 'GH₵ 48,000', category: 'accessories', slug: 'accessories' },
-    ],
-  },
-];
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-    },
+    transition: { staggerChildren: 0.12 },
   },
 };
 
@@ -122,6 +24,23 @@ const cardVariants: Variants = {
 export default function LookbookView() {
   const { toggleCart } = useCartContext();
   const [activeLook, setActiveLook] = useState<string | null>(null);
+  const [lookbooks, setLookbooks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLookbooks() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('lookbooks')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+      
+      if (data) setLookbooks(data);
+      setLoading(false);
+    }
+    fetchLookbooks();
+  }, []);
 
   return (
     <div style={{ backgroundColor: '#0D0D0D', minHeight: '100vh', color: '#FFFFFF' }}>
@@ -212,8 +131,16 @@ export default function LookbookView() {
               gap: '2.5rem',
             }}
           >
-            {LOOKBOOK_ITEMS.map((look) => {
-              const isTall = look.aspect === 'tall';
+            {loading ? (
+              <div style={{ textAlign: 'center', gridColumn: '1 / -1', padding: '4rem 0', color: '#71717A' }}>
+                Loading editorials...
+              </div>
+            ) : lookbooks.length === 0 ? (
+              <div style={{ textAlign: 'center', gridColumn: '1 / -1', padding: '4rem 0', color: '#71717A' }}>
+                No editorials available at the moment.
+              </div>
+            ) : lookbooks.map((look) => {
+              const isTall = look.aspect_ratio === 'tall';
               const minHeight = isTall ? '550px' : '420px';
 
               return (
@@ -233,7 +160,7 @@ export default function LookbookView() {
                   {/* Photo Container */}
                   <div className="relative w-full h-full min-h-[400px] flex-1 overflow-hidden">
                     <Image
-                      src={look.image}
+                      src={look.image_url}
                       alt={look.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -300,7 +227,7 @@ export default function LookbookView() {
 
                         {/* List of outfit items */}
                         <div className="flex flex-col gap-2.5 mb-4">
-                          {look.items.map((item, idx) => (
+                          {(look.tagged_items || []).map((item: any, idx: number) => (
                             <Link
                               key={idx}
                               href={`/shop?category=${item.category}`}

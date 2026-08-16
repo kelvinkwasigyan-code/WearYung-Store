@@ -19,6 +19,7 @@ const navItems = [
   { href: '/admin/products', label: 'Products', icon: <Package size={18} /> },
   { href: '/admin/orders', label: 'Orders', icon: <ShoppingBag size={18} /> },
   { href: '/admin/customers', label: 'Customers', icon: <Users size={18} /> },
+  { href: '/admin/lookbook', label: 'Lookbook', icon: <Star size={18} /> },
   { href: '/admin/reviews', label: 'Reviews', icon: <Star size={18} /> },
 ];
 
