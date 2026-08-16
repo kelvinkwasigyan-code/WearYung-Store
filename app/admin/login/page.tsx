@@ -44,15 +44,22 @@ export default function AdminLoginPage() {
         .eq('id', data.user.id)
         .maybeSingle();
 
-      // If profile exists and role is not admin, deny access
-      if (profile && profile.role !== 'admin') {
-        // Sign out unauthorized user
+      // Admin check: role-based OR email-based
+      const isAdminUser = profile?.role === 'admin' || data.user.email === 'admin@wearyung.com';
+
+      // If profile exists and user is not admin, deny access
+      if (profile && !isAdminUser) {
         await supabase.auth.signOut();
         throw new Error('Access Denied: Your account does not have administrative privileges.');
       }
 
-      // If no profile yet or role is admin, ensure admin role is set
-      if (!profile) {
+      // Auto-fix: ensure admin role is set in the database
+      if (profile && profile.role !== 'admin' && isAdminUser) {
+        await supabase.from('profiles').update({ role: 'admin' }).eq('id', data.user.id);
+      }
+
+      // If no profile yet, create one with admin role
+      if (!profile && isAdminUser) {
         await supabase.from('profiles').upsert({
           id: data.user.id,
           role: 'admin',

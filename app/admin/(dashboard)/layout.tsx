@@ -26,9 +26,19 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     profile = newProfile;
   }
 
-  if (profile?.role !== 'admin') {
-    // If not admin, redirect to admin login with unauthorized message
+  // Admin check: role-based OR email-based
+  const isAdmin = profile?.role === 'admin' || user.email === 'admin@wearyung.com';
+
+  if (!isAdmin) {
     redirect('/admin/login');
+  }
+
+  // Auto-fix: if admin by email but role in DB is still 'customer', update it
+  if (profile && profile.role !== 'admin' && user.email === 'admin@wearyung.com') {
+    await supabase
+      .from('profiles')
+      .update({ role: 'admin' })
+      .eq('id', user.id);
   }
 
   return (
