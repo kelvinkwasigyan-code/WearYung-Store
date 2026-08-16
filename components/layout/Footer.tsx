@@ -129,7 +129,7 @@ export default function Footer() {
           <p style={{ color: 'var(--wy-muted-dim)', fontSize: '0.8rem' }}>
             © {new Date().getFullYear()} WEAR YUNG. All rights reserved.
           </p>
-          <div style={{ display: 'flex', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
             {['Privacy Policy', 'Terms of Service'].map((item) => (
               <a key={item} href="#" style={{ color: 'var(--wy-muted-dim)', fontSize: '0.8rem', transition: 'color 150ms' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-muted)')}
@@ -137,6 +137,40 @@ export default function Footer() {
                 {item}
               </a>
             ))}
+            
+            {/* Development Admin Portal Button */}
+            <Link
+              href="/admin/login"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                padding: '0.3rem 0.65rem',
+                borderRadius: '6px',
+                background: 'rgba(255, 200, 0, 0.08)',
+                border: '1px solid rgba(255, 200, 0, 0.25)',
+                color: '#FFC800',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+                transition: 'all 150ms ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#FFC800';
+                e.currentTarget.style.color = '#000000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 200, 0, 0.08)';
+                e.currentTarget.style.color = '#FFC800';
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>Admin Portal</span>
+            </Link>
           </div>
         </div>
       </div>
