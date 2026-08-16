@@ -125,9 +125,12 @@ ALTER TABLE public.user_wishlists ENABLE ROW LEVEL SECURITY;
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
-  RETURN EXISTS (
-    SELECT 1 FROM public.profiles 
-    WHERE id = auth.uid() AND role = 'admin'::app_role
+  RETURN (
+    (current_setting('request.jwt.claims', true)::jsonb ->> 'email') = 'admin@wearyung.com'
+    OR EXISTS (
+      SELECT 1 FROM public.profiles 
+      WHERE id = auth.uid() AND role = 'admin'::app_role
+    )
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
