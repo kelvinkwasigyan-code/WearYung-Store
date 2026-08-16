@@ -5,6 +5,8 @@ import ProductCard from '@/components/ui/ProductCard';
 import ShopFilters from '@/components/ShopFilters';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type Product, type ProductCategory } from '@/types/ecommerce';
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: 'Shop All Products',
   description: 'Browse all WEAR YUNG products — clothing, sneakers, watches, bags, perfumes, accessories and slides.',

@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 const BUCKET_NAME = 'product-images';
 
 export async function POST(request: NextRequest) {

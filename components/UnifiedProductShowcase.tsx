@@ -523,11 +523,7 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
         {/* Unified Product Cards Grid */}
         <motion.div
           layout
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: '1.75rem',
-          }}
+          className="product-showcase-grid"
         >
           <AnimatePresence>
             {displayedProducts.length === 0 ? (
@@ -705,21 +701,32 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                     </Link>
 
                     {/* Product Details & Actions */}
-                    <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, justifyContent: 'space-between' }}>
+                    <div style={{
+                      padding: 'clamp(0.65rem, 1.8vw, 1.15rem)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      flex: 1,
+                      justifyContent: 'space-between',
+                    }}>
                       <div>
                         <Link href={`/shop/${product.slug}`}>
                           <h3 style={{
                             fontFamily: 'var(--font-display)',
-                            fontSize: '1.15rem',
+                            fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)',
                             color: '#FFFFFF',
                             letterSpacing: '0.03em',
                             lineHeight: 1.2,
-                            marginBottom: '0.35rem',
+                            marginBottom: '0.25rem',
                           }}>
                             {product.title}
                           </h3>
                         </Link>
-                        <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: '#FFC800' }}>
+                        <div style={{
+                          fontFamily: 'var(--font-display)',
+                          fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
+                          color: '#FFC800',
+                        }}>
                           GH₵ {price.toLocaleString()}
                         </div>
                       </div>
@@ -731,24 +738,24 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                         disabled={isAdded}
                         style={{
                           width: '100%',
-                          padding: '0.75rem',
+                          padding: 'clamp(0.5rem, 1.4vw, 0.75rem)',
                           borderRadius: '8px',
                           background: isAdded ? '#10b981' : '#FFC800',
                           color: isAdded ? '#FFFFFF' : '#000000',
                           border: 'none',
                           fontFamily: 'var(--font-display)',
-                          fontSize: '0.85rem',
+                          fontSize: 'clamp(0.72rem, 1.4vw, 0.85rem)',
                           letterSpacing: '0.06em',
                           cursor: isAdded ? 'default' : 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '0.4rem',
+                          gap: '0.35rem',
                           transition: 'background 0.2s',
                         }}
                       >
-                        <ShoppingBag size={14} />
-                        <span>{isAdded ? 'ADDED TO BAG' : '+ QUICK ADD'}</span>
+                        <ShoppingBag size={13} />
+                        <span>{isAdded ? 'ADDED' : '+ QUICK ADD'}</span>
                       </button>
                     </div>
                   </motion.div>

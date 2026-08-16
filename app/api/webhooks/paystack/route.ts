@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { verifyPaystackWebhookSignature } from '@/lib/payments/paystack';
 import { sendSaleAdminAlert } from '@/lib/email';
 
+export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();

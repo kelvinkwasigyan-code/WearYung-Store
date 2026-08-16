@@ -55,11 +55,13 @@ export async function initializePaystackTransaction({
 
   try {
     const amountInPesewas = Math.round(amountInGHS * 100);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://wearyung.com';
+    const callbackUrlResolved = callbackUrl || `${siteUrl}/checkout/success`;
 
     const response = await fetch('https://api.paystack.co/transaction/initialize', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY || PAYSTACK_SECRET_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -67,7 +69,8 @@ export async function initializePaystackTransaction({
         amount: amountInPesewas,
         currency: 'GHS',
         reference,
-        callback_url: callbackUrl,
+        // Dynamic redirect after payment:
+        callback_url: callbackUrlResolved,
         channels,
         metadata: {
           order_id: orderId,

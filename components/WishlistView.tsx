@@ -169,13 +169,7 @@ export default function WishlistView() {
           </div>
         ) : (
           /* Products Grid */
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.75rem',
-            }}
-          >
+          <div className="product-showcase-grid">
             {products.map((product) => {
               const variant = product.variants?.[0];
               const price = variant?.price ?? 0;
@@ -196,13 +190,13 @@ export default function WishlistView() {
                   }}
                 >
                   {/* Image & Remove button */}
-                  <div style={{ position: 'relative', width: '100%', height: '280px', background: '#0a0a0a' }}>
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5', background: '#0a0a0a' }}>
                     <Link href={`/shop/${product.slug}`}>
                       <Image
                         src={img}
                         alt={product.title}
                         fill
-                        sizes="(max-width: 768px) 100vw, 30vw"
+                        sizes="(max-width: 768px) 50vw, 30vw"
                         style={{ objectFit: 'cover' }}
                       />
                     </Link>
@@ -212,10 +206,10 @@ export default function WishlistView() {
                       title="Remove from wishlist"
                       style={{
                         position: 'absolute',
-                        top: '12px',
-                        right: '12px',
-                        width: '32px',
-                        height: '32px',
+                        top: '8px',
+                        right: '8px',
+                        width: '30px',
+                        height: '30px',
                         borderRadius: '50%',
                         background: '#000000',
                         border: '1px solid #27272A',
@@ -224,27 +218,28 @@ export default function WishlistView() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
+                        zIndex: 10,
                       }}
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     </button>
-                    <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
-                      <span className="badge badge-yellow" style={{ fontSize: '0.7rem' }}>
+                    <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 10 }}>
+                      <span className="badge badge-yellow" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem' }}>
                         {product.category}
                       </span>
                     </div>
                   </div>
 
                   {/* Info & Actions */}
-                  <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                  <div style={{ padding: 'clamp(0.65rem, 1.8vw, 1.15rem)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <div>
                       <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none' }}>
                         <h3
                           style={{
                             fontFamily: 'var(--font-display)',
-                            fontSize: '1.15rem',
+                            fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)',
                             color: '#FFFFFF',
-                            margin: '0 0 0.35rem',
+                            margin: '0 0 0.25rem',
                             lineHeight: 1.2,
                           }}
                         >
@@ -254,7 +249,7 @@ export default function WishlistView() {
                       <p
                         style={{
                           fontFamily: 'var(--font-display)',
-                          fontSize: '1.25rem',
+                          fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
                           color: '#FFC800',
                           margin: 0,
                         }}
@@ -263,7 +258,7 @@ export default function WishlistView() {
                       </p>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.6rem' }}>
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.25rem' }}>
                       <button
                         type="button"
                         onClick={() => handleQuickAdd(product)}
@@ -271,30 +266,37 @@ export default function WishlistView() {
                         className="btn btn-yellow"
                         style={{
                           flex: 1,
-                          padding: '0.65rem 1rem',
-                          fontSize: '0.82rem',
+                          padding: 'clamp(0.45rem, 1.2vw, 0.65rem)',
+                          fontSize: 'clamp(0.72rem, 1.3vw, 0.82rem)',
                           fontWeight: 700,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '0.4rem',
+                          gap: '0.35rem',
+                          background: inStock ? '#FFC800' : '#27272A',
+                          color: inStock ? '#000000' : '#71717A',
                         }}
                       >
-                        <ShoppingBag size={15} />
-                        {inStock ? 'ADD TO BAG' : 'OUT OF STOCK'}
+                        <ShoppingBag size={13} />
+                        <span>{inStock ? '+ BAG' : 'OUT'}</span>
                       </button>
+
                       <Link
                         href={`/shop/${product.slug}`}
-                        className="btn"
                         style={{
-                          padding: '0.65rem 0.85rem',
-                          fontSize: '0.82rem',
-                          background: 'var(--wy-surface-raised)',
+                          padding: 'clamp(0.45rem, 1.2vw, 0.65rem)',
+                          borderRadius: '6px',
+                          background: '#1E1E22',
+                          border: '1px solid #3F3F46',
                           color: '#FFFFFF',
-                          border: '1px solid var(--wy-border)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textDecoration: 'none',
                         }}
+                        title="View Product"
                       >
-                        VIEW
+                        <ArrowRight size={14} />
                       </Link>
                     </div>
                   </div>

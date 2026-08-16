@@ -176,7 +176,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: '82px',
+            height: 'clamp(64px, 12vw, 82px)',
           }}
         >
           {/* Logo */}
@@ -187,7 +187,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
           >
             <Link
               href="/"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.4rem, 1.5vw, 0.85rem)' }}
               id="nav-brand-logo"
             >
               <Image
@@ -195,12 +195,12 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 alt="WEAR YUNG"
                 width={260}
                 height={80}
-                style={{ objectFit: 'contain', maxHeight: '66px', width: 'auto', borderRadius: '8px' }}
+                style={{ objectFit: 'contain', maxHeight: 'clamp(42px, 8vw, 66px)', width: 'auto', borderRadius: '8px' }}
                 priority
               />
               <span style={{ 
                 fontFamily: 'var(--font-display)', 
-                fontSize: '2.1rem', 
+                fontSize: 'clamp(1.35rem, 4vw, 2.1rem)', 
                 color: '#FFFFFF', 
                 letterSpacing: '0.05em',
                 fontWeight: 800,
