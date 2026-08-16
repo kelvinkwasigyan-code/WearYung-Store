@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
@@ -7,14 +8,19 @@ import AnnouncementMarquee from '../AnnouncementMarquee';
 
 export default function Footer() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const categories = ALL_CATEGORIES;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (pathname?.startsWith('/admin')) {
     return null;
   }
 
   return (
-    <footer style={{ background: 'var(--wy-surface)', borderTop: '1px solid var(--wy-border)', marginTop: 'auto' }}>
+    <footer suppressHydrationWarning style={{ background: 'var(--wy-surface)', borderTop: '1px solid var(--wy-border)', marginTop: 'auto' }}>
       {/* Marquee Banner */}
       <AnnouncementMarquee />
 
@@ -126,7 +132,7 @@ export default function Footer() {
           alignItems: 'center',
           gap: '1rem',
         }}>
-          <p style={{ color: 'var(--wy-muted-dim)', fontSize: '0.8rem' }}>
+          <p suppressHydrationWarning style={{ color: 'var(--wy-muted-dim)', fontSize: '0.8rem' }}>
             © {new Date().getFullYear()} WEAR YUNG. All rights reserved.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
