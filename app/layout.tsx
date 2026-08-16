@@ -3,21 +3,7 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import { CartProvider } from '@/context/CartContext';
 import type { Metadata } from 'next';
-import { Bebas_Neue, Inter } from 'next/font/google';
 import './globals.css';
-
-const bebasNeue = Bebas_Neue({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -39,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${bebasNeue.variable} ${inter.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" data-scroll-behavior="smooth">
       <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <CartProvider>
           <Navbar />

@@ -94,7 +94,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     category: 'clothing',
     description: '14oz rigid Japanese selvedge denim. Loose relaxed cut with heavy contrast gold stitching.',
     images: [
-      'https://images.unsplash.com/photo-1542272604-780c96856592?auto=format&fit=crop&w=1000&q=80'
+      'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1000&q=80'
     ],
     is_published: true,
     created_at: new Date().toISOString(),
