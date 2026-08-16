@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -162,8 +162,8 @@ export default function CartPage() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                   <span style={{ color: 'var(--wy-muted)' }}>Shipping</span>
-                  <span style={{ color: total >= 50000 ? 'var(--wy-success)' : 'var(--wy-text)' }}>
-                    {total >= 50000 ? 'Free' : 'Calculated at checkout'}
+                  <span style={{ color: total >= 1000 ? 'var(--wy-success)' : 'var(--wy-text)' }}>
+                    {total >= 1000 ? 'Free' : 'Calculated at checkout'}
                   </span>
                 </div>
               </div>
