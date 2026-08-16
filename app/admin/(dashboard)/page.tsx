@@ -34,6 +34,11 @@ export default async function AdminDashboardPage() {
     cancelled: '#ef4444',
   };
 
+  const hour = new Date().getHours();
+  let greeting = 'GOOD EVENING';
+  if (hour < 12) greeting = 'GOOD MORNING';
+  else if (hour < 18) greeting = 'GOOD AFTERNOON';
+
   return (
     <div>
       {/* Header */}
@@ -45,7 +50,7 @@ export default async function AdminDashboardPage() {
           letterSpacing: '0.04em',
           marginBottom: '0.25rem',
         }}>
-          DASHBOARD
+          {greeting}, DANI
         </h1>
         <p style={{ color: '#555', fontSize: '0.875rem' }}>
           Live overview of your WEAR YUNG store
