@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -98,7 +98,7 @@ export default function CheckoutPage() {
                     </div>
                     <div>
                       <label htmlFor="phone" style={labelStyle}>Phone *</label>
-                      <input id="phone" name="phone" type="tel" required placeholder="+234 800 000 0000" style={inputStyle} className="input-wy" />
+                      <input id="phone" name="phone" type="tel" required placeholder="+233 54 535 5585" style={inputStyle} className="input-wy" />
                     </div>
                   </div>
                 </div>
@@ -111,15 +111,15 @@ export default function CheckoutPage() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div style={{ gridColumn: '1 / -1' }}>
                       <label htmlFor="line1" style={labelStyle}>Street Address *</label>
-                      <input id="line1" name="line1" type="text" required placeholder="123 Lagos Street" style={inputStyle} className="input-wy" />
+                      <input id="line1" name="line1" type="text" required placeholder="Behind B Foster Bakery" style={inputStyle} className="input-wy" />
                     </div>
                     <div>
                       <label htmlFor="city" style={labelStyle}>City *</label>
-                      <input id="city" name="city" type="text" required placeholder="Lagos" style={inputStyle} className="input-wy" />
+                      <input id="city" name="city" type="text" required placeholder="Koforidua" style={inputStyle} className="input-wy" />
                     </div>
                     <div>
-                      <label htmlFor="state" style={labelStyle}>State *</label>
-                      <input id="state" name="state" type="text" required placeholder="Lagos State" style={inputStyle} className="input-wy" />
+                      <label htmlFor="state" style={labelStyle}>Region *</label>
+                      <input id="state" name="state" type="text" required placeholder="Eastern Region" style={inputStyle} className="input-wy" />
                     </div>
                     <div>
                       <label htmlFor="postal_code" style={labelStyle}>Postal Code</label>

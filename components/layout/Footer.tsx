@@ -5,8 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
-import AnnouncementMarquee from '../AnnouncementMarquee';
-
 export default function Footer() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
@@ -22,10 +20,6 @@ export default function Footer() {
 
   return (
     <footer suppressHydrationWarning style={{ background: 'var(--wy-surface)', borderTop: '1px solid var(--wy-border)', marginTop: 'auto' }}>
-      {/* Marquee Banner */}
-      <AnnouncementMarquee />
-
-
       <div className="container-wy" style={{ padding: '4rem 1.5rem 2rem' }}>
         <div style={{
           display: 'grid',
@@ -68,7 +62,7 @@ export default function Footer() {
                 <Image src="/icons/snapchat-icon.jpg" alt="Snapchat" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
               </a>
               {/* WhatsApp */}
-              <a href="https://wa.me/WEAR_YUNG" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ transition: 'opacity 150ms' }}
+              <a href="https://wa.me/233545355585" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ transition: 'opacity 150ms' }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
                 onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                 <Image src="/icons/whatsapp-icon.png" alt="WhatsApp" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />

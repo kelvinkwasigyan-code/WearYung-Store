@@ -5,6 +5,7 @@ interface StatItem {
 
 interface StatsBarProps {
   stats?: StatItem[];
+  style?: React.CSSProperties;
 }
 
 export default function StatsBar({
@@ -13,9 +14,10 @@ export default function StatsBar({
     { value: '7', label: 'Categories' },
     { value: '100%', label: 'Authentic' },
   ],
+  style,
 }: StatsBarProps) {
   return (
-    <div style={{ display: 'flex', gap: '3rem', marginTop: '4rem', flexWrap: 'wrap' }}>
+    <div style={{ display: 'flex', gap: '3rem', marginTop: '2.25rem', flexWrap: 'wrap', ...style }}>
       {stats.map((stat) => (
         <div key={stat.label}>
           <p

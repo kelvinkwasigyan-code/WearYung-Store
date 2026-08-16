@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import HeroSection from '@/components/HeroSection';
 import CategoryGrid from '@/components/CategoryGrid';
-import FeaturedProducts from '@/components/FeaturedProducts';
-import ProductGrid from '@/components/ProductGrid';
+import AnnouncementMarquee from '@/components/AnnouncementMarquee';
+import UnifiedProductShowcase from '@/components/UnifiedProductShowcase';
 import ValueProps from '@/components/ValueProps';
 import CallToActionBanner from '@/components/CallToActionBanner';
 
@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 };
 
 import { getProducts } from '@/lib/supabase/products';
-import UnifiedProductShowcase from '@/components/UnifiedProductShowcase';
 
 export default async function HomePage() {
   const allProducts = await getProducts();
@@ -21,6 +20,7 @@ export default async function HomePage() {
     <div>
       <HeroSection />
       <CategoryGrid />
+      <AnnouncementMarquee />
       <UnifiedProductShowcase products={allProducts} />
       <ValueProps />
       <CallToActionBanner />

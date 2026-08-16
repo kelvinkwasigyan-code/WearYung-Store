@@ -19,7 +19,7 @@ export default function ValueProps() {
         </svg>
       ),
       title: 'FAST DELIVERY',
-      desc: 'Quick, reliable shipping across Nigeria.',
+      desc: 'Quick, reliable shipping across Ghana & Nationwide.',
     },
     {
       icon: (

@@ -55,12 +55,14 @@ export default function ContactPage() {
                     </div>
                     <div style={{ paddingTop: '0.25rem' }}>
                       <h3 style={{ color: '#18181B', fontWeight: 700, marginBottom: '0.25rem', fontSize: '1.05rem' }}>Phone Lines</h3>
-                      <p style={{ color: '#3F3F46', fontSize: '0.95rem', marginBottom: '0.25rem' }}>
-                        +234 (0) 800 WEAR YUNG
+                      <p style={{ color: '#3F3F46', fontSize: '0.95rem', marginBottom: '0.35rem', fontWeight: 600 }}>
+                        0545355585
                       </p>
-                      <p style={{ color: '#71717A', fontSize: '0.85rem' }}>
-                        Mon-Fri, 9am - 6pm (WAT)
-                      </p>
+                      <div style={{ color: '#71717A', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                        <p style={{ fontWeight: 600, color: '#52525B', marginBottom: '0.15rem' }}>Shop Opening Hours:</p>
+                        <p>Mon - Sat: 8:30am – 10:30pm</p>
+                        <p>Sun: 1:00pm – 10:00pm</p>
+                      </div>
                     </div>
                   </div>
 
@@ -81,10 +83,10 @@ export default function ContactPage() {
                     <div style={{ paddingTop: '0.25rem' }}>
                       <h3 style={{ color: '#18181B', fontWeight: 700, marginBottom: '0.25rem', fontSize: '1.05rem' }}>WhatsApp Support</h3>
                       <p style={{ color: '#3F3F46', fontSize: '0.95rem', marginBottom: '0.25rem', fontWeight: 600 }}>
-                        @WEAR_YUNG
+                        0545355585 (@WEAR_YUNG)
                       </p>
-                      <a href="https://wa.me/WEAR_YUNG" target="_blank" rel="noopener noreferrer" style={{ color: '#D4A000', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
-                        Chat on WhatsApp (@WEAR_YUNG) &rarr;
+                      <a href="https://wa.me/233545355585" target="_blank" rel="noopener noreferrer" style={{ color: '#D4A000', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
+                        Chat on WhatsApp (0545355585) &rarr;
                       </a>
                     </div>
                   </div>
@@ -105,11 +107,8 @@ export default function ContactPage() {
                     </div>
                     <div style={{ paddingTop: '0.25rem' }}>
                       <h3 style={{ color: '#18181B', fontWeight: 700, marginBottom: '0.25rem', fontSize: '1.05rem' }}>Email Address</h3>
-                      <p style={{ color: '#3F3F46', fontSize: '0.95rem', marginBottom: '0.25rem' }}>
-                        support@wearyung.com
-                      </p>
-                      <p style={{ color: '#3F3F46', fontSize: '0.95rem' }}>
-                        info@wearyung.com
+                      <p style={{ color: '#3F3F46', fontSize: '0.95rem', fontWeight: 600 }}>
+                        wearyungworldwide@gmail.com
                       </p>
                     </div>
                   </div>
@@ -131,8 +130,8 @@ export default function ContactPage() {
                     <div style={{ paddingTop: '0.25rem' }}>
                       <h3 style={{ color: '#18181B', fontWeight: 700, marginBottom: '0.25rem', fontSize: '1.05rem' }}>Headquarters</h3>
                       <p style={{ color: '#3F3F46', fontSize: '0.95rem', lineHeight: 1.6 }}>
-                        12 Fashion Avenue, Lekki Phase 1<br />
-                        Lagos, Nigeria
+                        Koforidua, behind B Foster Bakery<br />
+                        Ghana
                       </p>
                     </div>
                   </div>
@@ -285,7 +284,7 @@ export default function ContactPage() {
                       <input
                         type="tel"
                         id="phone"
-                        placeholder="+234..."
+                        placeholder="+233..."
                         className="input-wy"
                         style={{ padding: '0.85rem 1rem', background: '#F8F9FA', color: '#18181B', border: '1px solid #E5E7EB', borderRadius: '8px' }}
                       />
