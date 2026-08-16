@@ -711,33 +711,6 @@ export default function AdminProductsPage() {
                     />
                   </div>
 
-                  <div style={ROW}>
-                    <div>
-                      <label style={LABEL}>Slug</label>
-                      <input
-                        type="text"
-                        value={form.slug}
-                        onChange={e => setForm(f => ({ ...f, slug: e.target.value }))}
-                        placeholder="auto-generated"
-                        style={{ ...INPUT, color: '#71717A' }}
-                        onFocus={e => { e.target.style.borderColor = '#FFC800'; e.target.style.color = '#fff'; }}
-                        onBlur={e => { e.target.style.borderColor = '#27272A'; e.target.style.color = '#71717A'; }}
-                      />
-                    </div>
-                    <div>
-                      <label style={LABEL}>SKU</label>
-                      <input
-                        type="text"
-                        value={form.sku}
-                        onChange={e => setForm(f => ({ ...f, sku: e.target.value }))}
-                        placeholder="auto-generated"
-                        style={{ ...INPUT, color: '#71717A' }}
-                        onFocus={e => { e.target.style.borderColor = '#FFC800'; e.target.style.color = '#fff'; }}
-                        onBlur={e => { e.target.style.borderColor = '#27272A'; e.target.style.color = '#71717A'; }}
-                      />
-                    </div>
-                  </div>
-
                   <div>
                     <label style={LABEL}>Description</label>
                     <textarea
