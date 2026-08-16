@@ -24,6 +24,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // Auto-fix the role in the DB if they are the admin by email but role is 'customer'
+    if (profile?.role !== 'admin' && user.email === 'admin@wearyung.com') {
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ role: 'admin' })
+        .eq('id', user.id);
+      
+      if (updateError) {
+        console.error('Failed to auto-fix admin role:', updateError);
+        return NextResponse.json({ error: 'Could not set admin role for upload. Check RLS policies.' }, { status: 500 });
+      }
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
