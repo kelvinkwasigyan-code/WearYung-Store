@@ -344,8 +344,29 @@ export default function AdminLookbookPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {lookbooks.map(item => (
             <div key={item.id} style={{ background: '#0D0D0D', border: '1px solid #1A1A1A', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ position: 'relative', width: '100%', height: '220px' }}>
-                <img src={item.image_url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ position: 'relative', width: '100%', height: '220px', backgroundColor: '#111113' }}>
+                <img 
+                  src={item.image_url} 
+                  alt={item.title} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    if (e.currentTarget.parentElement) {
+                      e.currentTarget.parentElement.style.display = 'flex';
+                      e.currentTarget.parentElement.style.alignItems = 'center';
+                      e.currentTarget.parentElement.style.justifyContent = 'center';
+                      if (!e.currentTarget.parentElement.querySelector('.broken-img-text')) {
+                        const span = document.createElement('span');
+                        span.className = 'broken-img-text';
+                        span.style.color = '#71717A';
+                        span.style.fontSize = '0.75rem';
+                        span.style.fontFamily = 'var(--font-body)';
+                        span.textContent = 'Image Unavailable';
+                        e.currentTarget.parentElement.appendChild(span);
+                      }
+                    }
+                  }}
+                />
                 <div style={{ position: 'absolute', top: '8px', left: '8px', display: 'flex', gap: '4px' }}>
                   <span style={{ background: 'rgba(0,0,0,0.7)', color: '#FFC800', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 700 }}>
                     {item.season}
