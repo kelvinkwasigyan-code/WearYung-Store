@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 /* ============================================================
@@ -23,8 +24,8 @@
   --wy-success: #22c55e;
 
   /* Typography */
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'Bebas Neue', Impact, 'Arial Black', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Spacing / Radius */
   --radius-sm: 4px;
@@ -403,3 +404,15 @@ a {
 .card-wy:hover .product-img {
   transform: scale(1.06);
 }
+
+/* Explicit font family utilities */
+.font-display {
+  font-family: var(--font-display), 'Bebas Neue', Impact, 'Arial Black', sans-serif !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.font-body {
+  font-family: var(--font-body), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
