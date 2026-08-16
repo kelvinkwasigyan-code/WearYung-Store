@@ -330,33 +330,6 @@ export default function CustomerDashboard({
                 <Edit3 size={13} />
                 <span>Edit Profile</span>
               </button>
-
-              {profile?.role === 'admin' && (
-                <Link
-                  href="/admin"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.45rem',
-                    padding: '0.65rem 1.15rem',
-                    borderRadius: '10px',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                    background: '#FFC800',
-                    color: '#000000',
-                    textDecoration: 'none',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#e6b400'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = '#FFC800'}
-                >
-                  <span>Admin Portal</span>
-                  <ExternalLink size={13} />
-                </Link>
-              )}
             </div>
           </div>
         </div>
