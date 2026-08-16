@@ -728,7 +728,7 @@ export default function CustomerDashboard({
                 </button>
 
                 <a
-                  href="https://wa.me/2335959738962?text=Hello%20WEAR%20YUNG%20Concierge,%20I%20need%20assistance"
+                  href="https://wa.me/WEAR_YUNG?text=Hello%20WEAR%20YUNG%20Concierge,%20I%20need%20assistance"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -757,7 +757,7 @@ export default function CustomerDashboard({
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <MessageCircle size={14} color="#10b981" />
-                    <span>WhatsApp VIP Concierge</span>
+                    <span>WhatsApp VIP (@WEAR_YUNG)</span>
                   </div>
                   <ExternalLink size={13} color="#71717A" />
                 </a>

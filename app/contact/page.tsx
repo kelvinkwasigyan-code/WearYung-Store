@@ -80,11 +80,11 @@ export default function ContactPage() {
                     </div>
                     <div style={{ paddingTop: '0.25rem' }}>
                       <h3 style={{ color: '#18181B', fontWeight: 700, marginBottom: '0.25rem', fontSize: '1.05rem' }}>WhatsApp Support</h3>
-                      <p style={{ color: '#3F3F46', fontSize: '0.95rem', marginBottom: '0.25rem' }}>
-                        +234 (0) 901 234 5678
+                      <p style={{ color: '#3F3F46', fontSize: '0.95rem', marginBottom: '0.25rem', fontWeight: 600 }}>
+                        @WEAR_YUNG
                       </p>
-                      <a href="https://wa.me/2349012345678" target="_blank" rel="noopener noreferrer" style={{ color: '#D4A000', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
-                        Message us directly &rarr;
+                      <a href="https://wa.me/WEAR_YUNG" target="_blank" rel="noopener noreferrer" style={{ color: '#D4A000', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none' }} className="hover:underline">
+                        Chat on WhatsApp (@WEAR_YUNG) &rarr;
                       </a>
                     </div>
                   </div>

@@ -61,7 +61,7 @@ export default function Footer() {
                 </svg>
               </a>
               {/* WhatsApp */}
-              <a href="#" aria-label="WhatsApp" style={{ color: 'var(--wy-muted)', transition: 'color 150ms' }}
+              <a href="https://wa.me/WEAR_YUNG" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ color: 'var(--wy-muted)', transition: 'color 150ms' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--wy-yellow)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--wy-muted)')}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
