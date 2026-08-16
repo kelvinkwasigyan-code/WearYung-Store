@@ -31,7 +31,7 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
 
     // 2. If viewing clothing (or all with clothing active filter), apply clothing subcategory
     if (selectedCategory === 'clothing' && selectedClothingSub !== 'all') {
-      const variantType = product.variants?.[0]?.attributes?.clothing_type;
+      const variantType = (product.variants?.[0]?.attributes as any)?.clothing_type;
       if (variantType === selectedClothingSub) return true;
 
       const titleLower = product.title.toLowerCase();
@@ -321,7 +321,7 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                 const isWishlisted = wishlist.has(product.id);
                 const isAdded = addedItems.has(product.id);
                 const price = product.variants?.[0]?.price || 0;
-                const subType = product.variants?.[0]?.attributes?.clothing_type;
+                const subType = (product.variants?.[0]?.attributes as any)?.clothing_type;
 
                 // Category badge text
                 let badgeText = product.category.toUpperCase();

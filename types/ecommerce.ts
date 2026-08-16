@@ -93,8 +93,9 @@ export interface OrderItem {
 
 // ---- Variant Attribute Shapes ----
 export interface ClothingAttributes {
-  size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | '3XL';
+  size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | '3XL' | string;
   color: string;
+  clothing_type?: 'hoodie' | 'jeans' | 'tops' | string;
 }
 
 export interface FootwearAttributes {
