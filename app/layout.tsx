@@ -5,6 +5,7 @@ import MobileBottomNav from '@/components/layout/MobileBottomNav';
 import MobileScrollProgress from '@/components/MobileScrollProgress';
 import PWARegister from '@/components/PWARegister';
 import { CartProvider } from '@/context/CartContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { Analytics } from '@vercel/analytics/next';
 import { Bebas_Neue, Inter } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
@@ -59,20 +60,39 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${bebasNeue.variable} ${inter.variable}`}>
-      <body className="overflow-x-hidden" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <CartProvider>
-          <MobileScrollProgress />
-          <Navbar />
-          <main style={{ flex: 1, overflowX: 'hidden' }}>
-            {children}
-          </main>
-          <Footer />
-          <CartDrawer />
-          <MobileBottomNav />
-          <PWARegister />
-          <Analytics />
-        </CartProvider>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={`${bebasNeue.variable} ${inter.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('wy-theme');
+                  var theme = stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+                  document.documentElement.setAttribute('data-theme', theme);
+                  document.documentElement.classList.add(theme);
+                  document.documentElement.style.colorScheme = theme;
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="overflow-x-hidden transition-colors duration-300" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <ThemeProvider>
+          <CartProvider>
+            <MobileScrollProgress />
+            <Navbar />
+            <main style={{ flex: 1, overflowX: 'hidden' }}>
+              {children}
+            </main>
+            <Footer />
+            <CartDrawer />
+            <MobileBottomNav />
+            <PWARegister />
+            <Analytics />
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
