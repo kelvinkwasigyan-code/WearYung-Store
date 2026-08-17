@@ -119,7 +119,7 @@ export default function ShopFilters() {
   return (
     <>
       {/* ─── 1. MOBILE TOP CONTROLS (Horizontal Category Rail + Search & Filter Bar) ─── */}
-      <div className="w-full lg:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.25rem' }}>
+      <div className="flex lg:hidden flex-col gap-3.5 mb-5 w-full">
         {/* Horizontal Category Scroll Rail with Floating Arrows */}
         <div style={{ position: 'relative', width: '100%' }}>
           <AnimatePresence>

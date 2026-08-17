@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
 import ProductCard from '@/components/ui/ProductCard';
 import ShopFilters from '@/components/ShopFilters';
+import { getProducts } from '@/lib/supabase/products';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type Product, type ProductCategory } from '@/types/ecommerce';
 
 export const metadata: Metadata = {
@@ -17,31 +17,39 @@ interface ShopPageProps {
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
   const activeCategory = params.category as ProductCategory | undefined;
-  const query = params.q ?? '';
+  const query = (params.q ?? '').toLowerCase().trim();
   const minPrice = params.minPrice ? parseFloat(params.minPrice) : null;
   const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : null;
   const sort = params.sort ?? 'newest';
 
-  const supabase = await createClient();
+  const allProducts = await getProducts();
+  let products = [...allProducts];
 
-  let dbQuery = supabase
-    .from('products')
-    .select('*, variants:product_variants(*)')
-    .eq('is_published', true)
-    .order('created_at', { ascending: false });
-
+  // Category Filtering
   if (activeCategory) {
-    dbQuery = dbQuery.eq('category', activeCategory);
+    products = products.filter((p) => p.category === activeCategory);
   }
 
+  // Search Query Filtering
   if (query) {
-    dbQuery = dbQuery.ilike('title', `%${query}%`);
+    products = products.filter((p) => {
+      const t = p.title.toLowerCase();
+      const desc = (p.description || '').toLowerCase();
+      const cat = p.category.toLowerCase();
+      const attrs = (p.variants?.[0]?.attributes as any) || {};
+      const clothingType = (attrs.clothing_type || '').toLowerCase();
+      const color = (attrs.color || '').toLowerCase();
+      return (
+        t.includes(query) ||
+        desc.includes(query) ||
+        cat.includes(query) ||
+        clothingType.includes(query) ||
+        color.includes(query)
+      );
+    });
   }
 
-  const { data: rawProducts, error } = await dbQuery;
-  let products = (rawProducts as Product[]) || [];
-
-  // In-memory Price Filtering
+  // Price Range Filtering
   if (minPrice !== null || maxPrice !== null) {
     products = products.filter((product) => {
       if (!product.variants || product.variants.length === 0) return false;
@@ -52,7 +60,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     });
   }
 
-  // In-memory Sorting
+  // Sorting
   if (sort === 'price-asc') {
     products.sort((a, b) => {
       const priceA = a.variants?.[0]?.price ?? 0;
@@ -111,29 +119,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
       {/* ─── Main Shop Content ─── */}
       <div className="container-wy" style={{ padding: 'clamp(1rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 5rem' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} className="lg:flex-row lg:items-start lg:gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-8 w-full">
           {/* Filters (Desktop Sidebar + Mobile Top Controls) */}
           <ShopFilters />
 
           {/* Products Grid Area */}
           <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
-            {error && (
-              <div
-                style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  borderRadius: '12px',
-                  padding: '1rem',
-                  color: '#EF4444',
-                  fontSize: '0.85rem',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                Failed to load products. Please refresh and try again.
-              </div>
-            )}
-
-            {!products.length && !error ? (
+            {!products.length ? (
               <div
                 style={{
                   textAlign: 'center',
