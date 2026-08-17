@@ -184,13 +184,17 @@ export default function CategoryGrid() {
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: -10 }}
                 whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-[#0D0D10]/90 border border-[#FFC800]/40 text-[#FFC800] shadow-lg backdrop-blur-md cursor-pointer hover:bg-black hover:border-[#FFC800] transition-all -ml-2 sm:-ml-4"
+                whileTap={{ scale: 0.92 }}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full text-[#FFC800] cursor-pointer transition-all -ml-2 sm:-ml-5"
                 style={{
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 200, 0, 0.25)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(16px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45), 0 0 16px rgba(255, 200, 0, 0.2)',
                 }}
               >
-                <ChevronLeft size={18} strokeWidth={2.6} />
+                <ChevronLeft size={20} strokeWidth={2.4} />
               </motion.button>
             )}
           </AnimatePresence>
@@ -207,13 +211,17 @@ export default function CategoryGrid() {
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: 10 }}
                 whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-[#0D0D10]/90 border border-[#FFC800]/40 text-[#FFC800] shadow-lg backdrop-blur-md cursor-pointer hover:bg-black hover:border-[#FFC800] transition-all -mr-2 sm:-mr-4"
+                whileTap={{ scale: 0.92 }}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full text-[#FFC800] cursor-pointer transition-all -mr-2 sm:-mr-5"
                 style={{
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 200, 0, 0.25)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(16px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45), 0 0 16px rgba(255, 200, 0, 0.2)',
                 }}
               >
-                <ChevronRight size={18} strokeWidth={2.6} />
+                <ChevronRight size={20} strokeWidth={2.4} />
               </motion.button>
             )}
           </AnimatePresence>

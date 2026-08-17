@@ -140,9 +140,16 @@ export default function ShopFilters() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-black/90 border border-[#FFC800]/50 text-[#FFC800] shadow-md cursor-pointer -ml-1"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-8 h-8 rounded-full text-[#FFC800] cursor-pointer -ml-1.5"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 200, 0, 0.25)',
+                }}
               >
-                <ChevronLeft size={15} strokeWidth={3} />
+                <ChevronLeft size={16} strokeWidth={2.6} />
               </motion.button>
             )}
           </AnimatePresence>
@@ -156,9 +163,16 @@ export default function ShopFilters() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-black/90 border border-[#FFC800]/50 text-[#FFC800] shadow-md cursor-pointer -mr-1"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-8 h-8 rounded-full text-[#FFC800] cursor-pointer -mr-1.5"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 200, 0, 0.25)',
+                }}
               >
-                <ChevronRight size={15} strokeWidth={3} />
+                <ChevronRight size={16} strokeWidth={2.6} />
               </motion.button>
             )}
           </AnimatePresence>
