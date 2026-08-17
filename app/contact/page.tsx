@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, MessageSquare, Send } from 'lucide-react';
-import ContactForm from '@/components/ContactForm';
 
 export const metadata: Metadata = {
   title: 'Contact Us',

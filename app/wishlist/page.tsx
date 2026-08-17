@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import WishlistClient from '@/components/wishlist/WishlistClient';
+import WishlistView from '@/components/WishlistView';
 
 export const metadata: Metadata = {
   title: 'My Wishlist — WEAR YUNG',
