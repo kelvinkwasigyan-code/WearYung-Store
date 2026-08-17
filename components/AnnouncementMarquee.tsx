@@ -37,9 +37,9 @@ export default function AnnouncementMarquee() {
                 key={`${i}-${idx}`}
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: '0.92rem',
-                  fontWeight: 800,
-                  letterSpacing: '0.12em',
+                  fontSize: '0.96rem',
+                  fontWeight: 400,
+                  letterSpacing: '0.14em',
                   color: '#000000',
                   whiteSpace: 'nowrap',
                   display: 'inline-flex',
