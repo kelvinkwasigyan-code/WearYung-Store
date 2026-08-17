@@ -64,28 +64,5 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // 3. If authenticated admin visits customer /account, redirect to /admin
-  if (user && request.nextUrl.pathname.startsWith('/account')) {
-    const userEmail = (user.email || '').toLowerCase();
-    const isAdminByEmail = userEmail === 'admin@wearyung.com' ||
-      (!!process.env.ADMIN_EMAIL && userEmail === process.env.ADMIN_EMAIL.toLowerCase());
-
-    let isAdminByRole = false;
-    if (!isAdminByEmail) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .maybeSingle();
-      isAdminByRole = profile?.role === 'admin';
-    }
-
-    if (isAdminByEmail || isAdminByRole) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin';
-      return NextResponse.redirect(url);
-    }
-  }
-
   return supabaseResponse;
 }
