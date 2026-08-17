@@ -47,15 +47,11 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
       flexDirection: 'column',
       minHeight: '100vh',
       background: '#080808',
+      width: '100%',
+      overflowX: 'hidden',
     }}>
       <AdminSidebar />
-      <main
-        style={{
-          flex: 1,
-          minHeight: '100vh',
-        }}
-        className="w-full lg:ml-[260px] p-3 sm:p-6 lg:p-8 pt-[72px] lg:pt-8"
-      >
+      <main className="admin-layout-main">
         {children}
       </main>
     </div>
