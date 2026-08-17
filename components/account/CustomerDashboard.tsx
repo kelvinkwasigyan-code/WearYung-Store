@@ -372,6 +372,21 @@ export default function CustomerDashboard({
                   }}>
                     {profile?.full_name || 'WEAR YUNG MEMBER'}
                   </h1>
+                  {profile?.role === 'admin' && (
+                    <span style={{
+                      background: 'rgba(255, 200, 0, 0.12)',
+                      border: '1px solid rgba(255, 200, 0, 0.35)',
+                      color: '#FFC800',
+                      fontSize: '0.65rem',
+                      fontWeight: 800,
+                      padding: '0.2rem 0.55rem',
+                      borderRadius: '4px',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}>
+                      ADMIN
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', fontSize: '0.8rem', color: '#A1A1AA', flexWrap: 'wrap' }}>
@@ -390,6 +405,41 @@ export default function CustomerDashboard({
 
             {/* Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              {profile?.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  id="account-admin-portal-btn"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '0.65rem 1.15rem',
+                    borderRadius: '10px',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    background: '#FFC800',
+                    border: '1px solid #FFC800',
+                    color: '#000000',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 16px rgba(255, 200, 0, 0.25)',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#FFFFFF';
+                    e.currentTarget.style.borderColor = '#FFFFFF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#FFC800';
+                    e.currentTarget.style.borderColor = '#FFC800';
+                  }}
+                >
+                  <ShieldCheck size={14} />
+                  <span>Admin Portal</span>
+                </Link>
+              )}
+
               <button
                 onClick={() => {
                   setProfileActiveTab('profile');
