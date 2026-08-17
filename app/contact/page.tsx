@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin, MessageSquare, Send } from 'lucide-react';
+import StoreMap from '@/components/StoreMap';
+import { STORE_LOCATION } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -364,6 +366,46 @@ export default function ContactPage() {
                 </form>
               </div>
             </div>
+          </div>
+
+          {/* Physical Store Map */}
+          <div style={{ marginTop: '4rem' }}>
+            <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <span style={{ color: '#D4A000', fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Find Our Store
+                </span>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.85rem', color: '#18181B', letterSpacing: '0.02em', textTransform: 'uppercase', marginTop: '0.2rem', marginBottom: 0 }}>
+                  Physical Store Location
+                </h2>
+                <p style={{ color: '#52525B', fontSize: '0.95rem', marginTop: '0.25rem' }}>
+                  Visit us in Koforidua, behind B Foster Bakery.
+                </p>
+              </div>
+              <a
+                href={STORE_LOCATION.directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '8px',
+                  background: '#18181B',
+                  color: '#FFFFFF',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  transition: 'background 0.2s ease',
+                }}
+              >
+                Get Directions &rarr;
+              </a>
+            </div>
+            <StoreMap />
           </div>
         </div>
       </section>

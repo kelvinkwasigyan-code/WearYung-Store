@@ -6,6 +6,7 @@ import HeroGridCarousel, { GRID_SLIDES_1X2 } from './HeroGridCarousel';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { Fragment, useState, useEffect } from 'react';
 import { MapPin, Clock, Navigation, ChevronDown } from 'lucide-react';
+import { STORE_LOCATION } from '@/lib/constants';
 
 export default function HeroSection() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -278,10 +279,10 @@ export default function HeroSection() {
                   borderRadius: '100px',
                   background: '#FFC800',
                   color: '#000000',
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(1rem, 2vw, 1.15rem)',
-                  fontWeight: 900,
-                  letterSpacing: '0.08em',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.92rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
                   boxShadow: '0 4px 22px rgba(255, 200, 0, 0.35)',
@@ -289,7 +290,7 @@ export default function HeroSection() {
                 }}
               >
                 <span>Shop Now</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform group-hover:translate-x-1">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </Link>
@@ -309,10 +310,10 @@ export default function HeroSection() {
                   background: 'rgba(255, 255, 255, 0.08)',
                   border: '1.5px solid rgba(255, 255, 255, 0.25)',
                   color: '#FFFFFF',
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(1rem, 2vw, 1.15rem)',
-                  fontWeight: 800,
-                  letterSpacing: '0.08em',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.92rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
                   backdropFilter: 'blur(10px)',
@@ -370,7 +371,7 @@ export default function HeroSection() {
                 </div>
 
                 <a
-                  href="https://www.google.com/maps/dir/?api=1&destination=6.094672706386784,-0.2603865047343695"
+                  href={STORE_LOCATION.directionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{

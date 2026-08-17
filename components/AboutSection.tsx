@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { MapPin, Clock, Navigation, ArrowRight, MessageCircle } from 'lucide-react';
+import StoreMap from './StoreMap';
+import { STORE_LOCATION } from '@/lib/constants';
 
 export default function AboutSection() {
   return (
@@ -148,7 +150,6 @@ export default function AboutSection() {
               position: 'relative',
               paddingLeft: '1.25rem',
               borderLeft: '3px solid var(--wy-yellow)',
-              marginBottom: '1.75rem',
             }}>
               <p suppressHydrationWarning style={{
                 fontSize: 'clamp(0.95rem, 1.8vw, 1.08rem)',
@@ -159,23 +160,39 @@ export default function AboutSection() {
                 &ldquo;My name is <strong>Daniel Mante</strong>, CEO of Wear Yung Collections. In Koforidua, Ghana, I bring modern and stylish menswear designed for the youthful and trendy gentleman. I offer quality, affordable fashion that keeps you looking sharp, confident, and effortlessly stylish.&rdquo;
               </p>
             </div>
+          </div>
+        </div>
 
-            {/* Location & Hours meta card */}
-            <div suppressHydrationWarning style={{
-              background: '#141416',
-              borderRadius: '12px',
-              border: '1px solid #27272A',
-              padding: '1rem 1.25rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              marginBottom: '1.75rem',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#FFFFFF' }}>
+        {/* Physical Store Location Map */}
+        <div style={{ marginTop: '3rem', maxWidth: '850px', margin: '3rem auto 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+            <MapPin size={18} style={{ color: '#FFC800' }} />
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: '#FFFFFF', margin: 0, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              Physical Store Location
+            </h3>
+          </div>
+
+          <StoreMap />
+
+          {/* Location & Hours meta card + Action Buttons */}
+          <div suppressHydrationWarning style={{
+            marginTop: '1.25rem',
+            background: '#141416',
+            borderRadius: '12px',
+            border: '1px solid #27272A',
+            padding: '1.25rem 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1.25rem',
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', color: '#FFFFFF', fontWeight: 600 }}>
                 <MapPin size={16} style={{ color: '#FFC800', flexShrink: 0 }} />
                 <span>Koforidua, Behind B Foster Bakery</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: '#A1A1AA' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#A1A1AA' }}>
                 <Clock size={15} style={{ color: '#FFC800', flexShrink: 0 }} />
                 <span>Mon–Sat 8:30am–10:30pm &bull; Sun 1pm–10pm</span>
               </div>
@@ -184,7 +201,7 @@ export default function AboutSection() {
             {/* Action Buttons */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
               <a
-                href="https://www.google.com/maps/dir/?api=1&destination=6.094672706386784,-0.2603865047343695"
+                href={STORE_LOCATION.directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -250,7 +267,6 @@ export default function AboutSection() {
                 <ArrowRight size={14} />
               </a>
             </div>
-
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
+import { STORE_LOCATION } from '@/lib/constants';
 import {
   User,
   ShoppingBag,
@@ -865,7 +866,7 @@ export default function CustomerDashboard({
 
                 {/* Get Directions Link */}
                 <a
-                  href="https://www.google.com/maps/dir/?api=1&destination=6.094672706386784,-0.2603865047343695"
+                  href={STORE_LOCATION.directionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
