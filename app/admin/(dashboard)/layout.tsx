@@ -2,6 +2,11 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
+const ADMIN_EMAILS = [
+  'admin@wearyung.com',
+  process.env.ADMIN_EMAIL,
+].filter(Boolean).map(e => e?.toLowerCase());
+
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
 
@@ -11,30 +16,39 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     redirect('/admin/login');
   }
 
+  const userEmail = (user.email || '').toLowerCase();
+  const isAdminByEmail = ADMIN_EMAILS.includes(userEmail);
+
   let { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .maybeSingle();
 
+  // If no profile exists yet, assign 'admin' ONLY if email matches authorized admin emails
   if (!profile) {
+    const defaultRole = isAdminByEmail ? 'admin' : 'customer';
     const { data: newProfile } = await supabase
       .from('profiles')
-      .upsert({ id: user.id, role: 'admin', full_name: user.user_metadata?.full_name || 'Admin' })
+      .upsert({
+        id: user.id,
+        role: defaultRole,
+        full_name: user.user_metadata?.full_name || (isAdminByEmail ? 'Admin' : 'Customer'),
+      })
       .select('role')
       .maybeSingle();
     profile = newProfile;
   }
 
-  // Admin check: role-based OR email-based
-  const isAdmin = profile?.role === 'admin' || user.email === 'admin@wearyung.com';
+  // Strict Admin check: role-based OR verified admin email
+  const isAdmin = profile?.role === 'admin' || isAdminByEmail;
 
   if (!isAdmin) {
     redirect('/admin/login');
   }
 
-  // Auto-fix: if admin by email but role in DB is still 'customer', update it
-  if (profile && profile.role !== 'admin' && user.email === 'admin@wearyung.com') {
+  // Auto-sync: if authorized admin by email but role in DB is still 'customer', update to 'admin'
+  if (profile && profile.role !== 'admin' && isAdminByEmail) {
     await supabase
       .from('profiles')
       .update({ role: 'admin' })

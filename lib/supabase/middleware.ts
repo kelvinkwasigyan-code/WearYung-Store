@@ -28,14 +28,35 @@ export async function updateSession(request: NextRequest) {
   // Refresh session — do not add logic between createServerClient and getUser()
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Protect /admin routes (redirect to /admin/login)
-  if (!user && request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/admin/login';
-    return NextResponse.redirect(url);
+  // 1. Strict /admin Route Guard
+  if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin/login';
+      return NextResponse.redirect(url);
+    }
+
+    const userEmail = (user.email || '').toLowerCase();
+    const isAdminByEmail = userEmail === 'admin@wearyung.com' ||
+      (!!process.env.ADMIN_EMAIL && userEmail === process.env.ADMIN_EMAIL.toLowerCase());
+
+    if (!isAdminByEmail) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profile?.role !== 'admin') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/admin/login';
+        url.searchParams.set('error', 'unauthorized');
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
-  // Protect /account routes (redirect to customer /login)
+  // 2. Protect /account customer routes
   if (!user && request.nextUrl.pathname.startsWith('/account')) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
@@ -43,10 +64,11 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If authenticated admin visits /account, redirect to /admin
+  // 3. If authenticated admin visits customer /account, redirect to /admin
   if (user && request.nextUrl.pathname.startsWith('/account')) {
-    // Check by email first (immediate), then by DB role
-    const isAdminByEmail = user.email === 'admin@wearyung.com';
+    const userEmail = (user.email || '').toLowerCase();
+    const isAdminByEmail = userEmail === 'admin@wearyung.com' ||
+      (!!process.env.ADMIN_EMAIL && userEmail === process.env.ADMIN_EMAIL.toLowerCase());
 
     let isAdminByRole = false;
     if (!isAdminByEmail) {
