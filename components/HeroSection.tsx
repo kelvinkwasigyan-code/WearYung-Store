@@ -181,7 +181,8 @@ export default function HeroSection() {
                 border: '1px solid rgba(255, 200, 0, 0.35)',
                 backdropFilter: 'blur(8px)',
                 borderRadius: '100px',
-                padding: '0.35rem 0.9rem',
+                padding: '0.4rem 1rem',
+                marginBottom: 'clamp(1rem, 2.2vw, 1.5rem)',
               }}
             >
               <span
@@ -208,7 +209,7 @@ export default function HeroSection() {
             </div>
 
             {/* Kinetic Animated Headline with Synchronized Transitions */}
-            <div style={{ minHeight: 'clamp(80px, 14vw, 155px)', display: 'flex', alignItems: 'center' }}>
+            <div style={{ minHeight: 'clamp(80px, 14vw, 155px)', display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
               <AnimatePresence mode="wait">
                 <motion.h1
                   key={currentSlideIndex % HEADLINES.length}
