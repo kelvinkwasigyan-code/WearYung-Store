@@ -9,7 +9,6 @@ import type { User } from '@supabase/supabase-js';
 import { useCartContext } from '@/context/CartContext';
 import { Heart, ShoppingBag, Menu, X, User as UserIcon, Shield } from 'lucide-react';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
-import ThemeToggle from '@/components/ui/ThemeToggle';
 
 import { usePathname } from 'next/navigation';
 
@@ -258,9 +257,6 @@ export default function Navbar({ cartCount }: NavbarProps) {
             animate="show"
             style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}
           >
-            {/* Theme Toggle Button */}
-            <ThemeToggle />
-
             {/* Wishlist Icon */}
             <Link
               href="/wishlist"
@@ -538,23 +534,6 @@ export default function Navbar({ cartCount }: NavbarProps) {
                     ))}
                   </div>
                 </motion.div>
-                {/* Theme Mode Switcher in Drawer */}
-                <motion.div variants={drawerSectionVariants} style={{ marginBottom: '1.25rem' }}>
-                  <p
-                    style={{
-                      fontSize: '0.7rem',
-                      letterSpacing: '0.15em',
-                      color: 'var(--wy-muted)',
-                      textTransform: 'uppercase',
-                      marginBottom: '0.65rem',
-                      fontWeight: 700,
-                    }}
-                  >
-                    APPEARANCE
-                  </p>
-                  <ThemeToggle variant="pill" />
-                </motion.div>
-
               </motion.div>
 
               {/* Bottom Auth CTA */}
