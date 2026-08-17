@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, X, ArrowUpDown, DollarSign, Check, RotateCcw } from 'lucide-react';
+import { Search, SlidersHorizontal, X, ArrowUpDown, DollarSign, Check, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 
 export default function ShopFilters() {
@@ -21,6 +21,35 @@ export default function ShopFilters() {
   const [maxPrice, setMaxPrice] = useState(currentMaxPrice);
   const [searchInput, setSearchInput] = useState(currentQuery);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkCategoryScroll = useCallback(() => {
+    if (!categoryScrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = categoryScrollRef.current;
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 8);
+  }, []);
+
+  useEffect(() => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    checkCategoryScroll();
+    el.addEventListener('scroll', checkCategoryScroll, { passive: true });
+    window.addEventListener('resize', checkCategoryScroll);
+    return () => {
+      el.removeEventListener('scroll', checkCategoryScroll);
+      window.removeEventListener('resize', checkCategoryScroll);
+    };
+  }, [checkCategoryScroll]);
+
+  const handleCategoryScroll = (direction: 'left' | 'right') => {
+    if (!categoryScrollRef.current) return;
+    const offset = direction === 'left' ? -180 : 180;
+    categoryScrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+  };
 
   // Sync internal state when URL search params change
   useEffect(() => {
@@ -91,72 +120,107 @@ export default function ShopFilters() {
     <>
       {/* ─── 1. MOBILE TOP CONTROLS (Horizontal Category Rail + Search & Filter Bar) ─── */}
       <div className="w-full lg:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.25rem' }}>
-        {/* Horizontal Category Scroll Rail */}
-        <div
-          className="no-scrollbar"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.45rem',
-            overflowX: 'auto',
-            width: '100%',
-            padding: '0.2rem 0',
-            WebkitOverflowScrolling: 'touch',
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => setCategory('')}
+        {/* Horizontal Category Scroll Rail with Floating Arrows */}
+        <div style={{ position: 'relative', width: '100%' }}>
+          <AnimatePresence>
+            {canScrollLeft && (
+              <motion.button
+                type="button"
+                onClick={() => handleCategoryScroll('left')}
+                aria-label="Scroll categories left"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-black/90 border border-[#FFC800]/50 text-[#FFC800] shadow-md cursor-pointer -ml-1"
+              >
+                <ChevronLeft size={15} strokeWidth={3} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {canScrollRight && (
+              <motion.button
+                type="button"
+                onClick={() => handleCategoryScroll('right')}
+                aria-label="Scroll categories right"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-black/90 border border-[#FFC800]/50 text-[#FFC800] shadow-md cursor-pointer -mr-1"
+              >
+                <ChevronRight size={15} strokeWidth={3} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          <div
+            ref={categoryScrollRef}
+            className="no-scrollbar scroll-smooth"
             style={{
-              padding: '0.45rem 1rem',
-              borderRadius: '100px',
-              fontFamily: 'var(--font-display)',
-              fontSize: '0.78rem',
-              fontWeight: 800,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              background: !currentCategory ? 'var(--wy-yellow)' : '#18181B',
-              color: !currentCategory ? '#000000' : '#A1A1AA',
-              border: !currentCategory ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
-              boxShadow: !currentCategory ? '0 0 12px rgba(255, 200, 0, 0.3)' : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              overflowX: 'auto',
+              width: '100%',
+              padding: '0.2rem 0',
+              WebkitOverflowScrolling: 'touch',
             }}
           >
-            All Drops
-          </button>
+            <button
+              type="button"
+              onClick={() => setCategory('')}
+              style={{
+                padding: '0.45rem 1rem',
+                borderRadius: '100px',
+                fontFamily: 'var(--font-display)',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                background: !currentCategory ? 'var(--wy-yellow)' : '#18181B',
+                color: !currentCategory ? '#000000' : '#A1A1AA',
+                border: !currentCategory ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
+                boxShadow: !currentCategory ? '0 0 12px rgba(255, 200, 0, 0.3)' : 'none',
+              }}
+            >
+              All Drops
+            </button>
 
-          {ALL_CATEGORIES.map((cat) => {
-            const isActive = currentCategory === cat;
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategory(cat)}
-                style={{
-                  padding: '0.45rem 0.95rem',
-                  borderRadius: '100px',
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.78rem',
-                  fontWeight: 800,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  background: isActive ? 'var(--wy-yellow)' : '#18181B',
-                  color: isActive ? '#000000' : '#A1A1AA',
-                  border: isActive ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
-                  boxShadow: isActive ? '0 0 12px rgba(255, 200, 0, 0.3)' : 'none',
-                }}
-              >
-                {CATEGORY_LABELS[cat]}
-              </button>
-            );
-          })}
+            {ALL_CATEGORIES.map((cat) => {
+              const isActive = currentCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategory(cat)}
+                  style={{
+                    padding: '0.45rem 0.95rem',
+                    borderRadius: '100px',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    background: isActive ? 'var(--wy-yellow)' : '#18181B',
+                    color: isActive ? '#000000' : '#A1A1AA',
+                    border: isActive ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
+                    boxShadow: isActive ? '0 0 12px rgba(255, 200, 0, 0.3)' : 'none',
+                  }}
+                >
+                  {CATEGORY_LABELS[cat]}
+                </button>
+              );
+            })}
+          </div>
         </div>
-
+        
         {/* Mobile Search Input & Filter Button */}
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', width: '100%' }}>
           <form onSubmit={handleSearchSubmit} style={{ flex: 1, position: 'relative' }}>

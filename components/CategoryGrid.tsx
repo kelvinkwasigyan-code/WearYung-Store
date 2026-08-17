@@ -1,9 +1,10 @@
 'use client';
 
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
-import { Shirt, Watch, Gem, ShoppingBag } from 'lucide-react';
+import { Shirt, Watch, Gem, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 // Custom inline SVG icons for footwear with matching Lucide 2px stroke aesthetics
@@ -91,25 +92,59 @@ const categoryIcons: Record<string, ReactNode> = {
 };
 
 export default function CategoryGrid() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 8);
+    if (scrollLeft > 15) {
+      setHasScrolled(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    checkScroll();
+    el.addEventListener('scroll', checkScroll, { passive: true });
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      el.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [checkScroll]);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (!scrollContainerRef.current) return;
+    const offset = direction === 'left' ? -220 : 220;
+    scrollContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+  };
+
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.08,
       },
     },
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    hidden: { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
 
   return (
-    <section style={{ background: 'var(--wy-surface)', padding: 'clamp(2.5rem, 5vw, 3.75rem) 0' }}>
+    <section style={{ background: 'var(--wy-surface)', padding: 'clamp(2.5rem, 5vw, 3.75rem) 0', position: 'relative' }}>
       <div className="container-wy">
-        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem', position: 'relative' }}>
           <h2
             style={{
               fontFamily: 'var(--font-display)',
@@ -124,68 +159,138 @@ export default function CategoryGrid() {
           <p style={{ color: 'var(--wy-muted)', fontSize: '0.85rem', margin: 0 }}>
             Find your style across all our collections
           </p>
+
+          {/* Floating Scroll Indicator Badge (Mobile only, animates until scrolled) */}
+          <AnimatePresence>
+            {!hasScrolled && canScrollRight && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: [0, -3, 0] }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{
+                  opacity: { duration: 0.3 },
+                  y: { repeat: Infinity, duration: 1.6, ease: 'easeInOut' },
+                }}
+                className="flex md:hidden items-center justify-center gap-1.5 mx-auto mt-2 text-[11px] font-black text-[#FFC800] tracking-wider uppercase bg-[#FFC800]/10 border border-[#FFC800]/30 rounded-full px-3 py-0.5 w-fit"
+              >
+                <span>Swipe to explore</span>
+                <ChevronRight size={12} strokeWidth={3} className="animate-pulse" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <motion.div 
-          className="category-showcase-grid"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-50px" }}
-        >
-          {ALL_CATEGORIES.map((cat) => (
-            <motion.div key={cat} variants={item}>
-              <Link
-                href={`/shop?category=${cat}`}
-                id={`category-${cat}`}
-                className="category-showcase-item group block"
-                style={{ textDecoration: 'none' }}
+        {/* Scroll Container with Floating Scroll Buttons */}
+        <div style={{ position: 'relative' }}>
+          {/* Floating Left Arrow Button */}
+          <AnimatePresence>
+            {canScrollLeft && (
+              <motion.button
+                key="scroll-left-btn"
+                type="button"
+                onClick={() => handleScroll('left')}
+                aria-label="Scroll categories left"
+                initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.8, x: -10 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-[#0D0D10]/90 border border-[#FFC800]/40 text-[#FFC800] shadow-lg backdrop-blur-md cursor-pointer hover:bg-black hover:border-[#FFC800] transition-all -ml-2 sm:-ml-4"
+                style={{
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 200, 0, 0.25)',
+                }}
               >
-                <div
-                  className="card-wy group-hover:border-[#FFC800]/50 transition-all duration-300"
-                  style={{
-                    padding: 'clamp(0.95rem, 1.8vw, 1.35rem) 0.65rem',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: '#141416',
-                    borderRadius: '14px',
-                    border: '1px solid #27272A',
-                  }}
+                <ChevronLeft size={18} strokeWidth={2.6} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {/* Floating Right Arrow Button */}
+          <AnimatePresence>
+            {canScrollRight && (
+              <motion.button
+                key="scroll-right-btn"
+                type="button"
+                onClick={() => handleScroll('right')}
+                aria-label="Scroll categories right"
+                initial={{ opacity: 0, scale: 0.8, x: 10 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.8, x: 10 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-[#0D0D10]/90 border border-[#FFC800]/40 text-[#FFC800] shadow-lg backdrop-blur-md cursor-pointer hover:bg-black hover:border-[#FFC800] transition-all -mr-2 sm:-mr-4"
+                style={{
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 200, 0, 0.25)',
+                }}
+              >
+                <ChevronRight size={18} strokeWidth={2.6} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {/* The Scrollable Category Showcase Grid */}
+          <motion.div
+            ref={scrollContainerRef}
+            className="category-showcase-grid scroll-smooth"
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-40px' }}
+          >
+            {ALL_CATEGORIES.map((cat) => (
+              <motion.div key={cat} variants={item}>
+                <Link
+                  href={`/shop?category=${cat}`}
+                  id={`category-${cat}`}
+                  className="category-showcase-item group block"
+                  style={{ textDecoration: 'none' }}
                 >
                   <div
-                    className="text-white group-hover:text-[#FFC800] transition-colors duration-300"
+                    className="card-wy group-hover:border-[#FFC800]/60 group-hover:shadow-[0_0_20px_rgba(255,200,0,0.15)] transition-all duration-300"
                     style={{
-                      marginBottom: '0.55rem',
+                      padding: 'clamp(0.95rem, 1.8vw, 1.35rem) 0.65rem',
+                      textAlign: 'center',
+                      cursor: 'pointer',
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      background: '#141416',
+                      borderRadius: '14px',
+                      border: '1px solid #27272A',
                     }}
                   >
-                    {categoryIcons[cat]}
+                    <div
+                      className="text-white group-hover:text-[#FFC800] group-hover:scale-110 transition-all duration-300"
+                      style={{
+                        marginBottom: '0.55rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {categoryIcons[cat]}
+                    </div>
+                    <p
+                      className="transition-colors duration-300 group-hover:text-[#FFC800]"
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontSize: 'clamp(0.78rem, 1.1vw, 0.88rem)',
+                        letterSpacing: '0.08em',
+                        color: 'var(--wy-text)',
+                        textTransform: 'uppercase',
+                        margin: 0,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {CATEGORY_LABELS[cat as ProductCategory]}
+                    </p>
                   </div>
-                  <p
-                    className="transition-colors duration-300 group-hover:text-[#FFC800]"
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: 'clamp(0.78rem, 1.1vw, 0.88rem)',
-                      letterSpacing: '0.08em',
-                      color: 'var(--wy-text)',
-                      textTransform: 'uppercase',
-                      margin: 0,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {CATEGORY_LABELS[cat as ProductCategory]}
-                  </p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
