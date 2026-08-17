@@ -319,9 +319,14 @@ export default function Navbar({ cartCount }: NavbarProps) {
               <Link
                 href="/login"
                 id="nav-login-btn"
-                className="hidden lg:inline-flex items-center justify-center px-4 py-1.5 bg-black text-[#FFC800] rounded-full font-black text-xs uppercase tracking-wider hover:bg-zinc-900 border border-black/30 transition-all whitespace-nowrap no-underline"
+                className="hidden lg:inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-black text-[#FFC800] rounded-full font-bold text-xs uppercase tracking-wider hover:bg-zinc-900 hover:scale-105 active:scale-95 border border-black/40 shadow-sm transition-all whitespace-nowrap no-underline"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  letterSpacing: '0.08em',
+                }}
               >
-                Sign In
+                <UserIcon size={13} strokeWidth={2.4} />
+                <span>Sign In</span>
               </Link>
             )}
 
