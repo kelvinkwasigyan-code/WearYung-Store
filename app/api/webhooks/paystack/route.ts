@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyPaystackWebhookSignature } from '@/lib/payments/paystack';
 import { sendSaleAdminAlert } from '@/lib/email';
 
@@ -8,76 +8,107 @@ export async function POST(request: NextRequest) {
     const rawBody = await request.text();
     const signature = request.headers.get('x-paystack-signature');
 
-    // Verify webhook authenticity
+    // 1. Verify webhook authenticity
     const isValid = await verifyPaystackWebhookSignature(rawBody, signature);
     if (!isValid && process.env.NODE_ENV === 'production') {
+      console.warn('[Paystack Webhook] Signature verification failed');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
     const event = JSON.parse(rawBody);
 
-    // Handle successful charge
+    // 2. Handle successful charge
     if (event.event === 'charge.success') {
       const data = event.data;
       const reference = data.reference;
       const orderId = data.metadata?.order_id;
-      const amountInGHS = data.amount / 100;
+      const amountInGHS = Number(data.amount) / 100;
       const channel = data.channel; // 'card', 'mobile_money', etc.
 
-      const supabase = await createClient();
+      const supabase = createAdminClient();
 
-      // Find order by ID or reference
-      let query = supabase.from('orders').update({
-        payment_status: 'paid',
-        status: 'processing',
-        payment_reference: reference,
-        updated_at: new Date().toISOString(),
-      });
+      // Find existing order
+      let orderQuery = supabase
+        .from('orders')
+        .select('id, payment_status, status, user_id, guest_email');
 
-      if (orderId) {
-        query = query.eq('id', orderId);
+      if (orderId && !orderId.startsWith('temp_')) {
+        orderQuery = orderQuery.eq('id', orderId);
       } else {
-        query = query.eq('payment_reference', reference);
+        orderQuery = orderQuery.eq('payment_reference', reference);
       }
 
-      const { error } = await query;
+      const { data: existingOrder, error: orderFetchError } = await orderQuery.maybeSingle();
 
-      if (error) {
-        console.error('[Paystack Webhook] Failed to update order:', error);
-        return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+      if (orderFetchError) {
+        console.error('[Paystack Webhook] Error finding order:', orderFetchError);
       }
 
-      console.log(`[Paystack Webhook] Order ${orderId || reference} marked as PAID via ${channel} (GH₵ ${amountInGHS})`);
+      // Check if order was already marked paid (Idempotency)
+      const isAlreadyPaid = existingOrder?.payment_status === 'paid';
 
-      // Determine order items for the sale alert
-      let orderItems: Array<{ title: string; quantity: number; price: number; sku?: string }> = data.metadata?.custom_fields || [];
+      if (existingOrder && !isAlreadyPaid) {
+        // Update order status to paid
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({
+            payment_status: 'paid',
+            status: 'processing',
+            payment_reference: reference,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existingOrder.id);
 
-      if (!orderItems.length && orderId) {
+        if (updateError) {
+          console.error('[Paystack Webhook] Failed to update order status:', updateError);
+          return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+        }
+
+        console.log(`[Paystack Webhook] Order ${existingOrder.id} marked as PAID via ${channel} (GH₵ ${amountInGHS})`);
+      }
+
+      // 3. Fetch order items for the sale alert email
+      const targetOrderId = existingOrder?.id || orderId;
+      let orderItems: Array<{ title: string; quantity: number; price: number; sku?: string }> = [];
+
+      if (targetOrderId) {
         const { data: dbItems } = await supabase
           .from('order_items')
-          .select('quantity, unit_price, product_title, sku')
-          .eq('order_id', orderId);
+          .select('quantity, unit_price, variant_id, product_variants:variant_id(sku, product:products(title))')
+          .eq('order_id', targetOrderId);
 
         if (dbItems && dbItems.length > 0) {
           orderItems = dbItems.map((item: any) => ({
-            title: item.product_title || 'Item',
+            title: item.product_variants?.product?.title || 'Wear Yung Apparel',
             quantity: item.quantity,
-            price: item.unit_price,
-            sku: item.sku,
+            price: Number(item.unit_price) || 0,
+            sku: item.product_variants?.sku || '',
           }));
         }
       }
 
-      // Send Sale Alert to Admin via Resend
-      try {
-        await sendSaleAdminAlert({
-          orderId: data.reference,
-          amount: amountInGHS,
-          customerEmail: data.customer?.email || 'Customer',
-          items: orderItems,
-        });
-      } catch (emailError) {
-        console.error('[Paystack Webhook] Error sending sale alert email:', emailError);
+      // Fallback items from metadata if DB items were empty
+      if (!orderItems.length && Array.isArray(data.metadata?.custom_fields)) {
+        orderItems = data.metadata.custom_fields.map((it: any) => ({
+          title: it.productTitle || it.title || 'Item',
+          quantity: it.quantity || 1,
+          price: Number(it.price) || 0,
+          sku: it.sku || '',
+        }));
+      }
+
+      // 4. Send Sale Alert Email to Admin (only on first confirmation)
+      if (!isAlreadyPaid) {
+        try {
+          await sendSaleAdminAlert({
+            orderId: reference,
+            amount: amountInGHS,
+            customerEmail: data.customer?.email || existingOrder?.guest_email || 'Customer',
+            items: orderItems,
+          });
+        } catch (emailError) {
+          console.error('[Paystack Webhook] Non-fatal email alert error:', emailError);
+        }
       }
     }
 
@@ -87,4 +118,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message || 'Webhook handler error' }, { status: 500 });
   }
 }
-
