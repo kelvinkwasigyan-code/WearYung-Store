@@ -121,8 +121,17 @@ export default function CategoryGrid() {
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
-    const offset = direction === 'left' ? -220 : 220;
-    scrollContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    if (direction === 'right') {
+      scrollContainerRef.current.scrollTo({
+        left: scrollContainerRef.current.scrollWidth,
+        behavior: 'smooth',
+      });
+    } else {
+      scrollContainerRef.current.scrollTo({
+        left: 0,
+        behavior: 'smooth',
+      });
+    }
   };
 
   const container = {
@@ -159,25 +168,6 @@ export default function CategoryGrid() {
           <p style={{ color: 'var(--wy-muted)', fontSize: '0.85rem', margin: 0 }}>
             Find your style across all our collections
           </p>
-
-          {/* Floating Scroll Indicator Badge (Mobile only, animates until scrolled) */}
-          <AnimatePresence>
-            {!hasScrolled && canScrollRight && (
-              <motion.div
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: [0, -3, 0] }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{
-                  opacity: { duration: 0.3 },
-                  y: { repeat: Infinity, duration: 1.6, ease: 'easeInOut' },
-                }}
-                className="flex md:hidden items-center justify-center gap-1.5 mx-auto mt-2 text-[11px] font-black text-[#FFC800] tracking-wider uppercase bg-[#FFC800]/10 border border-[#FFC800]/30 rounded-full px-3 py-0.5 w-fit"
-              >
-                <span>Swipe to explore</span>
-                <ChevronRight size={12} strokeWidth={3} className="animate-pulse" />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* Scroll Container with Floating Scroll Buttons */}

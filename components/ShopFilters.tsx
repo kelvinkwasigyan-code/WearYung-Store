@@ -47,8 +47,17 @@ export default function ShopFilters() {
 
   const handleCategoryScroll = (direction: 'left' | 'right') => {
     if (!categoryScrollRef.current) return;
-    const offset = direction === 'left' ? -180 : 180;
-    categoryScrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    if (direction === 'right') {
+      categoryScrollRef.current.scrollTo({
+        left: categoryScrollRef.current.scrollWidth,
+        behavior: 'smooth',
+      });
+    } else {
+      categoryScrollRef.current.scrollTo({
+        left: 0,
+        behavior: 'smooth',
+      });
+    }
   };
 
   // Sync internal state when URL search params change
