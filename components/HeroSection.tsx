@@ -37,37 +37,37 @@ export default function HeroSection() {
   const HEADLINES = [
     // 1. Dress Like You Own The Room
     [
-      { text: 'DRESS', color: 'var(--wy-text)', glow: false, br: false },
-      { text: 'LIKE', color: 'var(--wy-text)', glow: false, br: false },
-      { text: 'YOU', color: 'var(--wy-text)', glow: false, br: true },
-      { text: 'OWN', color: 'var(--wy-yellow)', glow: true, br: false },
-      { text: 'THE', color: 'var(--wy-yellow)', glow: true, br: false },
-      { text: 'ROOM', color: 'var(--wy-yellow)', glow: true, br: false },
+      { text: 'DRESS', color: '#FFFFFF', glow: false, br: false },
+      { text: 'LIKE', color: '#FFFFFF', glow: false, br: false },
+      { text: 'YOU', color: '#FFFFFF', glow: false, br: true },
+      { text: 'OWN', color: '#FFC800', glow: true, br: false },
+      { text: 'THE', color: '#FFC800', glow: true, br: false },
+      { text: 'ROOM', color: '#FFC800', glow: true, br: false },
     ],
     // 2. Walk In Like You Built The Place
     [
-      { text: 'WALK', color: 'var(--wy-text)', glow: false, br: false },
-      { text: 'IN', color: 'var(--wy-text)', glow: false, br: false },
-      { text: 'LIKE', color: 'var(--wy-text)', glow: false, br: false },
-      { text: 'YOU', color: 'var(--wy-text)', glow: false, br: true },
-      { text: 'BUILT', color: 'var(--wy-yellow)', glow: true, br: false },
-      { text: 'THE', color: 'var(--wy-yellow)', glow: true, br: false },
-      { text: 'PLACE', color: 'var(--wy-yellow)', glow: true, br: false },
+      { text: 'WALK', color: '#FFFFFF', glow: false, br: false },
+      { text: 'IN', color: '#FFFFFF', glow: false, br: false },
+      { text: 'LIKE', color: '#FFFFFF', glow: false, br: false },
+      { text: 'YOU', color: '#FFFFFF', glow: false, br: true },
+      { text: 'BUILT', color: '#FFC800', glow: true, br: false },
+      { text: 'THE', color: '#FFC800', glow: true, br: false },
+      { text: 'PLACE', color: '#FFC800', glow: true, br: false },
     ],
     // 3. Speak Without Saying A Word
     [
-      { text: 'SPEAK', color: 'var(--wy-text)', glow: false, br: false },
-      { text: 'WITHOUT', color: 'var(--wy-text)', glow: false, br: true },
-      { text: 'SAYING', color: 'var(--wy-yellow)', glow: true, br: false },
-      { text: 'A', color: 'var(--wy-yellow)', glow: true, br: false },
-      { text: 'WORD', color: 'var(--wy-yellow)', glow: true, br: false },
+      { text: 'SPEAK', color: '#FFFFFF', glow: false, br: false },
+      { text: 'WITHOUT', color: '#FFFFFF', glow: false, br: true },
+      { text: 'SAYING', color: '#FFC800', glow: true, br: false },
+      { text: 'A', color: '#FFC800', glow: true, br: false },
+      { text: 'WORD', color: '#FFC800', glow: true, br: false },
     ],
     // 4. Effortless Drip, Unmatched Impact
     [
-      { text: 'EFFORTLESS', color: 'var(--wy-text)', glow: false, br: false },
-      { text: 'DRIP,', color: 'var(--wy-text)', glow: false, br: true },
-      { text: 'UNMATCHED', color: 'var(--wy-yellow)', glow: true, br: false },
-      { text: 'IMPACT', color: 'var(--wy-yellow)', glow: true, br: false },
+      { text: 'EFFORTLESS', color: '#FFFFFF', glow: false, br: false },
+      { text: 'DRIP,', color: '#FFFFFF', glow: false, br: true },
+      { text: 'UNMATCHED', color: '#FFC800', glow: true, br: false },
+      { text: 'IMPACT', color: '#FFC800', glow: true, br: false },
     ],
   ];
 
@@ -97,14 +97,13 @@ export default function HeroSection() {
         flexDirection: 'column',
         justifyContent: 'center',
         overflow: 'hidden',
-        background: 'var(--wy-canvas)',
+        background: '#0D0D0D',
         paddingTop: '1.5rem',
         paddingBottom: '1.5rem',
       }}
     >
       {/* Hero Banner Background Image */}
       <div
-        className="hero-banner-bg"
         style={{
           position: 'absolute',
           top: 0,
@@ -120,9 +119,8 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Multi-stage Gradient Overlays for optimal text legibility and atmosphere */}
+      {/* Multi-stage Dark Gradient Overlays for optimal text legibility and atmosphere */}
       <div
-        className="hero-gradient-overlay"
         style={{
           position: 'absolute',
           top: 0,
@@ -147,9 +145,9 @@ export default function HeroSection() {
           right: 0,
           bottom: 0,
           backgroundImage:
-            'linear-gradient(var(--wy-border) 1px, transparent 1px), linear-gradient(90deg, var(--wy-border) 1px, transparent 1px)',
+            'linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px)',
           backgroundSize: '60px 60px',
-          opacity: 0.12,
+          opacity: 0.15,
           pointerEvents: 'none',
         }}
       />
@@ -163,7 +161,7 @@ export default function HeroSection() {
           width: '550px',
           height: '550px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, var(--wy-yellow-glow) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(255,200,0,0.12) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />
@@ -191,14 +189,14 @@ export default function HeroSection() {
                   width: 8,
                   height: 8,
                   borderRadius: '50%',
-                  background: 'var(--wy-yellow)',
+                  background: '#FFC800',
                   display: 'inline-block',
                   animation: 'pulse-yellow 2s infinite',
                 }}
               />
               <span
                 style={{
-                  color: 'var(--wy-yellow)',
+                  color: '#FFC800',
                   fontSize: 'clamp(0.78rem, 1.5vw, 0.86rem)',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
@@ -235,7 +233,7 @@ export default function HeroSection() {
                           color: word.color,
                           display: 'inline-block',
                           marginRight: '0.22em',
-                          textShadow: word.glow ? '0 0 35px var(--wy-yellow-glow)' : 'none',
+                          textShadow: word.glow ? '0 0 35px rgba(255, 200, 0, 0.35)' : 'none',
                         }}
                       >
                         {word.text}
@@ -250,10 +248,11 @@ export default function HeroSection() {
             {/* Subtitle */}
             <p
               style={{
-                color: 'var(--wy-muted)',
+                color: '#D4D4D8',
                 fontSize: 'clamp(0.85rem, 1.8vw, 1.02rem)',
                 lineHeight: 1.6,
                 maxWidth: '540px',
+                textShadow: '0 2px 10px rgba(0,0,0,0.8)',
               }}
             >
               Premium streetwear, authentic sneakers, luxury apparel & exclusive grails.
@@ -273,17 +272,17 @@ export default function HeroSection() {
                   justifyContent: 'center',
                   gap: '0.45rem',
                   padding: '0 1.25rem',
-                  borderRadius: '6px',
-                  background: 'var(--wy-yellow)',
-                  border: '1.5px solid var(--wy-yellow)',
-                  color: '#000000',
+                  borderRadius: '2px',
+                  background: 'transparent',
+                  border: '1.5px solid #FFC800',
+                  color: '#FFC800',
                   fontFamily: 'var(--font-display)',
                   fontSize: 'clamp(1rem, 2vw, 1.18rem)',
                   fontWeight: 800,
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
-                  boxShadow: '0 4px 18px var(--wy-yellow-glow)',
+                  boxShadow: '0 0 15px rgba(255, 200, 0, 0.15)',
                   transition: 'all 0.2s ease',
                   whiteSpace: 'nowrap',
                 }}
@@ -304,10 +303,10 @@ export default function HeroSection() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   padding: '0 1.25rem',
-                  borderRadius: '6px',
-                  background: 'var(--wy-surface)',
-                  border: '1.5px solid var(--wy-border)',
-                  color: 'var(--wy-text)',
+                  borderRadius: '2px',
+                  background: 'transparent',
+                  border: '1.5px solid rgba(255, 255, 255, 0.35)',
+                  color: '#FFFFFF',
                   fontFamily: 'var(--font-display)',
                   fontSize: 'clamp(1rem, 2vw, 1.18rem)',
                   fontWeight: 800,
@@ -346,26 +345,25 @@ export default function HeroSection() {
 
             {/* Store Location & Hours Pill Card */}
             <div
-              className="hero-info-box"
               style={{
                 width: '100%',
                 maxWidth: '720px',
                 padding: 'clamp(0.65rem, 1.8vw, 0.85rem) clamp(0.75rem, 2vw, 1.25rem)',
-                background: 'var(--wy-surface)',
-                border: '1px solid var(--wy-border)',
+                background: 'rgba(22, 22, 26, 0.88)',
+                border: '1px solid rgba(255, 200, 0, 0.35)',
                 backdropFilter: 'blur(12px)',
                 borderRadius: '14px',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.45rem',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', color: 'var(--wy-text)', fontSize: 'clamp(0.75rem, 1.5vw, 0.82rem)', flex: 1, minWidth: '220px' }}>
-                  <MapPin size={15} style={{ color: 'var(--wy-yellow)', flexShrink: 0, marginTop: '2px' }} />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', color: '#FFFFFF', fontSize: 'clamp(0.75rem, 1.5vw, 0.82rem)', flex: 1, minWidth: '220px' }}>
+                  <MapPin size={15} style={{ color: '#FFC800', flexShrink: 0, marginTop: '2px' }} />
                   <span suppressHydrationWarning style={{ lineHeight: 1.3 }}>
-                    <strong style={{ color: 'var(--wy-yellow)' }}>Visit Us:</strong> Koforidua, Behind B Foster Bakery
+                    <strong style={{ color: '#FFC800' }}>Visit Us:</strong> Koforidua, Behind B Foster Bakery
                   </span>
                 </div>
 
@@ -379,7 +377,7 @@ export default function HeroSection() {
                     gap: '0.35rem',
                     padding: '0.3rem 0.75rem',
                     borderRadius: '6px',
-                    background: 'var(--wy-yellow)',
+                    background: '#FFC800',
                     color: '#000000',
                     fontSize: '0.68rem',
                     fontWeight: 800,
@@ -389,18 +387,24 @@ export default function HeroSection() {
                     transition: 'all 0.15s',
                     whiteSpace: 'nowrap',
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#FFFFFF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#FFC800';
+                  }}
                 >
                   <Navigation size={11} style={{ transform: 'rotate(45deg)' }} />
                   <span>Directions</span>
                 </a>
               </div>
 
-              <div style={{ height: '1px', background: 'var(--wy-border)', width: '100%' }} />
+              <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.08)', width: '100%' }} />
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', color: 'var(--wy-muted)', fontSize: 'clamp(0.72rem, 1.4vw, 0.78rem)' }}>
-                <Clock size={14} style={{ color: 'var(--wy-yellow)', flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', color: '#D4D4D8', fontSize: 'clamp(0.72rem, 1.4vw, 0.78rem)' }}>
+                <Clock size={14} style={{ color: '#FFC800', flexShrink: 0, marginTop: '2px' }} />
                 <div style={{ lineHeight: 1.3 }}>
-                  <strong style={{ color: 'var(--wy-yellow)' }}>Hours:</strong> Mon–Sat 8:30am–10:30pm | Sun 1pm–10pm
+                  <strong style={{ color: '#FFC800' }}>Hours:</strong> Mon–Sat 8:30am–10:30pm | Sun 1pm–10pm
                 </div>
               </div>
             </div>
