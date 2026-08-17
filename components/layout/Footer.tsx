@@ -20,7 +20,7 @@ export default function Footer() {
   }
 
   return (
-    <footer suppressHydrationWarning style={{ background: '#0D0D0E', borderTop: '1px solid #1E1E22', marginTop: 'auto' }}>
+    <footer suppressHydrationWarning style={{ background: 'var(--wy-surface)', borderTop: '1px solid var(--wy-border)', marginTop: 'auto' }}>
       <div className="container-wy" style={{ padding: '2.75rem 1.5rem 2.25rem' }}>
         
         {/* Main Row: Brand + Nav Links + Socials */}
@@ -31,7 +31,7 @@ export default function Footer() {
           flexWrap: 'wrap',
           gap: '1.5rem',
           paddingBottom: '1.5rem',
-          borderBottom: '1px solid #1E1E22',
+          borderBottom: '1px solid var(--wy-border)',
         }}>
           {/* Brand & Tagline */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>

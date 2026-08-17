@@ -7,9 +7,9 @@ import { MapPin, Clock, Navigation, ArrowRight, MessageCircle } from 'lucide-rea
 export default function AboutSection() {
   return (
     <section style={{
-      background: '#09090B',
+      background: 'var(--wy-canvas)',
       padding: 'clamp(3.5rem, 6vw, 5rem) 0',
-      borderTop: '1px solid #1E1E22',
+      borderTop: '1px solid var(--wy-border)',
       position: 'relative',
       overflow: 'hidden',
     }}>
@@ -20,7 +20,7 @@ export default function AboutSection() {
         left: '-10%',
         width: '400px',
         height: '400px',
-        background: 'radial-gradient(circle, rgba(255, 200, 0, 0.04) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, var(--wy-yellow-glow) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
@@ -41,9 +41,9 @@ export default function AboutSection() {
               height: 'clamp(290px, 40vh, 380px)',
               borderRadius: '18px',
               overflow: 'hidden',
-              background: '#141416',
-              border: '1px solid #27272A',
-              boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 200, 0, 0.06)',
+              background: 'var(--wy-surface)',
+              border: '1px solid var(--wy-border)',
+              boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.4), 0 0 25px var(--wy-yellow-glow)',
             }}>
               <Image
                 src="/Ceo-about.jpeg"
@@ -57,36 +57,29 @@ export default function AboutSection() {
               <div style={{
                 position: 'absolute',
                 inset: '0',
-                background: 'linear-gradient(to top, rgba(9, 9, 11, 0.92) 0%, rgba(9, 9, 11, 0.3) 40%, transparent 70%)',
+                background: 'linear-gradient(to top, rgba(9, 9, 11, 0.88) 0%, rgba(9, 9, 11, 0.2) 40%, transparent 70%)',
                 pointerEvents: 'none',
               }} />
 
-              {/* CEO Badge Overlay with Floating Animation */}
+              {/* Floating Name Badge */}
               <motion.div
-                animate={{
-                  y: [0, -6, 0],
-                }}
-                transition={{
-                  duration: 3.5,
-                  repeat: Infinity,
-                  repeatType: 'reverse',
-                  ease: 'easeInOut',
-                }}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
                 style={{
                   position: 'absolute',
-                  bottom: 'clamp(0.85rem, 2vw, 1.15rem)',
-                  left: 'clamp(0.85rem, 2vw, 1.15rem)',
-                  right: 'clamp(0.85rem, 2vw, 1.15rem)',
+                  bottom: '1rem',
+                  left: '1rem',
+                  right: '1rem',
+                  padding: '0.75rem 1rem',
+                  background: 'rgba(18, 18, 20, 0.85)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 200, 0, 0.3)',
+                  borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '14px',
-                  background: 'rgba(0, 0, 0, 0.82)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255, 200, 0, 0.35)',
-                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 200, 0, 0.15)',
                 }}
               >
                 <div>
@@ -102,7 +95,7 @@ export default function AboutSection() {
                   </h4>
                   <p style={{
                     fontSize: 'clamp(0.62rem, 1.2vw, 0.72rem)',
-                    color: '#FFC800',
+                    color: 'var(--wy-yellow)',
                     fontWeight: 700,
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
@@ -126,7 +119,7 @@ export default function AboutSection() {
               borderRadius: '999px',
               background: 'rgba(255, 200, 0, 0.08)',
               border: '1px solid rgba(255, 200, 0, 0.25)',
-              color: '#FFC800',
+              color: 'var(--wy-yellow)',
               fontSize: '0.72rem',
               fontWeight: 800,
               letterSpacing: '0.12em',
@@ -140,21 +133,21 @@ export default function AboutSection() {
             <h2 style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(2rem, 4vw, 3rem)',
-              color: '#FFFFFF',
+              color: 'var(--wy-text)',
               letterSpacing: '0.04em',
               lineHeight: 1.15,
               marginBottom: '1.25rem',
               textTransform: 'uppercase',
             }}>
               MODERN MENSWEAR FOR <br />
-              <span style={{ color: '#FFC800' }}>THE TRENDY GENTLEMAN</span>
+              <span style={{ color: 'var(--wy-yellow)' }}>THE TRENDY GENTLEMAN</span>
             </h2>
 
             {/* Founder Note */}
             <div style={{
               position: 'relative',
               paddingLeft: '1.25rem',
-              borderLeft: '3px solid #FFC800',
+              borderLeft: '3px solid var(--wy-yellow)',
               marginBottom: '1.75rem',
             }}>
               <p suppressHydrationWarning style={{

@@ -38,10 +38,10 @@ export default function ValueProps() {
   return (
     <section
       style={{
-        background: '#09090B',
+        background: 'var(--wy-canvas)',
         padding: 'clamp(3.5rem, 6vw, 5.5rem) 0',
-        borderTop: '1px solid #1E1E22',
-        borderBottom: '1px solid #1E1E22',
+        borderTop: '1px solid var(--wy-border)',
+        borderBottom: '1px solid var(--wy-border)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -54,7 +54,7 @@ export default function ValueProps() {
           right: '10%',
           width: '500px',
           height: '500px',
-          background: 'radial-gradient(circle, rgba(255, 200, 0, 0.05) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, var(--wy-yellow-glow) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />
@@ -71,7 +71,7 @@ export default function ValueProps() {
               borderRadius: '100px',
               background: 'rgba(255, 200, 0, 0.08)',
               border: '1px solid rgba(255, 200, 0, 0.28)',
-              color: '#FFC800',
+              color: 'var(--wy-yellow)',
               fontSize: '0.72rem',
               fontWeight: 800,
               letterSpacing: '0.12em',
@@ -86,19 +86,19 @@ export default function ValueProps() {
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(2.1rem, 5vw, 3.5rem)',
-              color: '#FFFFFF',
+              color: 'var(--wy-text)',
               letterSpacing: '0.04em',
               lineHeight: 1.05,
               marginBottom: '0.65rem',
               textTransform: 'uppercase',
             }}
           >
-            WHY WEAR <span style={{ color: '#FFC800' }}>YUNG?</span>
+            WHY WEAR <span style={{ color: 'var(--wy-yellow)' }}>YUNG?</span>
           </h2>
 
           <p
             style={{
-              color: '#A1A1AA',
+              color: 'var(--wy-muted)',
               fontSize: 'clamp(0.85rem, 1.4vw, 1rem)',
               lineHeight: 1.6,
               margin: 0,
@@ -121,16 +121,17 @@ export default function ValueProps() {
               key={feature.title}
               whileHover={{ y: -6 }}
               transition={{ duration: 0.25 }}
+              className="value-prop-card"
               style={{
                 position: 'relative',
-                background: 'linear-gradient(180deg, rgba(24, 24, 28, 0.75) 0%, rgba(14, 14, 18, 0.95) 100%)',
+                background: 'var(--wy-surface)',
                 borderRadius: '18px',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                border: '1px solid var(--wy-border)',
                 padding: 'clamp(1.15rem, 2.5vw, 1.75rem) clamp(1rem, 2vw, 1.35rem)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                boxShadow: '0 12px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 12px 30px rgba(0, 0, 0, 0.1)',
                 transition: 'border-color 0.3s, box-shadow 0.3s',
               }}
               onMouseEnter={(e) => {
@@ -201,7 +202,7 @@ export default function ValueProps() {
                     fontFamily: 'var(--font-display)',
                     fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
                     letterSpacing: '0.06em',
-                    color: '#FFFFFF',
+                    color: 'var(--wy-text)',
                     margin: '0 0 0.45rem',
                     textTransform: 'uppercase',
                     lineHeight: 1.15,
@@ -211,7 +212,7 @@ export default function ValueProps() {
                 </h3>
                 <p
                   style={{
-                    color: '#A1A1AA',
+                    color: 'var(--wy-muted)',
                     fontSize: 'clamp(0.78rem, 1.2vw, 0.88rem)',
                     lineHeight: 1.6,
                     margin: 0,

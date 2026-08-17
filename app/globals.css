@@ -44,9 +44,9 @@
   --wy-yellow: #E5A800;
   --wy-yellow-dim: #C69200;
   --wy-yellow-glow: rgba(229, 168, 0, 0.2);
-  --wy-canvas: #F8F9FA;
+  --wy-canvas: #FFFFFF;
   --wy-surface: #FFFFFF;
-  --wy-surface-raised: #F1F3F5;
+  --wy-surface-raised: #F8F9FA;
   --wy-border: #E4E4E7;
   --wy-border-light: #D4D4D8;
   --wy-text: #09090B;
@@ -56,10 +56,33 @@
   --wy-success: #16A34A;
 }
 
-[data-theme="light"] .card-wy {
+[data-theme="light"] body,
+[data-theme="light"] main {
+  background-color: #FFFFFF !important;
+  color: #09090B !important;
+}
+
+[data-theme="light"] .hero-banner-bg {
+  filter: brightness(1.1) contrast(0.9) opacity(0.18) !important;
+}
+
+[data-theme="light"] .hero-gradient-overlay {
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 50%, rgba(255, 255, 255, 0.5) 100%),
+              linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, transparent 35%),
+              linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, transparent 25%) !important;
+}
+
+[data-theme="light"] .hero-info-box {
   background: #FFFFFF !important;
   border-color: #E4E4E7 !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .card-wy,
+[data-theme="light"] .value-prop-card {
+  background: #FFFFFF !important;
+  border-color: #E4E4E7 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
 }
 
 [data-theme="light"] .category-showcase-item .card-wy {
@@ -72,7 +95,7 @@
 }
 
 [data-theme="light"] .announcement-marquee-wrap {
-  background: #F1F3F5 !important;
+  background: #F4F4F5 !important;
   border-color: #E4E4E7 !important;
 }
 
@@ -94,6 +117,7 @@
 [data-theme="light"] textarea::placeholder {
   color: #A1A1AA !important;
 }
+
 
 
 

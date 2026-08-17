@@ -142,7 +142,7 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
   ];
 
   return (
-    <section style={{ background: '#0D0D0D', padding: 'clamp(3rem, 6vw, 5rem) 0', borderTop: '1px solid #1E1E22' }}>
+    <section style={{ background: 'var(--wy-canvas)', padding: 'clamp(3rem, 6vw, 5rem) 0', borderTop: '1px solid var(--wy-border)' }}>
       <div className="container-wy">
 
         {/* Section Header */}
@@ -165,14 +165,14 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
               <div style={{
                 width: '36px',
                 height: '3px',
-                background: '#FFC800',
+                background: 'var(--wy-yellow)',
                 marginBottom: '0.5rem',
               }} />
 
               <h2 style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
-                color: '#FFFFFF',
+                color: 'var(--wy-text)',
                 letterSpacing: '0.04em',
                 lineHeight: 1.05,
                 margin: 0,
