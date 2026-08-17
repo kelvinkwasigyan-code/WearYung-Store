@@ -210,6 +210,27 @@ h6 {
   }
 }
 
+/* ---- Infinite Marquee Animation ---- */
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: flex !important;
+  width: max-content !important;
+  animation: marquee-scroll 24s linear infinite !important;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
 /* ---- Responsive Grid Utilities ---- */
 .category-showcase-grid {
   display: grid;

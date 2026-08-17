@@ -1,43 +1,54 @@
-﻿export default function AnnouncementMarquee() {
+'use client';
+
+export default function AnnouncementMarquee() {
   const announcements = [
     'FREE DELIVERY ON ORDERS ABOVE GH₵ 500',
     'AUTHENTIC STREETWEAR',
     'PREMIUM QUALITY GUARANTEED',
     'SHOP THE LATEST DROPS',
     'EXCLUSIVE COLLECTIONS',
+    'FAST NATIONWIDE SHIPPING',
   ];
 
   return (
     <div
       style={{
-        background: 'var(--wy-yellow)',
+        background: '#FFC800',
         overflow: 'hidden',
-        padding: '0.75rem 0',
-        borderTop: '2px solid var(--wy-canvas)',
+        padding: '0.65rem 0',
+        borderTop: '1px solid rgba(0,0,0,0.1)',
+        borderBottom: '1px solid rgba(0,0,0,0.1)',
+        position: 'relative',
+        zIndex: 20,
       }}
     >
       <div
         className="animate-marquee"
         style={{
           display: 'flex',
-          gap: '3rem',
+          gap: '2.5rem',
           width: 'max-content',
         }}
       >
-        {[...Array(2)].map((_, i) => (
-          <div key={i} style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
-            {announcements.map((text) => (
+        {[...Array(4)].map((_, i) => (
+          <div key={i} style={{ display: 'flex', gap: '2.5rem', alignItems: 'center', flexShrink: 0 }}>
+            {announcements.map((text, idx) => (
               <span
-                key={text}
+                key={`${i}-${idx}`}
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: '1rem',
-                  letterSpacing: '0.1em',
-                  color: 'var(--wy-canvas)',
+                  fontSize: '0.92rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.12em',
+                  color: '#000000',
                   whiteSpace: 'nowrap',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
                 }}
               >
-                {text} <span style={{ margin: '0 0.5rem', opacity: 0.5 }}>★</span>
+                <span>{text}</span>
+                <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>★</span>
               </span>
             ))}
           </div>
@@ -46,4 +57,3 @@
     </div>
   );
 }
-
