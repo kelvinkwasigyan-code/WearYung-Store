@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 interface InitializePaystackParams {
   email: string;
   amountInGHS: number; // in GH₵
@@ -174,14 +172,31 @@ export async function verifyPaystackTransaction(
   }
 }
 
-export function verifyPaystackWebhookSignature(
+export async function verifyPaystackWebhookSignature(
   rawBody: string,
   signatureHeader: string | null
-): boolean {
+): Promise<boolean> {
   if (!PAYSTACK_SECRET_KEY || !signatureHeader) return false;
-  const hash = crypto
-    .createHmac('sha512', PAYSTACK_SECRET_KEY)
-    .update(rawBody)
-    .digest('hex');
-  return hash === signatureHeader;
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(PAYSTACK_SECRET_KEY),
+      { name: 'HMAC', hash: 'SHA-512' },
+      false,
+      ['sign']
+    );
+    const signatureBuffer = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      encoder.encode(rawBody)
+    );
+    const hash = Array.from(new Uint8Array(signatureBuffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+    return hash.toLowerCase() === signatureHeader.toLowerCase();
+  } catch (err) {
+    console.error('[Webhook HMAC Error]:', err);
+    return false;
+  }
 }

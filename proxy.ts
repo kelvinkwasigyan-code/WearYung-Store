@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 import { updateSession } from '@/lib/supabase/middleware';
 import type { NextRequest } from 'next/server';
 
