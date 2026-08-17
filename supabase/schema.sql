@@ -153,6 +153,9 @@ CREATE POLICY "Users can view own profile" ON public.profiles
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
+CREATE POLICY "Users can insert own profile" ON public.profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "Anyone can view published products" ON public.products
   FOR SELECT USING (is_published = true OR public.is_admin());
 

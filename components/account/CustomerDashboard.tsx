@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { STORE_LOCATION } from '@/lib/constants';
+import { updateCustomerProfile } from '@/app/actions/profile';
 import {
   User,
   ShoppingBag,
@@ -131,22 +132,17 @@ export default function CustomerDashboard({
     setSavingProfile(true);
     setAccountFeedback(null);
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert({
-        id: initialUser.id,
-        full_name: fullNameInput,
-        phone_number: phoneInput,
-      })
-      .select()
-      .single();
+    const result = await updateCustomerProfile({
+      full_name: fullNameInput.trim(),
+      phone_number: phoneInput.trim(),
+    });
 
-    if (!error && data) {
-      setProfile((prev: any) => ({ ...prev, ...data }));
+    if (result.success && result.profile) {
+      setProfile((prev: any) => ({ ...prev, ...result.profile }));
       setAccountFeedback({ text: 'Profile details saved successfully!', type: 'success' });
       setTimeout(() => setIsEditProfileOpen(false), 1200);
-    } else if (error) {
-      setAccountFeedback({ text: error.message || 'Failed to save profile', type: 'error' });
+    } else {
+      setAccountFeedback({ text: result.error || 'Failed to save profile', type: 'error' });
     }
     setSavingProfile(false);
   };
@@ -161,13 +157,14 @@ export default function CustomerDashboard({
     setSavingEmail(true);
     setAccountFeedback(null);
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: newEmailInput.trim().toLowerCase(),
-      });
+      const { error } = await supabase.auth.updateUser(
+        { email: newEmailInput.trim().toLowerCase() },
+        { emailRedirectTo: `${window.location.origin}/account` }
+      );
       if (error) throw error;
       setAccountFeedback({
-        text: 'Confirmation email sent! Please check your new email inbox to verify.',
-        type: 'info',
+        text: 'Confirmation email sent! Please check your email inbox to verify the new address.',
+        type: 'success',
       });
     } catch (err: any) {
       setAccountFeedback({ text: err.message || 'Failed to update email address', type: 'error' });
@@ -184,7 +181,7 @@ export default function CustomerDashboard({
       return;
     }
     if (newPasswordInput !== confirmPasswordInput) {
-      setAccountFeedback({ text: 'Passwords do not match. Please try again.', type: 'error' });
+      setAccountFeedback({ text: 'Passwords do not match. Please check and try again.', type: 'error' });
       return;
     }
     setSavingPassword(true);
@@ -196,7 +193,7 @@ export default function CustomerDashboard({
       if (error) throw error;
       setNewPasswordInput('');
       setConfirmPasswordInput('');
-      setAccountFeedback({ text: 'Password changed successfully! Keep your new credentials safe.', type: 'success' });
+      setAccountFeedback({ text: 'Password changed successfully! Your new password is now active.', type: 'success' });
     } catch (err: any) {
       setAccountFeedback({ text: err.message || 'Failed to change password', type: 'error' });
     } finally {
@@ -209,25 +206,22 @@ export default function CustomerDashboard({
     setSavingAddress(true);
 
     const updatedAddress = {
-      street: streetInput,
-      city: cityInput,
-      region: regionInput,
-      postal_code: postalCodeInput,
-      digital_address: digitalAddressInput,
+      street: streetInput.trim(),
+      city: cityInput.trim(),
+      region: regionInput.trim(),
+      postal_code: postalCodeInput.trim(),
+      digital_address: digitalAddressInput.trim(),
     };
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert({
-        id: initialUser.id,
-        address: updatedAddress,
-      })
-      .select()
-      .single();
+    const result = await updateCustomerProfile({
+      address: updatedAddress,
+    });
 
-    if (!error && data) {
-      setProfile((prev: any) => ({ ...prev, ...data }));
+    if (result.success && result.profile) {
+      setProfile((prev: any) => ({ ...prev, ...result.profile }));
       setIsEditAddressOpen(false);
+    } else if (result.error) {
+      alert(result.error);
     }
     setSavingAddress(false);
   };
