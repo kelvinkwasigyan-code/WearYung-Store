@@ -216,18 +216,13 @@ export default function Navbar({ cartCount }: NavbarProps) {
             variants={navLinkContainerVariants}
             initial="hidden"
             animate="show"
-            style={{
-              alignItems: 'center',
-              gap: '2.25rem',
-              listStyle: 'none',
-            }}
-            className="desktop-only-flex"
+            className="hidden lg:flex items-center gap-5 xl:gap-8 list-none flex-row flex-nowrap whitespace-nowrap m-0 p-0"
           >
             {mainHeaderLinks.map((link) => (
-              <motion.li key={link.href} variants={navLinkVariants}>
+              <motion.li key={link.href} variants={navLinkVariants} className="inline-block">
                 <Link
                   href={link.href}
-                  className="transition-colors duration-200 hover:text-[#FFC800] relative group"
+                  className="transition-colors duration-200 hover:text-[#FFC800] relative group no-underline inline-block py-1"
                   style={{
                     fontSize: '0.82rem',
                     fontWeight: 800,
@@ -241,7 +236,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   <span
                     style={{
                       position: 'absolute',
-                      bottom: '-3px',
+                      bottom: '-2px',
                       left: 0,
                       width: 0,
                       height: '2px',
@@ -260,15 +255,14 @@ export default function Navbar({ cartCount }: NavbarProps) {
             variants={iconGroupVariants}
             initial="hidden"
             animate="show"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}
           >
             {/* Wishlist Icon */}
             <Link
               href="/wishlist"
               id="nav-wishlist-btn"
               aria-label="Wishlist"
-              className="transition-opacity duration-200 hover:opacity-75 p-2"
-              style={{ display: 'flex', alignItems: 'center', color: '#000000' }}
+              className="transition-opacity duration-200 hover:opacity-75 p-2 flex items-center justify-center text-black no-underline"
             >
               <Heart size={20} strokeWidth={2.5} color="#000000" />
             </Link>
@@ -279,7 +273,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
               onClick={toggleCart}
               id="nav-cart-btn"
               aria-label="Open Cart"
-              className="group relative p-2 rounded-full hover:bg-black/15 transition-colors"
+              className="group relative p-2 rounded-full hover:bg-black/15 transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"
             >
               <ShoppingBag className="w-5 h-5 text-black group-hover:text-zinc-900 transition-colors" strokeWidth={2.4} />
               <AnimatePresence>
@@ -305,14 +299,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   href="/admin"
                   id="nav-admin-btn"
                   aria-label="Admin Portal"
-                  className="btn btn-sm desktop-only-inline"
-                  style={{
-                    background: '#000000',
-                    border: '1px solid #000000',
-                    color: '#FFC800',
-                    gap: '0.35rem',
-                    fontWeight: 800,
-                  }}
+                  className="hidden lg:inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-[#FFC800] rounded-full font-black text-xs uppercase tracking-wider hover:bg-zinc-900 border border-black/30 transition-all whitespace-nowrap no-underline"
                 >
                   <Shield size={14} />
                   <span>Admin</span>
@@ -322,8 +309,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   href="/account"
                   id="nav-account-btn"
                   aria-label="Account"
-                  className="btn btn-ghost btn-sm desktop-only-inline"
-                  style={{ gap: '0.35rem', color: '#000000', fontWeight: 800 }}
+                  className="hidden lg:inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black/15 text-black rounded-full font-black text-xs uppercase tracking-wider hover:bg-black/25 transition-all whitespace-nowrap no-underline"
                 >
                   <UserIcon size={14} />
                   <span>Account</span>
@@ -333,13 +319,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
               <Link
                 href="/login"
                 id="nav-login-btn"
-                className="btn btn-sm desktop-only-inline"
-                style={{
-                  background: '#000000',
-                  color: '#FFC800',
-                  fontWeight: 800,
-                  border: '1px solid #000000'
-                }}
+                className="hidden lg:inline-flex items-center justify-center px-4 py-1.5 bg-black text-[#FFC800] rounded-full font-black text-xs uppercase tracking-wider hover:bg-zinc-900 border border-black/30 transition-all whitespace-nowrap no-underline"
               >
                 Sign In
               </Link>
