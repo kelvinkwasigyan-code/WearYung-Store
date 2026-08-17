@@ -2,8 +2,6 @@ import { createClient } from '@/lib/supabase/server';
 import StatsCard from '@/components/admin/StatsCard';
 import { Package, ShoppingBag, Users, TrendingUp } from 'lucide-react';
 
-export const runtime = 'edge';
-
 export const metadata = { title: 'Admin Dashboard | WEAR YUNG' };
 
 export default async function AdminDashboardPage() {

@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import WishlistView from '@/components/WishlistView';
-
-export const runtime = 'edge';
+import WishlistClient from '@/components/wishlist/WishlistClient';
 
 export const metadata: Metadata = {
   title: 'My Wishlist — WEAR YUNG',

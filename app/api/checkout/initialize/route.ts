@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializePaystackTransaction } from '@/lib/payments/paystack';
 
-export const runtime = 'edge';
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

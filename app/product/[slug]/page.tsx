@@ -5,8 +5,6 @@ import { createClient } from '@/lib/supabase/server';
 import type { Product } from '@/types/ecommerce';
 import ProductDetailView from '@/components/ProductDetailView';
 
-export const runtime = 'edge';
-
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }

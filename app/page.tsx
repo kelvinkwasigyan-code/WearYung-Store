@@ -7,8 +7,6 @@ import AboutSection from '@/components/AboutSection';
 import ValueProps from '@/components/ValueProps';
 import CallToActionBanner from '@/components/CallToActionBanner';
 
-export const runtime = 'edge';
-
 export const metadata: Metadata = {
   title: 'WEAR YUNG — Premium Streetwear & Accessories',
   description: 'Shop the latest drops in streetwear, sneakers, watches, bags and accessories.',
