@@ -88,7 +88,7 @@ function LoginForm() {
   return (
     <div className="min-h-[calc(100dvh-72px)] w-full grid grid-cols-1 lg:grid-cols-2 lg:h-[calc(100dvh-72px)] lg:overflow-hidden bg-[#09090B]">
       {/* ─── Left: Brand Panel (Desktop Dual Image Left Column) ─── */}
-      <div className="hidden lg:flex relative flex-col justify-end p-5 bg-[#0a0a0a] overflow-hidden h-full">
+      <div className="hidden lg:flex relative flex-col justify-end p-6 xl:p-8 bg-[#0a0a0a] overflow-hidden h-full">
         {/* 2-column dual image grid */}
         <div
           style={{
@@ -99,6 +99,7 @@ function LoginForm() {
             gap: '0.75rem',
             borderRadius: '16px',
             overflow: 'hidden',
+            border: '1px solid #1E1E24',
           }}
         >
           {['/sign-in-image.jpg', '/sign-in-image2.jpg'].map((src, i) => (
@@ -118,31 +119,38 @@ function LoginForm() {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center top',
+                  objectPosition: 'center 15%',
                   display: 'block',
                 }}
               />
             </div>
           ))}
 
-          {/* Gradient overlay across both images */}
+          {/* Gradient overlay across both images for crisp text readability */}
           <div
             style={{
               position: 'absolute',
               inset: 0,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.05) 100%)',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.2) 35%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0.98) 100%)',
               pointerEvents: 'none',
             }}
           />
         </div>
 
         {/* Brand text overlay */}
-        <div style={{ position: 'relative', zIndex: 10 }}>
-          <Link href="/" style={{ display: 'inline-block', marginBottom: '0.75rem', textDecoration: 'none' }}>
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            padding: '1.25rem 1rem 1rem 1rem',
+            marginBottom: '0.5rem',
+          }}
+        >
+          <Link href="/" style={{ display: 'inline-block', marginBottom: '0.65rem', textDecoration: 'none' }}>
             <span
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: '1.1rem',
+                fontSize: '1.15rem',
                 color: '#FFC800',
                 letterSpacing: '0.1em',
               }}
@@ -150,20 +158,21 @@ function LoginForm() {
               WEAR YUNG
             </span>
           </Link>
-          <p
+          <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.4rem, 2.5vw, 2rem)',
-              color: 'var(--wy-text)',
-              lineHeight: 1.15,
+              fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
+              color: '#FFFFFF',
+              lineHeight: 1.1,
               letterSpacing: '0.03em',
-              marginBottom: '0.4rem',
+              margin: '0 0 0.4rem 0',
+              textTransform: 'uppercase',
             }}
           >
             DRESS LIKE<br />
             <span style={{ color: '#FFC800' }}>YOU MEAN IT.</span>
-          </p>
-          <p style={{ color: 'var(--wy-muted)', fontSize: '0.82rem', lineHeight: 1.5 }}>
+          </h2>
+          <p style={{ color: '#A1A1AA', fontSize: '0.85rem', lineHeight: 1.45, margin: 0, maxWidth: '420px' }}>
             Premium streetwear curated for those who move different.
           </p>
         </div>
