@@ -591,7 +591,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             </svg>
             <div>
               <p style={{ color: '#FFFFFF', fontSize: '0.78rem', fontWeight: 700 }}>Fast Shipping</p>
-              <p style={{ color: 'var(--wy-muted-dim)', fontSize: '0.68rem' }}>Free above GH₵ 500</p>
+              <p style={{ color: 'var(--wy-muted-dim)', fontSize: '0.68rem' }}>Free above GH₵ 1,000</p>
             </div>
           </div>
         </div>

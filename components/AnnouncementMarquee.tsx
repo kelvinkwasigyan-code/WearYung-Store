@@ -2,7 +2,7 @@
 
 export default function AnnouncementMarquee() {
   const announcements = [
-    'FREE DELIVERY ON ORDERS ABOVE GH₵ 500',
+    'FREE DELIVERY ON ORDERS ABOVE GH₵ 1,000',
     'AUTHENTIC STREETWEAR',
     'PREMIUM QUALITY GUARANTEED',
     'SHOP THE LATEST DROPS',
