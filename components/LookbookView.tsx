@@ -139,7 +139,7 @@ export default function LookbookView() {
               <div style={{ textAlign: 'center', gridColumn: '1 / -1', padding: '4rem 0', color: '#71717A' }}>
                 No editorials available at the moment.
               </div>
-            ) : lookbooks.map((look) => {
+            ) : lookbooks.map((look, index) => {
               const isTall = look.aspect_ratio === 'tall';
               const minHeight = isTall ? '550px' : '420px';
 
@@ -165,7 +165,7 @@ export default function LookbookView() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      priority
+                      priority={index === 0}
                     />
 
                     {/* Gradient Overlay */}

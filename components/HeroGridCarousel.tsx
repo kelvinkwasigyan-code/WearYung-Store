@@ -199,7 +199,7 @@ export default function HeroGridCarousel({
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '1.2rem',
+            gap: 'clamp(0.5rem, 2vw, 1.2rem)',
           }}
         >
           {currentPair.map((item, index) => (
@@ -209,13 +209,14 @@ export default function HeroGridCarousel({
               transition={{ duration: 0.25 }}
               style={{
                 position: 'relative',
-                borderRadius: '22px',
+                borderRadius: 'clamp(14px, 2.5vw, 22px)',
                 overflow: 'hidden',
                 background: '#121215',
                 border: '1px solid rgba(255, 200, 0, 0.25)',
-                aspectRatio: '1 / 1.24',
-                height: '375px',
-                boxShadow: '0 22px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
+                aspectRatio: '1 / 1.25',
+                width: '100%',
+                maxHeight: '375px',
+                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
               }}
             >
               {/* Product / Lookbook Photo */}
@@ -238,16 +239,16 @@ export default function HeroGridCarousel({
               <div
                 style={{
                   position: 'absolute',
-                  top: '0.9rem',
-                  left: '0.9rem',
-                  padding: '0.3rem 0.7rem',
+                  top: 'clamp(0.5rem, 1.5vw, 0.9rem)',
+                  left: 'clamp(0.5rem, 1.5vw, 0.9rem)',
+                  padding: 'clamp(0.2rem, 0.8vw, 0.3rem) clamp(0.45rem, 1.2vw, 0.7rem)',
                   background: 'rgba(10, 10, 12, 0.75)',
                   backdropFilter: 'blur(8px)',
                   borderRadius: '100px',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
+                  gap: '0.3rem',
                   pointerEvents: 'none',
                 }}
               >
@@ -262,7 +263,7 @@ export default function HeroGridCarousel({
                 <span
                   style={{
                     color: '#FFFFFF',
-                    fontSize: '0.68rem',
+                    fontSize: 'clamp(0.6rem, 1.2vw, 0.68rem)',
                     fontWeight: 700,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
@@ -289,13 +290,13 @@ export default function HeroGridCarousel({
               <div
                 style={{
                   position: 'absolute',
-                  bottom: '0.9rem',
-                  left: '0.9rem',
-                  right: '0.9rem',
-                  padding: '0.7rem 0.95rem',
+                  bottom: 'clamp(0.45rem, 1.5vw, 0.9rem)',
+                  left: 'clamp(0.45rem, 1.5vw, 0.9rem)',
+                  right: 'clamp(0.45rem, 1.5vw, 0.9rem)',
+                  padding: 'clamp(0.45rem, 1.2vw, 0.7rem) clamp(0.55rem, 1.5vw, 0.95rem)',
                   background: 'rgba(18, 18, 22, 0.88)',
                   backdropFilter: 'blur(12px)',
-                  borderRadius: '14px',
+                  borderRadius: 'clamp(10px, 2vw, 14px)',
                   border: '1px solid rgba(255, 200, 0, 0.35)',
                   boxShadow: '0 8px 25px rgba(0, 0, 0, 0.6)',
                 }}
@@ -305,7 +306,7 @@ export default function HeroGridCarousel({
                     <p
                       style={{
                         color: '#FFFFFF',
-                        fontSize: '0.92rem',
+                        fontSize: 'clamp(0.75rem, 1.8vw, 0.92rem)',
                         fontWeight: 800,
                         letterSpacing: '0.04em',
                         textTransform: 'uppercase',
@@ -313,6 +314,7 @@ export default function HeroGridCarousel({
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
+                        margin: 0,
                       }}
                     >
                       {item.label}
@@ -320,11 +322,12 @@ export default function HeroGridCarousel({
                     <p
                       style={{
                         color: 'var(--wy-yellow)',
-                        fontSize: '0.68rem',
+                        fontSize: 'clamp(0.58rem, 1.2vw, 0.68rem)',
                         fontWeight: 600,
                         letterSpacing: '0.06em',
                         textTransform: 'uppercase',
                         marginTop: '2px',
+                        marginBottom: 0,
                       }}
                     >
                       Wear Yung Drop

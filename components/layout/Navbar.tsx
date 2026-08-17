@@ -217,12 +217,11 @@ export default function Navbar({ cartCount }: NavbarProps) {
             initial="hidden"
             animate="show"
             style={{
-              display: 'flex',
               alignItems: 'center',
               gap: '2.25rem',
               listStyle: 'none',
             }}
-            className="hidden lg:flex"
+            className="desktop-only-flex"
           >
             {mainHeaderLinks.map((link) => (
               <motion.li key={link.href} variants={navLinkVariants}>
@@ -306,7 +305,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   href="/admin"
                   id="nav-admin-btn"
                   aria-label="Admin Portal"
-                  className="btn btn-sm hidden md:inline-flex"
+                  className="btn btn-sm desktop-only-inline"
                   style={{
                     background: '#000000',
                     border: '1px solid #000000',
@@ -323,7 +322,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   href="/account"
                   id="nav-account-btn"
                   aria-label="Account"
-                  className="btn btn-ghost btn-sm hidden md:inline-flex"
+                  className="btn btn-ghost btn-sm desktop-only-inline"
                   style={{ gap: '0.35rem', color: '#000000', fontWeight: 800 }}
                 >
                   <UserIcon size={14} />
@@ -334,7 +333,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
               <Link
                 href="/login"
                 id="nav-login-btn"
-                className="btn btn-sm hidden md:inline-flex"
+                className="btn btn-sm desktop-only-inline"
                 style={{
                   background: '#000000',
                   color: '#FFC800',
@@ -346,13 +345,13 @@ export default function Navbar({ cartCount }: NavbarProps) {
               </Link>
             )}
 
-            {/* Hamburger Menu Toggle */}
+            {/* Hamburger Menu Toggle (Visible across all viewports) */}
             <button
               id="nav-drawer-toggle"
               type="button"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open navigation drawer"
-              className="transition-colors duration-200 text-black hover:text-zinc-900 p-2"
+              className="transition-colors duration-200 text-black hover:text-zinc-900 p-2 flex items-center"
               style={{
                 background: 'none',
                 border: 'none',
@@ -365,7 +364,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 whileTap={{ rotate: 90, scale: 0.9 }}
                 transition={{ duration: 0.2 }}
               >
-                <Menu size={24} strokeWidth={2} />
+                <Menu size={24} strokeWidth={2.4} />
               </motion.div>
             </button>
           </motion.div>

@@ -12,10 +12,10 @@ export default function StatsCard({ title, value, subtitle, icon, accent = '#FFC
       background: '#0d0d0d',
       border: '1px solid #1a1a1a',
       borderRadius: '12px',
-      padding: '1.5rem',
+      padding: 'clamp(1rem, 2.5vw, 1.5rem)',
       display: 'flex',
       flexDirection: 'column',
-      gap: '0.75rem',
+      gap: '0.65rem',
       position: 'relative',
       overflow: 'hidden',
     }}>

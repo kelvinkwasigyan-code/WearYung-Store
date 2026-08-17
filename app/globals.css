@@ -40,7 +40,9 @@
 }
 
 /* ---- Base Reset ---- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -61,7 +63,12 @@ body {
 }
 
 /* ---- Typography ---- */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   letter-spacing: 0.04em;
   line-height: 1.1;
@@ -77,13 +84,16 @@ a {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--wy-canvas);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--wy-border-light);
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--wy-muted-dim);
 }
@@ -131,28 +141,57 @@ a {
 
 /* ---- Animation Keyframes ---- */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes pulse-yellow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--wy-yellow-glow); }
-  50%       { box-shadow: 0 0 0 8px transparent; }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--wy-yellow-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px transparent;
+  }
 }
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* ---- Hero Layout Grid Helper ---- */
@@ -163,10 +202,70 @@ a {
   align-items: center;
 }
 
+.hero-left-col {
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-left-col .hero-pill-badge {
+  margin: 0 auto 0.85rem;
+}
+
+.hero-left-col .hero-headline {
+  text-align: center;
+}
+
+.hero-left-col .hero-desc {
+  text-align: center;
+  margin: 0 auto 1.15rem;
+}
+
+.hero-left-col .hero-cta-wrap {
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.hero-left-col .hero-stats-wrap {
+  justify-content: center;
+}
+
 @media (min-width: 960px) {
   .hero-layout-grid {
     grid-template-columns: 1.15fr 0.85fr;
     gap: 3.5rem;
+  }
+
+  .hero-left-col {
+    align-items: flex-start;
+    text-align: left;
+    margin: 0;
+  }
+
+  .hero-left-col .hero-pill-badge {
+    margin: 0 0 0.85rem;
+  }
+
+  .hero-left-col .hero-headline {
+    text-align: left;
+  }
+
+  .hero-left-col .hero-desc {
+    text-align: left;
+    margin: 0 0 1.15rem;
+  }
+
+  .hero-left-col .hero-cta-wrap {
+    margin: 0;
+    justify-content: flex-start;
+  }
+
+  .hero-left-col .hero-stats-wrap {
+    justify-content: flex-start;
   }
 }
 
@@ -174,21 +273,21 @@ a {
 .animate-fade-in-up {
   animation: fadeInUp 0.6s ease forwards;
 }
+
 .animate-fade-in {
   animation: fadeIn 0.4s ease forwards;
 }
+
 .animate-marquee {
   animation: marquee 24s linear infinite;
 }
 
 /* ---- Skeleton Loading ---- */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--wy-surface) 25%,
-    var(--wy-surface-raised) 50%,
-    var(--wy-surface) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--wy-surface) 25%,
+      var(--wy-surface-raised) 50%,
+      var(--wy-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-md);
@@ -231,11 +330,13 @@ a {
   background: var(--wy-yellow);
   color: var(--wy-canvas);
 }
+
 .btn-primary:hover {
   background: var(--wy-yellow-dim);
   transform: translateY(-1px);
   box-shadow: 0 4px 20px var(--wy-yellow-glow);
 }
+
 .btn-primary:active {
   transform: translateY(0);
 }
@@ -245,6 +346,7 @@ a {
   color: var(--wy-yellow);
   border: 2px solid var(--wy-yellow);
 }
+
 .btn-outline:hover {
   background: var(--wy-yellow);
   color: var(--wy-canvas);
@@ -255,6 +357,7 @@ a {
   color: var(--wy-text);
   border: 1px solid var(--wy-border);
 }
+
 .btn-ghost:hover {
   border-color: var(--wy-border-light);
   background: var(--wy-surface);
@@ -264,6 +367,7 @@ a {
   background: var(--wy-danger);
   color: #fff;
 }
+
 .btn-danger:hover {
   opacity: 0.9;
 }
@@ -290,9 +394,11 @@ a {
   font-size: 0.9rem;
   transition: border-color var(--transition-fast);
 }
+
 .input-wy::placeholder {
   color: var(--wy-muted-dim);
 }
+
 .input-wy:focus {
   outline: none;
   border-color: var(--wy-yellow);
@@ -307,6 +413,7 @@ a {
   overflow: hidden;
   transition: border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
 }
+
 .card-wy:hover {
   border-color: var(--wy-yellow);
   transform: translateY(-4px);
@@ -324,15 +431,18 @@ a {
   text-transform: uppercase;
   border-radius: 2px;
 }
+
 .badge-yellow {
   background: var(--wy-yellow);
   color: var(--wy-canvas);
 }
+
 .badge-outline {
   background: transparent;
   border: 1px solid var(--wy-border-light);
   color: var(--wy-muted);
 }
+
 .badge-surface {
   background: var(--wy-surface-raised);
   color: var(--wy-muted);
@@ -366,6 +476,7 @@ a {
   padding: 2rem;
   transition: border-color 250ms ease;
 }
+
 .feature-card:hover {
   border-color: var(--wy-yellow);
 }
@@ -386,6 +497,7 @@ a {
   text-decoration: none;
   transition: transform 150ms ease, box-shadow 150ms ease;
 }
+
 .cta-dark-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
@@ -396,13 +508,16 @@ a {
   color: var(--wy-muted);
   transition: color 150ms ease;
 }
+
 .link-hover:hover {
   color: var(--wy-text);
 }
+
 .link-hover-yellow {
   color: var(--wy-muted);
   transition: color 150ms ease;
 }
+
 .link-hover-yellow:hover {
   color: var(--wy-yellow);
 }
@@ -413,9 +528,11 @@ a {
   inset: 0;
   overflow: hidden;
 }
+
 .product-img {
   transition: transform 400ms ease !important;
 }
+
 .card-wy:hover .product-img {
   transform: scale(1.06);
 }
@@ -445,14 +562,116 @@ a {
   }
 }
 
+/* ---- Responsive Category Cards Grid (7 Items) ---- */
+.category-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 1023px) {
+  .category-showcase-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .category-showcase-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 0.65rem;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .category-showcase-grid::-webkit-scrollbar {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+
+  .category-showcase-item {
+    flex: 0 0 calc(28% - 0.5rem);
+    min-width: 92px;
+    scroll-snap-align: start;
+  }
+}
+
+/* Universal No-Scrollbar utility */
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+
+
 /* Touch optimization */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (max-width: 768px) {
-  input, select, textarea {
-    font-size: 16px !important; /* Prevents auto-zoom on iOS Safari */
+/* Responsive UI Separation (Desktop vs Mobile) */
+@media (min-width: 1024px) {
+  .desktop-only-flex {
+    display: flex !important;
+  }
+
+  .desktop-only-inline {
+    display: inline-flex !important;
+  }
+
+  .mobile-only {
+    display: none !important;
   }
 }
 
+@media (max-width: 1023px) {
+  .desktop-only-flex {
+    display: none !important;
+  }
+
+  .desktop-only-inline {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-bottom-nav-wrap {
+    display: none !important;
+  }
+
+  body {
+    padding-bottom: 0 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .mobile-bottom-nav-wrap {
+    display: flex !important;
+  }
+
+  body {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 65px) !important;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    /* Prevents auto-zoom on iOS Safari */
+  }
+}

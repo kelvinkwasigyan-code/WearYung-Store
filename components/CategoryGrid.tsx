@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 import { Shirt, Watch, Gem, ShoppingBag } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -77,88 +80,112 @@ function PerfumeSprayIcon({ size = 32, className = '' }: { size?: number; classN
   );
 }
 
-const categoryIcons: Record<ProductCategory, ReactNode> = {
-  clothing: <Shirt className="w-8 h-8" size={32} strokeWidth={2} />,
-  watches: <Watch className="w-8 h-8" size={32} strokeWidth={2} />,
-  perfumes: <PerfumeSprayIcon className="w-8 h-8" size={32} />,
-  accessories: <Gem className="w-8 h-8" size={32} strokeWidth={2} />,
-  sneakers: <SneakerIcon className="w-8 h-8" size={32} />,
-  slides: <SlideIcon className="w-8 h-8" size={32} />,
-  bags: <ShoppingBag className="w-8 h-8" size={32} strokeWidth={2} />,
+const categoryIcons: Record<string, ReactNode> = {
+  clothing: <Shirt size={26} strokeWidth={2} />,
+  watches: <Watch size={26} strokeWidth={2} />,
+  perfumes: <PerfumeSprayIcon size={26} />,
+  accessories: <Gem size={26} strokeWidth={2} />,
+  sneakers: <SneakerIcon size={26} />,
+  slides: <SlideIcon size={26} />,
+  bags: <ShoppingBag size={26} strokeWidth={2} />,
 };
 
 export default function CategoryGrid() {
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
   return (
-    <section className="section-wy" style={{ background: 'var(--wy-surface)' }}>
+    <section style={{ background: 'var(--wy-surface)', padding: 'clamp(2.5rem, 5vw, 3.75rem) 0' }}>
       <div className="container-wy">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+              fontSize: 'clamp(1.85rem, 4vw, 2.75rem)',
               color: 'var(--wy-text)',
-              marginBottom: '0.75rem',
+              marginBottom: '0.4rem',
+              letterSpacing: '0.05em',
             }}
           >
             SHOP BY CATEGORY
           </h2>
-          <p style={{ color: 'var(--wy-muted)' }}>Find your style across all our collections</p>
+          <p style={{ color: 'var(--wy-muted)', fontSize: '0.85rem', margin: 0 }}>
+            Find your style across all our collections
+          </p>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: '1rem',
-          }}
+        <motion.div 
+          className="category-showcase-grid"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
         >
           {ALL_CATEGORIES.map((cat) => (
-            <Link
-              key={cat}
-              href={`/shop?category=${cat}`}
-              id={`category-${cat}`}
-              className="group block"
-              style={{ textDecoration: 'none' }}
-            >
-              <div
-                className="card-wy group-hover:border-[#FFC800]/50 transition-colors duration-300"
-                style={{
-                  padding: '1.75rem 1rem',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+            <motion.div key={cat} variants={item}>
+              <Link
+                href={`/shop?category=${cat}`}
+                id={`category-${cat}`}
+                className="category-showcase-item group block"
+                style={{ textDecoration: 'none' }}
               >
                 <div
-                  className="text-white group-hover:text-[#FFC800] transition-colors duration-300"
+                  className="card-wy group-hover:border-[#FFC800]/50 transition-all duration-300"
                   style={{
-                    marginBottom: '0.85rem',
+                    padding: 'clamp(0.95rem, 1.8vw, 1.35rem) 0.65rem',
+                    textAlign: 'center',
+                    cursor: 'pointer',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    background: '#141416',
+                    borderRadius: '14px',
+                    border: '1px solid #27272A',
                   }}
                 >
-                  {categoryIcons[cat]}
+                  <div
+                    className="text-white group-hover:text-[#FFC800] transition-colors duration-300"
+                    style={{
+                      marginBottom: '0.55rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {categoryIcons[cat]}
+                  </div>
+                  <p
+                    className="transition-colors duration-300 group-hover:text-[#FFC800]"
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: 'clamp(0.78rem, 1.1vw, 0.88rem)',
+                      letterSpacing: '0.08em',
+                      color: 'var(--wy-text)',
+                      textTransform: 'uppercase',
+                      margin: 0,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {CATEGORY_LABELS[cat as ProductCategory]}
+                  </p>
                 </div>
-                <p
-                  className="transition-colors duration-300 group-hover:text-[#FFC800]"
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '0.9rem',
-                    letterSpacing: '0.1em',
-                    color: 'var(--wy-text)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {CATEGORY_LABELS[cat as ProductCategory]}
-                </p>
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

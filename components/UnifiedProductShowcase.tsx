@@ -12,7 +12,7 @@ interface UnifiedProductShowcaseProps {
   products: Product[];
 }
 
-type MainCategory = 'all' | 'clothing' | 'sneakers' | 'watches' | 'bags';
+type MainCategory = 'all' | 'clothing' | 'sneakers' | 'watches' | 'bags' | 'perfumes' | 'accessories' | 'slides';
 type ClothingPrimaryGroup = 'all' | 'tops_sleeves' | 'jeans_pants' | 'hoodie';
 type TopsSleevesSub = 'all' | 'tops' | 'sleeves';
 type JeansSub = 'all' | 'baggy' | 'slim';
@@ -58,69 +58,43 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
       return false;
     }
 
-    // 2. If viewing clothing, apply hierarchical clothing subcategory filters
-    if (selectedCategory === 'clothing' && selectedClothingGroup !== 'all') {
+    // 3. Clothing sub-filters
+    if (selectedCategory === 'clothing') {
       const attrs = (product.variants?.[0]?.attributes as any) || {};
-      const clothingType = attrs.clothing_type;
-      const sleeveType = attrs.sleeve_type;
-      const fit = attrs.fit;
-      const t = product.title.toLowerCase();
-      const s = product.slug.toLowerCase();
+      const cType = (attrs.clothing_type || '').toLowerCase();
+      const sType = (attrs.sleeve_type || '').toLowerCase();
+      const fit = (attrs.fit || '').toLowerCase();
 
       if (selectedClothingGroup === 'tops_sleeves') {
-        const isTopsOrSleeves =
-          clothingType === 'tops_sleeves' ||
-          clothingType === 'tops' ||
-          clothingType === 'sleeves' ||
-          sleeveType === 'tops' ||
-          sleeveType === 'sleeves' ||
-          t.includes('tee') || t.includes('top') || t.includes('sleeve') || t.includes('shirt') || t.includes('sweatshirt') || s.includes('tee') || s.includes('top') || s.includes('sleeve');
-
-        if (!isTopsOrSleeves) return false;
-
-        if (selectedTopsSub === 'tops') {
-          return sleeveType === 'tops' || (!sleeveType && (clothingType === 'tops' || (!t.includes('sleeve') && !t.includes('sweatshirt'))));
+        if (cType !== 'tops_sleeves' && cType !== 'top' && cType !== 'tops' && cType !== 'tshirt' && cType !== 'shirt') {
+          return false;
         }
-        if (selectedTopsSub === 'sleeves') {
-          return sleeveType === 'sleeves' || clothingType === 'sleeves' || t.includes('sleeve') || t.includes('sweatshirt') || s.includes('sleeve');
+        if (selectedTopsSub === 'tops' && sType === 'sleeves') return false;
+        if (selectedTopsSub === 'sleeves' && sType !== 'sleeves') return false;
+      } else if (selectedClothingGroup === 'jeans_pants') {
+        if (cType !== 'jeans_pants' && cType !== 'jeans' && cType !== 'pants' && cType !== 'trousers') {
+          return false;
         }
-        return true;
+        if (selectedJeansSub === 'baggy' && fit !== 'baggy') return false;
+        if (selectedJeansSub === 'slim' && fit !== 'slim') return false;
+      } else if (selectedClothingGroup === 'hoodie') {
+        if (cType !== 'hoodie' && cType !== 'sweatshirt' && cType !== 'sweater' && !product.title.toLowerCase().includes('hoodie')) {
+          return false;
+        }
       }
-
-      if (selectedClothingGroup === 'jeans_pants') {
-        const isJeansOrPants =
-          clothingType === 'jeans_pants' ||
-          clothingType === 'baggy_jeans' ||
-          clothingType === 'slim_jeans' ||
-          clothingType === 'jeans' ||
-          t.includes('jean') || t.includes('pant') || t.includes('denim') || t.includes('cargo') || s.includes('jean') || s.includes('pant');
-
-        if (!isJeansOrPants) return false;
-
-        if (selectedJeansSub === 'baggy') {
-          return fit === 'baggy' || clothingType === 'baggy_jeans' || t.includes('baggy') || t.includes('loose') || t.includes('skater') || t.includes('wide') || s.includes('baggy');
-        }
-        if (selectedJeansSub === 'slim') {
-          return fit === 'slim' || clothingType === 'slim_jeans' || t.includes('slim') || t.includes('skinny') || t.includes('tapered') || s.includes('slim');
-        }
-        return true;
-      }
-
-      if (selectedClothingGroup === 'hoodie') {
-        return clothingType === 'hoodie' || t.includes('hoodie') || t.includes('sweat') || s.includes('hoodie');
-      }
-
-      return false;
     }
 
     return true;
   });
 
-  const toggleWishlist = (id: string) => {
+  const toggleWishlist = (productId: string) => {
     setWishlist((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(productId)) {
+        next.delete(productId);
+      } else {
+        next.add(productId);
+      }
       return next;
     });
   };
@@ -155,6 +129,9 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
     { id: 'sneakers', label: 'SNEAKERS', count: products.filter((p) => p.category === 'sneakers').length },
     { id: 'watches', label: 'WATCHES', count: products.filter((p) => p.category === 'watches').length },
     { id: 'bags', label: 'BAGS', count: products.filter((p) => p.category === 'bags').length },
+    { id: 'perfumes', label: 'PERFUMES', count: products.filter((p) => p.category === 'perfumes').length },
+    { id: 'accessories', label: 'ACCESSORIES', count: products.filter((p) => p.category === 'accessories').length },
+    { id: 'slides', label: 'SLIDES', count: products.filter((p) => p.category === 'slides').length },
   ];
 
   const clothingPrimaryFilters: { id: ClothingPrimaryGroup; label: string }[] = [
@@ -165,33 +142,40 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
   ];
 
   return (
-    <section style={{ background: '#0D0D0D', padding: '5.5rem 0', borderTop: '1px solid #1E1E22' }}>
+    <section style={{ background: '#0D0D0D', padding: 'clamp(3rem, 6vw, 5rem) 0', borderTop: '1px solid #1E1E22' }}>
       <div className="container-wy">
 
         {/* Section Header */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          gap: '1.75rem',
-          marginBottom: '3rem',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5 }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: '1.25rem',
+            marginBottom: '2.25rem',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
               <div style={{
-                width: '40px',
+                width: '36px',
                 height: '3px',
                 background: '#FFC800',
-                marginBottom: '0.75rem',
+                marginBottom: '0.5rem',
               }} />
 
               <h2 style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
+                fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
                 color: '#FFFFFF',
                 letterSpacing: '0.04em',
                 lineHeight: 1.05,
+                margin: 0,
               }}>
                 EXPLORE ALL RELEASES
               </h2>
@@ -204,7 +188,7 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                 alignItems: 'center',
                 gap: '0.4rem',
                 fontFamily: 'var(--font-display)',
-                fontSize: '0.9rem',
+                fontSize: '0.88rem',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 color: '#FFC800',
@@ -213,7 +197,7 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
               }}
             >
               <span>View Full Store Catalog</span>
-              <ArrowRight size={16} />
+              <ArrowRight size={15} />
             </Link>
           </div>
 
@@ -222,19 +206,28 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '1rem',
+            gap: '0.85rem',
             flexWrap: 'wrap',
             width: '100%',
             paddingBottom: selectedCategory === 'clothing' ? '0.75rem' : '0',
             borderBottom: selectedCategory === 'clothing' ? '1px solid #1E1E22' : 'none',
           }}>
             {/* Category Filter Pills */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.65rem',
-              flexWrap: 'wrap',
-            }}>
+            <div
+              className="no-scrollbar"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                overflowX: 'auto',
+                maxWidth: '100%',
+                padding: '0.25rem 0',
+                WebkitOverflowScrolling: 'touch',
+                flex: '1 1 auto',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
               {mainCategories.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
                 return (
@@ -251,30 +244,33 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.65rem 1.25rem',
-                      borderRadius: '10px',
-                      fontSize: '0.8rem',
+                      gap: '0.45rem',
+                      height: '36px',
+                      padding: '0 0.95rem',
+                      borderRadius: '100px',
+                      fontSize: '0.76rem',
                       fontWeight: 700,
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.04em',
                       textTransform: 'uppercase',
                       cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
                       transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                      background: isSelected ? '#FFC800' : '#141416',
-                      color: isSelected ? '#000000' : '#A1A1AA',
+                      background: isSelected ? '#FFC800' : '#18181B',
+                      color: isSelected ? '#000000' : '#D4D4D8',
                       border: isSelected ? '1px solid #FFC800' : '1px solid #27272A',
-                      boxShadow: isSelected ? '0 0 16px rgba(255, 200, 0, 0.25)' : 'none',
+                      boxShadow: isSelected ? '0 0 16px rgba(255, 200, 0, 0.35)' : 'none',
                     }}
                   >
                     <span>{cat.label}</span>
                     <span
                       style={{
-                        padding: '0.15rem 0.45rem',
+                        padding: '0.12rem 0.45rem',
                         borderRadius: '100px',
-                        fontSize: '0.68rem',
+                        fontSize: '0.66rem',
                         fontWeight: 700,
-                        background: isSelected ? '#000000' : '#222226',
-                        color: isSelected ? '#FFC800' : '#71717A',
+                        background: isSelected ? '#000000' : '#27272A',
+                        color: isSelected ? '#FFC800' : '#A1A1AA',
                       }}
                     >
                       {cat.count}
@@ -287,15 +283,15 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
             {/* Search Input Tab */}
             <div style={{
               position: 'relative',
-              minWidth: '240px',
-              maxWidth: '360px',
-              flex: '1 1 240px',
+              width: '100%',
+              maxWidth: '320px',
+              flex: '1 1 220px',
             }}>
               <Search
-                size={16}
+                size={15}
                 style={{
                   position: 'absolute',
-                  left: '0.9rem',
+                  left: '0.85rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   color: searchQuery ? '#FFC800' : '#71717A',
@@ -310,12 +306,12 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                 placeholder="Search releases, sneakers, tees..."
                 style={{
                   width: '100%',
-                  padding: '0.65rem 2.25rem 0.65rem 2.45rem',
+                  padding: '0.55rem 2rem 0.55rem 2.35rem',
                   background: '#141416',
                   border: searchQuery ? '1px solid #FFC800' : '1px solid #27272A',
-                  borderRadius: '10px',
+                  borderRadius: '100px',
                   color: '#FFFFFF',
-                  fontSize: '0.82rem',
+                  fontSize: '0.8rem',
                   outline: 'none',
                   transition: 'border-color 0.2s, background 0.2s',
                 }}
@@ -339,11 +335,8 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                     transform: 'translateY(-50%)',
                     background: 'none',
                     border: 'none',
-                    color: '#A1A1AA',
+                    color: '#71717A',
                     cursor: 'pointer',
-                    padding: '2px',
-                    display: 'flex',
-                    alignItems: 'center',
                   }}
                   title="Clear search"
                 >
@@ -370,12 +363,15 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
               >
                 {/* Primary Clothing Group Tabs */}
                 <div
+                  className="no-scrollbar"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
-                    flexWrap: 'wrap',
+                    gap: '0.45rem',
+                    overflowX: 'auto',
                     width: '100%',
+                    paddingBottom: '0.2rem',
+                    WebkitOverflowScrolling: 'touch',
                   }}
                 >
                   <div style={{
@@ -385,12 +381,13 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                     fontSize: '0.72rem',
                     fontWeight: 700,
                     textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
+                    letterSpacing: '0.08em',
                     color: '#FFC800',
-                    marginRight: '0.5rem',
+                    marginRight: '0.35rem',
+                    flexShrink: 0,
                   }}>
                     <Filter size={13} />
-                    <span>Filter Clothing:</span>
+                    <span>Filter:</span>
                   </div>
 
                   {clothingPrimaryFilters.map((sub) => {
@@ -400,12 +397,14 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                         key={sub.id}
                         onClick={() => setSelectedClothingGroup(sub.id)}
                         style={{
-                          padding: '0.45rem 1rem',
-                          borderRadius: '999px',
-                          fontSize: '0.75rem',
+                          padding: '0.38rem 0.85rem',
+                          borderRadius: '100px',
+                          fontSize: '0.74rem',
                           fontWeight: isSubActive ? 700 : 500,
-                          letterSpacing: '0.06em',
+                          letterSpacing: '0.04em',
                           cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0,
                           transition: 'all 0.15s',
                           background: isSubActive ? '#FFC800' : '#1A1A1E',
                           color: isSubActive ? '#000000' : '#D4D4D8',
@@ -423,19 +422,21 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                   <motion.div
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
+                    className="no-scrollbar"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.4rem',
-                      flexWrap: 'wrap',
+                      overflowX: 'auto',
                       padding: '0.45rem 0.85rem',
                       background: 'rgba(26, 26, 30, 0.65)',
                       borderRadius: '12px',
-                      border: '1px solid rgba(255, 200, 0, 0.25)',
-                      width: 'fit-content',
+                      border: '1px solid #27272A',
+                      width: '100%',
+                      WebkitOverflowScrolling: 'touch',
                     }}
                   >
-                    <span style={{ fontSize: '0.68rem', color: '#FFC800', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '0.25rem' }}>
+                    <span style={{ fontSize: '0.68rem', color: '#FFC800', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '0.25rem', whiteSpace: 'nowrap' }}>
                       Style:
                     </span>
                     {[
@@ -518,11 +519,15 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
 
         {/* Unified Product Cards Grid */}
         <motion.div
           layout
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.55, delay: 0.1 }}
           className="product-showcase-grid"
         >
           <AnimatePresence>

@@ -1,13 +1,14 @@
 'use client';
 
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { MapPin, Clock, Navigation, ArrowRight, MessageCircle } from 'lucide-react';
 
 export default function AboutSection() {
   return (
     <section style={{
       background: '#09090B',
-      padding: '5rem 0',
+      padding: 'clamp(3.5rem, 6vw, 5rem) 0',
       borderTop: '1px solid #1E1E22',
       position: 'relative',
       overflow: 'hidden',
@@ -26,19 +27,19 @@ export default function AboutSection() {
       <div className="container-wy">
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(2rem, 4vw, 3.5rem)',
           alignItems: 'center',
           maxWidth: '1100px',
           margin: '0 auto',
         }}>
           {/* LEFT: CEO Portrait Frame */}
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '420px', margin: '0 auto' }}>
             <div style={{
               position: 'relative',
               width: '100%',
-              height: 'clamp(380px, 52vh, 480px)',
-              borderRadius: '20px',
+              height: 'clamp(290px, 40vh, 380px)',
+              borderRadius: '18px',
               overflow: 'hidden',
               background: '#141416',
               border: '1px solid #27272A',
@@ -48,9 +49,8 @@ export default function AboutSection() {
                 src="/Ceo-about.jpeg"
                 alt="Daniel Mante — CEO & Founder of Wear Yung Collections"
                 fill
-                sizes="(max-width: 768px) 100vw, 500px"
+                sizes="(max-width: 768px) 100vw, 420px"
                 style={{ objectFit: 'cover' }}
-                priority
               />
 
               {/* Gradient Scrim at bottom */}
@@ -61,25 +61,38 @@ export default function AboutSection() {
                 pointerEvents: 'none',
               }} />
 
-              {/* CEO Badge Overlay */}
-              <div style={{
-                position: 'absolute',
-                bottom: '1.25rem',
-                left: '1.25rem',
-                right: '1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0.85rem 1.15rem',
-                borderRadius: '12px',
-                background: 'rgba(0, 0, 0, 0.75)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 200, 0, 0.3)',
-              }}>
+              {/* CEO Badge Overlay with Floating Animation */}
+              <motion.div
+                animate={{
+                  y: [0, -6, 0],
+                }}
+                transition={{
+                  duration: 3.5,
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                  ease: 'easeInOut',
+                }}
+                style={{
+                  position: 'absolute',
+                  bottom: 'clamp(0.85rem, 2vw, 1.15rem)',
+                  left: 'clamp(0.85rem, 2vw, 1.15rem)',
+                  right: 'clamp(0.85rem, 2vw, 1.15rem)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '14px',
+                  background: 'rgba(0, 0, 0, 0.82)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 200, 0, 0.35)',
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 200, 0, 0.15)',
+                }}
+              >
                 <div>
                   <h4 style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: '1.1rem',
+                    fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
                     color: '#FFFFFF',
                     letterSpacing: '0.04em',
                     margin: '0 0 0.15rem',
@@ -88,7 +101,7 @@ export default function AboutSection() {
                     DANIEL MANTE
                   </h4>
                   <p style={{
-                    fontSize: '0.72rem',
+                    fontSize: 'clamp(0.62rem, 1.2vw, 0.72rem)',
                     color: '#FFC800',
                     fontWeight: 700,
                     letterSpacing: '0.1em',
@@ -98,7 +111,7 @@ export default function AboutSection() {
                     CEO & Founder &bull; Wear Yung Collections
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
 

@@ -1,87 +1,226 @@
+'use client';
+
+import { ShieldCheck, Truck, Crown, Headset, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+
 export default function ValueProps() {
   const valueProps = [
     {
-      icon: (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </svg>
-      ),
+      num: '01',
+      icon: <ShieldCheck size={28} strokeWidth={2.2} />,
       title: '100% AUTHENTIC',
-      desc: 'Every product is sourced and verified for authenticity.',
+      badge: 'Guaranteed',
+      desc: 'Every garment, sneaker, and timepiece is hand-inspected and verified for authenticity.',
     },
     {
-      icon: (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="1" y="3" width="15" height="13" rx="2" />
-          <path d="M16 8h4l3 3v5h-7V8z" />
-          <circle cx="5.5" cy="18.5" r="2.5" />
-          <circle cx="18.5" cy="18.5" r="2.5" />
-        </svg>
-      ),
-      title: 'FAST DELIVERY',
-      desc: 'Quick, reliable shipping across Ghana & Nationwide.',
+      num: '02',
+      icon: <Truck size={28} strokeWidth={2.2} />,
+      title: 'FAST DISPATCH',
+      badge: 'Nationwide',
+      desc: 'Rapid and discreet express shipping across Koforidua, Accra, Kumasi, and nationwide.',
     },
     {
-      icon: (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-          <polyline points="17 6 23 6 23 12" />
-        </svg>
-      ),
+      num: '03',
+      icon: <Crown size={28} strokeWidth={2.2} />,
       title: 'PREMIUM QUALITY',
-      desc: 'Carefully curated pieces that last and impress.',
+      badge: 'Curated',
+      desc: 'Heavyweight cottons, custom cuts, and durable luxury tailoring that last and turn heads.',
     },
     {
-      icon: (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-        </svg>
-      ),
-      title: '24/7 SUPPORT',
-      desc: 'Our team is always here to help you.',
+      num: '04',
+      icon: <Headset size={28} strokeWidth={2.2} />,
+      title: 'VIP SUPPORT',
+      badge: 'Always Live',
+      desc: 'Direct contact with Daniel and our styling staff on WhatsApp for sizing and delivery.',
     },
   ];
 
   return (
-    <section className="section-wy">
+    <section
+      style={{
+        background: '#09090B',
+        padding: 'clamp(3.5rem, 6vw, 5.5rem) 0',
+        borderTop: '1px solid #1E1E22',
+        borderBottom: '1px solid #1E1E22',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Subtle background ambient gold glow */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '-20%',
+          right: '10%',
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(255, 200, 0, 0.05) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+
       <div className="container-wy">
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto clamp(2rem, 4vw, 3.25rem)' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '100px',
+              background: 'rgba(255, 200, 0, 0.08)',
+              border: '1px solid rgba(255, 200, 0, 0.28)',
+              color: '#FFC800',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginBottom: '0.85rem',
+            }}
+          >
+            <span>The Wear Yung Standard</span>
+          </div>
+
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-              color: 'var(--wy-text)',
+              fontSize: 'clamp(2.1rem, 5vw, 3.5rem)',
+              color: '#FFFFFF',
+              letterSpacing: '0.04em',
+              lineHeight: 1.05,
+              marginBottom: '0.65rem',
+              textTransform: 'uppercase',
             }}
           >
-            WHY WEAR YUNG?
+            WHY WEAR <span style={{ color: '#FFC800' }}>YUNG?</span>
           </h2>
+
+          <p
+            style={{
+              color: '#A1A1AA',
+              fontSize: 'clamp(0.85rem, 1.4vw, 1rem)',
+              lineHeight: 1.6,
+              margin: 0,
+            }}
+          >
+            Authenticity, premium cuts, and white-glove customer service with every order.
+          </p>
         </div>
 
+        {/* 4-Card Grid on Desktop / 2x2 Grid on Mobile */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '1.5rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(150px, 42vw, 260px), 1fr))',
+            gap: 'clamp(0.75rem, 2vw, 1.5rem)',
           }}
         >
-          {valueProps.map((feature) => (
-            <div key={feature.title} className="feature-card">
-              <div style={{ color: 'var(--wy-yellow)', marginBottom: '1rem' }}>{feature.icon}</div>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '1.1rem',
-                  letterSpacing: '0.08em',
-                  marginBottom: '0.5rem',
-                  color: 'var(--wy-text)',
-                }}
-              >
-                {feature.title}
-              </h3>
-              <p style={{ color: 'var(--wy-muted)', fontSize: '0.875rem', lineHeight: 1.7 }}>
-                {feature.desc}
-              </p>
-            </div>
+          {valueProps.map((feature, idx) => (
+            <motion.div
+              key={feature.title}
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.25 }}
+              style={{
+                position: 'relative',
+                background: 'linear-gradient(180deg, rgba(24, 24, 28, 0.75) 0%, rgba(14, 14, 18, 0.95) 100%)',
+                borderRadius: '18px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                padding: 'clamp(1.15rem, 2.5vw, 1.75rem) clamp(1rem, 2vw, 1.35rem)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                boxShadow: '0 12px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                transition: 'border-color 0.3s, box-shadow 0.3s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 200, 0, 0.45)';
+                e.currentTarget.style.boxShadow = '0 18px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 200, 0, 0.12)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)';
+              }}
+            >
+              {/* Card Header: Icon + Number & Badge */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.15rem' }}>
+                {/* Glowing Icon Container */}
+                <div
+                  style={{
+                    width: 'clamp(44px, 5vw, 52px)',
+                    height: 'clamp(44px, 5vw, 52px)',
+                    borderRadius: '14px',
+                    background: 'rgba(255, 200, 0, 0.12)',
+                    border: '1px solid rgba(255, 200, 0, 0.3)',
+                    color: '#FFC800',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 15px rgba(255, 200, 0, 0.18)',
+                  }}
+                >
+                  {feature.icon}
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '1.25rem',
+                      color: 'rgba(255, 255, 255, 0.18)',
+                      letterSpacing: '0.05em',
+                      display: 'block',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {feature.num}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.62rem',
+                      fontWeight: 700,
+                      color: '#FFC800',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      background: 'rgba(255, 200, 0, 0.1)',
+                      padding: '0.15rem 0.45rem',
+                      borderRadius: '100px',
+                      display: 'inline-block',
+                      marginTop: '0.25rem',
+                    }}
+                  >
+                    {feature.badge}
+                  </span>
+                </div>
+              </div>
+
+              {/* Title & Description */}
+              <div>
+                <h3
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
+                    letterSpacing: '0.06em',
+                    color: '#FFFFFF',
+                    margin: '0 0 0.45rem',
+                    textTransform: 'uppercase',
+                    lineHeight: 1.15,
+                  }}
+                >
+                  {feature.title}
+                </h3>
+                <p
+                  style={{
+                    color: '#A1A1AA',
+                    fontSize: 'clamp(0.78rem, 1.2vw, 0.88rem)',
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  {feature.desc}
+                </p>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>

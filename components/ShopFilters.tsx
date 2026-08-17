@@ -2,7 +2,9 @@
 
 import { useCallback, useState, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { ALL_CATEGORIES, CATEGORY_LABELS } from '@/types/ecommerce';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, SlidersHorizontal, X, ArrowUpDown, DollarSign, Check, RotateCcw } from 'lucide-react';
+import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 
 export default function ShopFilters() {
   const router = useRouter();
@@ -17,12 +19,22 @@ export default function ShopFilters() {
 
   const [minPrice, setMinPrice] = useState(currentMinPrice);
   const [maxPrice, setMaxPrice] = useState(currentMaxPrice);
+  const [searchInput, setSearchInput] = useState(currentQuery);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
-  // Sync state with URL params on navigation
+  // Sync internal state when URL search params change
   useEffect(() => {
     setMinPrice(currentMinPrice);
     setMaxPrice(currentMaxPrice);
-  }, [currentMinPrice, currentMaxPrice]);
+    setSearchInput(currentQuery);
+  }, [currentMinPrice, currentMaxPrice, currentQuery]);
+
+  const activeFilterCount = [
+    Boolean(currentCategory),
+    Boolean(currentQuery),
+    currentSort !== 'newest',
+    Boolean(currentMinPrice || currentMaxPrice),
+  ].filter(Boolean).length;
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -37,15 +49,18 @@ export default function ShopFilters() {
     [searchParams]
   );
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const q = formData.get('q') as string;
-    router.push(`${pathname}?${createQueryString('q', q)}`);
+    router.push(`${pathname}?${createQueryString('q', searchInput.trim())}`);
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    router.push(`${pathname}?${createQueryString('q', '')}`);
   };
 
   const applyPriceFilter = () => {
-    let params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams.toString());
     if (minPrice) params.set('minPrice', minPrice);
     else params.delete('minPrice');
 
@@ -53,201 +68,697 @@ export default function ShopFilters() {
     else params.delete('maxPrice');
 
     router.push(`${pathname}?${params.toString()}`);
+    setIsMobileDrawerOpen(false);
   };
 
-  const clearFilters = () => {
-    router.push(pathname); // Clears all search params
+  const setCategory = (cat: string) => {
+    router.push(`${pathname}?${createQueryString('category', cat)}`);
+  };
+
+  const setSort = (sortValue: string) => {
+    router.push(`${pathname}?${createQueryString('sort', sortValue)}`);
+  };
+
+  const clearAllFilters = () => {
+    setMinPrice('');
+    setMaxPrice('');
+    setSearchInput('');
+    router.push(pathname);
+    setIsMobileDrawerOpen(false);
   };
 
   return (
-    <aside style={{ minWidth: '220px', flex: '0 0 220px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-
-      {/* Search */}
-      <div>
-        <form onSubmit={handleSearch}>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="text"
-              name="q"
-              defaultValue={currentQuery}
-              placeholder="Search drops..."
-              className="input-wy"
-              style={{ paddingRight: '2.5rem', width: '100%' }}
-            />
-            <button type="submit" style={{
-              position: 'absolute',
-              right: '0.75rem',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              color: 'var(--wy-muted)',
-              cursor: 'pointer',
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-              </svg>
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Sort By */}
-      <div>
-        <h3 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '0.85rem',
-          letterSpacing: '0.12em',
-          color: 'var(--wy-muted)',
-          marginBottom: '1rem',
-          textTransform: 'uppercase',
-        }}>
-          Sort By
-        </h3>
-        <select
-          className="input-wy"
-          value={currentSort}
-          onChange={(e) => router.push(`${pathname}?${createQueryString('sort', e.target.value)}`)}
-          style={{ width: '100%', cursor: 'pointer' }}
+    <>
+      {/* ─── 1. MOBILE TOP CONTROLS (Horizontal Category Rail + Search & Filter Bar) ─── */}
+      <div className="w-full lg:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.25rem' }}>
+        {/* Horizontal Category Scroll Rail */}
+        <div
+          className="no-scrollbar"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            overflowX: 'auto',
+            width: '100%',
+            padding: '0.2rem 0',
+            WebkitOverflowScrolling: 'touch',
+          }}
         >
-          <option value="newest">Newest Drops</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-        </select>
-      </div>
-
-      {/* Categories */}
-      <div>
-        <h3 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '0.85rem',
-          letterSpacing: '0.12em',
-          color: 'var(--wy-muted)',
-          marginBottom: '1rem',
-          textTransform: 'uppercase',
-        }}>
-          Categories
-        </h3>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           <button
-            onClick={() => router.push(`${pathname}?${createQueryString('category', '')}`)}
+            type="button"
+            onClick={() => setCategory('')}
             style={{
-              padding: '0.6rem 0.75rem',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.875rem',
-              fontWeight: !currentCategory ? 700 : 500,
-              color: !currentCategory ? 'var(--wy-yellow)' : 'var(--wy-muted)',
-              background: !currentCategory ? 'rgba(255,200,0,0.1)' : 'transparent',
-              transition: 'all 150ms',
-              textAlign: 'left',
-              border: 'none',
-              cursor: 'pointer',
-              letterSpacing: '0.06em',
+              padding: '0.45rem 1rem',
+              borderRadius: '100px',
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              background: !currentCategory ? 'var(--wy-yellow)' : '#18181B',
+              color: !currentCategory ? '#000000' : '#A1A1AA',
+              border: !currentCategory ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
+              boxShadow: !currentCategory ? '0 0 12px rgba(255, 200, 0, 0.3)' : 'none',
             }}
           >
-            All Products
+            All Drops
           </button>
-          {ALL_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => router.push(`${pathname}?${createQueryString('category', cat)}`)}
+
+          {ALL_CATEGORIES.map((cat) => {
+            const isActive = currentCategory === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategory(cat)}
+                style={{
+                  padding: '0.45rem 0.95rem',
+                  borderRadius: '100px',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  background: isActive ? 'var(--wy-yellow)' : '#18181B',
+                  color: isActive ? '#000000' : '#A1A1AA',
+                  border: isActive ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
+                  boxShadow: isActive ? '0 0 12px rgba(255, 200, 0, 0.3)' : 'none',
+                }}
+              >
+                {CATEGORY_LABELS[cat]}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mobile Search Input & Filter Button */}
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', width: '100%' }}>
+          <form onSubmit={handleSearchSubmit} style={{ flex: 1, position: 'relative' }}>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search drops, sneakers, hoodies..."
               style={{
-                padding: '0.6rem 0.75rem',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '0.875rem',
-                fontWeight: currentCategory === cat ? 700 : 500,
-                color: currentCategory === cat ? 'var(--wy-yellow)' : 'var(--wy-muted)',
-                background: currentCategory === cat ? 'rgba(255,200,0,0.1)' : 'transparent',
-                transition: 'all 150ms',
-                textAlign: 'left',
+                width: '100%',
+                height: '42px',
+                padding: '0 2.4rem 0 2.25rem',
+                background: '#141416',
+                border: '1px solid #27272A',
+                borderRadius: '10px',
+                color: '#FFFFFF',
+                fontSize: '0.82rem',
+                outline: 'none',
+              }}
+            />
+            <Search
+              size={15}
+              style={{
+                position: 'absolute',
+                left: '0.75rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#71717A',
+                pointerEvents: 'none',
+              }}
+            />
+            {searchInput && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                style={{
+                  position: 'absolute',
+                  right: '0.75rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#A1A1AA',
+                  cursor: 'pointer',
+                  padding: '2px',
+                }}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </form>
+
+          {/* Filter & Sort Drawer Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setIsMobileDrawerOpen(true)}
+            style={{
+              height: '42px',
+              padding: '0 0.85rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              background: activeFilterCount > 0 ? 'rgba(255, 200, 0, 0.15)' : '#141416',
+              border: activeFilterCount > 0 ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
+              borderRadius: '10px',
+              color: activeFilterCount > 0 ? 'var(--wy-yellow)' : '#FFFFFF',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <SlidersHorizontal size={15} />
+            <span>Filter</span>
+            {activeFilterCount > 0 && (
+              <span
+                style={{
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  background: 'var(--wy-yellow)',
+                  color: '#000000',
+                  fontSize: '0.65rem',
+                  fontWeight: 900,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ─── 2. DESKTOP SIDEBAR PANEL (Visible on lg screens ≥ 1024px) ─── */}
+      <aside
+        className="hidden lg:flex"
+        style={{
+          width: '260px',
+          flexShrink: 0,
+          flexDirection: 'column',
+          gap: '1.75rem',
+          background: '#121215',
+          border: '1px solid #27272A',
+          borderRadius: '16px',
+          padding: '1.5rem',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+          position: 'sticky',
+          top: '90px',
+        }}
+      >
+        {/* Search */}
+        <div>
+          <h3
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.75rem',
+              letterSpacing: '0.14em',
+              color: '#A1A1AA',
+              marginBottom: '0.65rem',
+              textTransform: 'uppercase',
+              fontWeight: 800,
+            }}
+          >
+            Search Collection
+          </h3>
+          <form onSubmit={handleSearchSubmit} style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search drops..."
+              style={{
+                width: '100%',
+                height: '40px',
+                padding: '0 2.2rem 0 2.2rem',
+                background: '#18181B',
+                border: '1px solid #27272A',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                fontSize: '0.82rem',
+                outline: 'none',
+              }}
+            />
+            <Search
+              size={14}
+              style={{
+                position: 'absolute',
+                left: '0.75rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#71717A',
+                pointerEvents: 'none',
+              }}
+            />
+            {searchInput && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                style={{
+                  position: 'absolute',
+                  right: '0.65rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#A1A1AA',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={13} />
+              </button>
+            )}
+          </form>
+        </div>
+
+        {/* Sort Order */}
+        <div>
+          <h3
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.75rem',
+              letterSpacing: '0.14em',
+              color: '#A1A1AA',
+              marginBottom: '0.65rem',
+              textTransform: 'uppercase',
+              fontWeight: 800,
+            }}
+          >
+            Sort By
+          </h3>
+          <select
+            value={currentSort}
+            onChange={(e) => setSort(e.target.value)}
+            style={{
+              width: '100%',
+              height: '40px',
+              padding: '0 0.85rem',
+              background: '#18181B',
+              border: '1px solid #27272A',
+              borderRadius: '8px',
+              color: '#FFFFFF',
+              fontSize: '0.82rem',
+              outline: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="newest">Newest Releases</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+
+        {/* Categories List */}
+        <div>
+          <h3
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.75rem',
+              letterSpacing: '0.14em',
+              color: '#A1A1AA',
+              marginBottom: '0.65rem',
+              textTransform: 'uppercase',
+              fontWeight: 800,
+            }}
+          >
+            Categories
+          </h3>
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <button
+              type="button"
+              onClick={() => setCategory('')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.55rem 0.85rem',
+                borderRadius: '8px',
+                fontSize: '0.82rem',
+                fontWeight: !currentCategory ? 800 : 500,
+                color: !currentCategory ? '#000000' : '#D4D4D8',
+                background: !currentCategory ? 'var(--wy-yellow)' : 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
+                textAlign: 'left',
+                transition: 'all 0.15s ease',
               }}
             >
-              {CATEGORY_LABELS[cat]}
+              <span>All Products</span>
+              {!currentCategory && <Check size={14} strokeWidth={3} />}
             </button>
-          ))}
-        </nav>
-      </div>
 
-      {/* Price Range */}
-      <div>
-        <h3 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '0.85rem',
-          letterSpacing: '0.12em',
-          color: 'var(--wy-muted)',
-          marginBottom: '1rem',
-          textTransform: 'uppercase',
-        }}>
-          Price Range (GH₵)
-        </h3>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '1rem' }}>
-          <input
-            type="number"
-            placeholder="Min"
-            className="input-wy"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
-          <span style={{ color: 'var(--wy-muted)' }}>-</span>
-          <input
-            type="number"
-            placeholder="Max"
-            className="input-wy"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
+            {ALL_CATEGORIES.map((cat) => {
+              const isActive = currentCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategory(cat)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.55rem 0.85rem',
+                    borderRadius: '8px',
+                    fontSize: '0.82rem',
+                    fontWeight: isActive ? 800 : 500,
+                    color: isActive ? '#000000' : '#D4D4D8',
+                    background: isActive ? 'var(--wy-yellow)' : 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span>{CATEGORY_LABELS[cat]}</span>
+                  {isActive && <Check size={14} strokeWidth={3} />}
+                </button>
+              );
+            })}
+          </nav>
         </div>
-        <button
-          onClick={applyPriceFilter}
-          style={{
-            width: '100%',
-            padding: '0.6rem',
-            background: 'var(--wy-surface)',
-            border: '1px solid var(--wy-border)',
-            color: 'var(--wy-text)',
-            borderRadius: 'var(--radius-sm)',
-            fontFamily: 'var(--font-display)',
-            letterSpacing: '0.06em',
-            cursor: 'pointer',
-            transition: 'all 150ms'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.borderColor = 'var(--wy-yellow)';
-            e.currentTarget.style.color = 'var(--wy-yellow)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.borderColor = 'var(--wy-border)';
-            e.currentTarget.style.color = 'var(--wy-text)';
-          }}
-        >
-          APPLY
-        </button>
-      </div>
 
-      {(currentCategory || currentQuery || currentMinPrice || currentMaxPrice || currentSort !== 'newest') && (
-        <button
-          onClick={clearFilters}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--wy-danger)',
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            textAlign: 'center',
-            marginTop: '-1rem'
-          }}
-        >
-          Clear all filters
-        </button>
-      )}
-    </aside>
+        {/* Price Range */}
+        <div>
+          <h3
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.75rem',
+              letterSpacing: '0.14em',
+              color: '#A1A1AA',
+              marginBottom: '0.65rem',
+              textTransform: 'uppercase',
+              fontWeight: 800,
+            }}
+          >
+            Price Range (GH₵)
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.45rem', marginBottom: '0.65rem' }}>
+            <input
+              type="number"
+              placeholder="Min"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              style={{
+                width: '100%',
+                height: '38px',
+                padding: '0 0.65rem',
+                background: '#18181B',
+                border: '1px solid #27272A',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                fontSize: '0.82rem',
+                outline: 'none',
+              }}
+            />
+            <input
+              type="number"
+              placeholder="Max"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              style={{
+                width: '100%',
+                height: '38px',
+                padding: '0 0.65rem',
+                background: '#18181B',
+                border: '1px solid #27272A',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                fontSize: '0.82rem',
+                outline: 'none',
+              }}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={applyPriceFilter}
+            style={{
+              width: '100%',
+              height: '38px',
+              borderRadius: '8px',
+              background: '#1E1E24',
+              border: '1px solid #3F3F46',
+              color: '#FFFFFF',
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--wy-yellow)';
+              e.currentTarget.style.borderColor = 'var(--wy-yellow)';
+              e.currentTarget.style.color = '#000000';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#1E1E24';
+              e.currentTarget.style.borderColor = '#3F3F46';
+              e.currentTarget.style.color = '#FFFFFF';
+            }}
+          >
+            Apply Range
+          </button>
+        </div>
+
+        {/* Reset All Filters Button */}
+        {activeFilterCount > 0 && (
+          <button
+            type="button"
+            onClick={clearAllFilters}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              width: '100%',
+              padding: '0.6rem 0',
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: '8px',
+              color: '#EF4444',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
+            <RotateCcw size={13} />
+            <span>Reset All Filters</span>
+          </button>
+        )}
+      </aside>
+
+      {/* ─── 3. MOBILE FILTER & SORT BOTTOM SHEET / MODAL ─── */}
+      <AnimatePresence>
+        {isMobileDrawerOpen && (
+          <>
+            {/* Backdrop Scrim */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileDrawerOpen(false)}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(6px)',
+                zIndex: 100,
+              }}
+            />
+
+            {/* Bottom Drawer Modal */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 280 }}
+              style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: '#121215',
+                borderTop: '1px solid #27272A',
+                borderTopLeftRadius: '20px',
+                borderTopRightRadius: '20px',
+                padding: '1.5rem 1.25rem 2.5rem',
+                zIndex: 101,
+                maxHeight: '85vh',
+                overflowY: 'auto',
+                boxShadow: '0 -10px 40px rgba(0,0,0,0.8)',
+              }}
+            >
+              {/* Drawer Top Handle */}
+              <div style={{ width: '36px', height: '4px', borderRadius: '4px', background: '#3F3F46', margin: '0 auto 1.25rem' }} />
+
+              {/* Drawer Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <SlidersHorizontal size={18} color="var(--wy-yellow)" />
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', color: '#FFFFFF', letterSpacing: '0.04em', margin: 0 }}>
+                    Filter & Sort Releases
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  style={{
+                    background: '#1E1E24',
+                    border: '1px solid #27272A',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#A1A1AA',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Sort Order Options */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.65rem' }}>
+                  Sort Order
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.45rem' }}>
+                  {[
+                    { id: 'newest', label: 'Newest Drops First' },
+                    { id: 'price-asc', label: 'Price: Low to High' },
+                    { id: 'price-desc', label: 'Price: High to Low' },
+                  ].map((s) => {
+                    const isSelected = currentSort === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setSort(s.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.65rem 1rem',
+                          borderRadius: '10px',
+                          background: isSelected ? 'rgba(255, 200, 0, 0.15)' : '#18181B',
+                          border: isSelected ? '1px solid var(--wy-yellow)' : '1px solid #27272A',
+                          color: isSelected ? 'var(--wy-yellow)' : '#FFFFFF',
+                          fontSize: '0.82rem',
+                          fontWeight: isSelected ? 800 : 500,
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                        }}
+                      >
+                        <span>{s.label}</span>
+                        {isSelected && <Check size={16} strokeWidth={2.5} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Price Range Filter */}
+              <div style={{ marginBottom: '1.75rem' }}>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.65rem' }}>
+                  Price Range (GH₵)
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem', marginBottom: '0.85rem' }}>
+                  <input
+                    type="number"
+                    placeholder="Min (e.g. 100)"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: '42px',
+                      padding: '0 0.85rem',
+                      background: '#18181B',
+                      border: '1px solid #27272A',
+                      borderRadius: '10px',
+                      color: '#FFFFFF',
+                      fontSize: '0.85rem',
+                      outline: 'none',
+                    }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max (e.g. 800)"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    style={{
+                      width: '100%',
+                      height: '42px',
+                      padding: '0 0.85rem',
+                      background: '#18181B',
+                      border: '1px solid #27272A',
+                      borderRadius: '10px',
+                      color: '#FFFFFF',
+                      fontSize: '0.85rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  style={{
+                    flex: 1,
+                    height: '46px',
+                    borderRadius: '10px',
+                    background: '#1E1E24',
+                    border: '1px solid #27272A',
+                    color: '#D4D4D8',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Reset
+                </button>
+
+                <button
+                  type="button"
+                  onClick={applyPriceFilter}
+                  style={{
+                    flex: 2,
+                    height: '46px',
+                    borderRadius: '10px',
+                    background: 'var(--wy-yellow)',
+                    border: 'none',
+                    color: '#000000',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.88rem',
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    boxShadow: '0 4px 20px rgba(255, 200, 0, 0.3)',
+                  }}
+                >
+                  Show Results
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import CustomerDashboard from '@/components/account/CustomerDashboard';
 
+export const runtime = 'edge';
+
 export const metadata = {
   title: 'Customer Account | WEAR YUNG',
   description: 'Manage your WEAR YUNG profile, orders, and VIP drop access.',

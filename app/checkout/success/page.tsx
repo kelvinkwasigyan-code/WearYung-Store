@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: 'Order Confirmed',
   description: 'Your WEAR YUNG order has been placed successfully.',

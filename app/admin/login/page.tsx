@@ -1,5 +1,7 @@
 'use client';
 
+export const runtime = 'edge';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -152,7 +154,7 @@ export default function AdminLoginPage() {
           background: '#121214',
           border: '1px solid #27272A',
           borderRadius: '16px',
-          padding: '2.25rem 2rem',
+          padding: 'clamp(1.5rem, 4vw, 2.25rem) clamp(1.2rem, 3.5vw, 2rem)',
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
         }}>
           {error && (
@@ -197,99 +199,103 @@ export default function AdminLoginPage() {
             <div>
               <label style={{
                 display: 'block',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: 700,
                 color: '#A1A1AA',
-                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                marginBottom: '0.5rem',
+                letterSpacing: '0.08em',
+                marginBottom: '0.45rem',
               }}>
-                Admin Email ID
+                Administrator Email
               </label>
               <div style={{ position: 'relative' }}>
-                <div style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#71717A',
-                  pointerEvents: 'none',
-                }}>
-                  <Mail size={16} />
-                </div>
                 <input
                   type="email"
                   required
+                  placeholder="admin@wearyung.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@wearyung.com"
                   style={{
                     width: '100%',
-                    padding: '0.85rem 1rem 0.85rem 2.5rem',
+                    height: '48px',
+                    padding: '0 1rem 0 2.6rem',
                     background: '#18181B',
                     border: '1px solid #27272A',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     color: '#FFFFFF',
-                    fontSize: '0.9rem',
+                    fontSize: '16px',
                     outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#FFC800'}
-                  onBlur={(e) => e.target.style.borderColor = '#27272A'}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#FFC800'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = '#27272A'}
+                />
+                <Mail
+                  size={16}
+                  style={{
+                    position: 'absolute',
+                    left: '0.85rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#71717A',
+                    pointerEvents: 'none',
+                  }}
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: '#A1A1AA',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                marginBottom: '0.5rem',
-              }}>
-                Security Key / Password
-              </label>
-              <div style={{ position: 'relative' }}>
-                <div style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#71717A',
-                  pointerEvents: 'none',
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                <label style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: '#A1A1AA',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
                 }}>
-                  <Lock size={16} />
-                </div>
+                  Security Key / Password
+                </label>
+              </div>
+              <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
                   style={{
                     width: '100%',
-                    padding: '0.85rem 2.5rem 0.85rem 2.5rem',
+                    height: '48px',
+                    padding: '0 2.75rem 0 2.6rem',
                     background: '#18181B',
                     border: '1px solid #27272A',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     color: '#FFFFFF',
-                    fontSize: '0.9rem',
+                    fontSize: '16px',
                     outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#FFC800'}
-                  onBlur={(e) => e.target.style.borderColor = '#27272A'}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#FFC800'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = '#27272A'}
+                />
+                <Lock
+                  size={16}
+                  style={{
+                    position: 'absolute',
+                    left: '0.85rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#71717A',
+                    pointerEvents: 'none',
+                  }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
                     position: 'absolute',
-                    right: '12px',
+                    right: '0.85rem',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     background: 'none',
@@ -298,7 +304,7 @@ export default function AdminLoginPage() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '4px',
+                    justifyContent: 'center',
                   }}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
