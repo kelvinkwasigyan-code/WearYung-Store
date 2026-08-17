@@ -5,6 +5,7 @@ import MobileBottomNav from '@/components/layout/MobileBottomNav';
 import MobileScrollProgress from '@/components/MobileScrollProgress';
 import PWARegister from '@/components/PWARegister';
 import { CartProvider } from '@/context/CartContext';
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartDrawer />
           <MobileBottomNav />
           <PWARegister />
+          <Analytics />
         </CartProvider>
       </body>
     </html>
