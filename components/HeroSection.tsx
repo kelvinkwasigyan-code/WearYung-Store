@@ -114,7 +114,7 @@ export default function HeroSection() {
           backgroundSize: 'cover',
           backgroundPosition: 'center 35%',
           transform: 'scale(1.02)',
-          filter: 'brightness(0.5) contrast(1.1)',
+          filter: 'brightness(0.48) contrast(1.15)',
           transition: 'transform 8s ease-out',
         }}
       />
@@ -177,8 +177,8 @@ export default function HeroSection() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                background: 'rgba(255,200,0,0.12)',
-                border: '1px solid rgba(255,200,0,0.35)',
+                background: 'rgba(255, 200, 0, 0.12)',
+                border: '1px solid rgba(255, 200, 0, 0.35)',
                 backdropFilter: 'blur(8px)',
                 borderRadius: '100px',
                 padding: '0.35rem 0.9rem',
@@ -245,13 +245,14 @@ export default function HeroSection() {
               </AnimatePresence>
             </div>
 
-            {/* Subtitle */}
+            {/* Subtitle with clean responsive typography */}
             <p
               style={{
                 color: '#D4D4D8',
-                fontSize: 'clamp(0.85rem, 1.8vw, 1.02rem)',
+                fontSize: 'clamp(0.85rem, 1.5vw, 0.98rem)',
                 lineHeight: 1.6,
-                maxWidth: '540px',
+                maxWidth: '520px',
+                margin: '0.25rem 0 1.25rem 0',
                 textShadow: '0 2px 10px rgba(0,0,0,0.8)',
               }}
             >
@@ -259,36 +260,35 @@ export default function HeroSection() {
               Curated for those who move different.
             </p>
 
-            {/* Sharp Transparent Luxury CTA Buttons */}
-            <div className="hero-cta-wrap" style={{ display: 'flex', gap: '0.65rem', width: '100%', maxWidth: '440px', alignItems: 'center' }}>
+            {/* High-Contrast Luxury Pill CTA Buttons */}
+            <div className="hero-cta-wrap" style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '440px', alignItems: 'center', flexWrap: 'wrap' }}>
               <Link
                 href="/shop"
                 id="hero-shop-btn"
+                className="group transition-all duration-200 hover:scale-105 active:scale-95"
                 style={{
-                  flex: 1,
+                  flex: '1 1 180px',
                   height: '48px',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.45rem',
-                  padding: '0 1.25rem',
-                  borderRadius: '2px',
-                  background: 'transparent',
-                  border: '1.5px solid #FFC800',
-                  color: '#FFC800',
+                  gap: '0.5rem',
+                  padding: '0 1.5rem',
+                  borderRadius: '100px',
+                  background: '#FFC800',
+                  color: '#000000',
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(1rem, 2vw, 1.18rem)',
-                  fontWeight: 800,
-                  letterSpacing: '0.06em',
+                  fontSize: 'clamp(1rem, 2vw, 1.15rem)',
+                  fontWeight: 900,
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
-                  boxShadow: '0 0 15px rgba(255, 200, 0, 0.15)',
-                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 22px rgba(255, 200, 0, 0.35)',
                   whiteSpace: 'nowrap',
                 }}
               >
                 <span>Shop Now</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </Link>
@@ -296,24 +296,25 @@ export default function HeroSection() {
               <Link
                 href="/shop?category=sneakers"
                 id="hero-sneakers-btn"
+                className="transition-all duration-200 hover:bg-white/15 hover:border-white/40 hover:scale-105 active:scale-95"
                 style={{
-                  flex: 1,
+                  flex: '1 1 180px',
                   height: '48px',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '0 1.25rem',
-                  borderRadius: '2px',
-                  background: 'transparent',
-                  border: '1.5px solid rgba(255, 255, 255, 0.35)',
+                  padding: '0 1.5rem',
+                  borderRadius: '100px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.25)',
                   color: '#FFFFFF',
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(1rem, 2vw, 1.18rem)',
+                  fontSize: 'clamp(1rem, 2vw, 1.15rem)',
                   fontWeight: 800,
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
-                  transition: 'all 0.2s ease',
+                  backdropFilter: 'blur(10px)',
                   whiteSpace: 'nowrap',
                 }}
               >
