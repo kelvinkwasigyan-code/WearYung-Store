@@ -154,7 +154,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                 src={currentImage}
                 alt={product.title}
                 fill
-                priority
+                loading="eager"
                 sizes="(max-width: 768px) 100vw, 55vw"
                 style={{ 
                   objectFit: 'cover',

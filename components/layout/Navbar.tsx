@@ -196,7 +196,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 width={260}
                 height={80}
                 style={{ objectFit: 'contain', maxHeight: 'clamp(42px, 8vw, 66px)', width: 'auto', borderRadius: '8px' }}
-                priority
+                loading="eager"
               />
               <span style={{ 
                 fontFamily: 'var(--font-display)', 

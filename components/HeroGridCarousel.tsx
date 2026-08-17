@@ -232,7 +232,7 @@ export default function HeroGridCarousel({
                   transition: 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
                 className="hover:scale-110"
-                priority={index === 0}
+                loading={index === 0 ? 'eager' : 'lazy'}
               />
 
               {/* Top Left Tag Chip */}

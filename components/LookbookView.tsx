@@ -165,7 +165,7 @@ export default function LookbookView() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      priority={index === 0}
+                      loading={index === 0 ? 'eager' : 'lazy'}
                     />
 
                     {/* Gradient Overlay */}
