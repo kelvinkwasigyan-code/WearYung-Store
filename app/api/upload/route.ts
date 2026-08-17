@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     // 1. Verify user is authenticated and authorized as admin
@@ -30,41 +33,52 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden. Admin privileges required.' }, { status: 403 });
     }
 
-    // 2. Cleanly extract FormData and File
-    let formData: FormData;
-    try {
-      formData = await request.formData();
-    } catch (err: any) {
-      console.error('[Upload API] FormData parse error:', err);
-      return NextResponse.json({ error: 'Failed to parse body as FormData' }, { status: 400 });
-    }
+    // 2. Extract File from FormData or raw body
+    let file: File | null = null;
 
-    const file = formData.get('file') as File | null;
+    try {
+      const formData = await request.formData();
+      file = formData.get('file') as File | null;
+    } catch (formErr: any) {
+      console.warn('[Upload API] FormData parse warning:', formErr?.message);
+    }
 
     if (!file || typeof file === 'string') {
-      return NextResponse.json({ error: 'No valid file provided under "file" key.' }, { status: 400 });
+      return NextResponse.json({ error: 'No valid file received. Please try again.' }, { status: 400 });
     }
 
-    // 3. Validate file type & size (max 5MB)
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
+    // 3. Validate file type & size (up to 10MB)
     const fileType = file.type || 'image/jpeg';
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/avif',
+      'image/gif',
+      'image/heic',
+      'image/heif',
+    ];
 
-    if (!allowedTypes.includes(fileType)) {
+    if (!allowedTypes.includes(fileType.toLowerCase()) && !fileType.startsWith('image/')) {
       return NextResponse.json({ error: 'Invalid file type. Allowed: JPG, PNG, WebP, AVIF, GIF' }, { status: 400 });
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large. Maximum size is 5MB.' }, { status: 400 });
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large. Maximum size is 10MB.' }, { status: 400 });
     }
 
     // 4. Generate unique storage path
-    const ext = file.name ? file.name.split('.').pop() : 'jpg';
+    let ext = file.name ? file.name.split('.').pop()?.toLowerCase() : 'jpg';
+    if (!ext || ext === 'heic' || ext === 'heif') {
+      ext = 'jpg';
+    }
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
-    const filename = `${timestamp}-${randomId}.${ext || 'jpg'}`;
+    const filename = `${timestamp}-${randomId}.${ext}`;
     const filePath = `uploads/${filename}`;
 
-    // Convert file arrayBuffer to Uint8Array/Buffer
+    // Convert file arrayBuffer to Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -73,10 +87,10 @@ export async function POST(request: NextRequest) {
 
     // Primary bucket: 'products', Fallback bucket: 'product-images'
     let bucketToUse = 'products';
-    let { data: uploadData, error: uploadError } = await adminSupabase.storage
+    let { error: uploadError } = await adminSupabase.storage
       .from(bucketToUse)
       .upload(filePath, buffer, {
-        contentType: fileType,
+        contentType: fileType.startsWith('image/') ? fileType : 'image/jpeg',
         cacheControl: '31536000',
         upsert: true,
       });
@@ -87,17 +101,16 @@ export async function POST(request: NextRequest) {
       const retryResult = await adminSupabase.storage
         .from(bucketToUse)
         .upload(filePath, buffer, {
-          contentType: fileType,
+          contentType: fileType.startsWith('image/') ? fileType : 'image/jpeg',
           cacheControl: '31536000',
           upsert: true,
         });
-      uploadData = retryResult.data;
       uploadError = retryResult.error;
     }
 
     if (uploadError) {
       console.error('[Upload API] Storage error:', uploadError);
-      return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 });
+      return NextResponse.json({ error: `Storage upload failed: ${uploadError.message}` }, { status: 500 });
     }
 
     // 5. Get public image URL

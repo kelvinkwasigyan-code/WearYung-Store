@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { compressImage } from '@/lib/image-compression';
 import {
   Plus, Pencil, Trash2, Eye, EyeOff, X, Check, Upload,
   ImagePlus, GripVertical, DollarSign, Package, Tag, FileText,
@@ -41,8 +42,11 @@ function ImageUploader({
     setImages(prev => [...prev, { url: tempId, uploading: true, file }]);
 
     try {
+      // Compress and format mobile camera / high-res uploads to lightweight web format
+      const optimizedFile = await compressImage(file);
+
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', optimizedFile);
 
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();

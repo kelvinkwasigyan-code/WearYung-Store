@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { compressImage } from '@/lib/image-compression';
 import {
   Plus, Pencil, Trash2, Eye, EyeOff, X, Check, Upload,
   ImagePlus, FileText, Tag, Loader2, AlertCircle, CheckCircle2,
@@ -48,8 +49,10 @@ function SingleImageUploader({
     setImage({ url: tempId, uploading: true, file });
 
     try {
+      const optimizedFile = await compressImage(file);
+
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', optimizedFile);
 
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
