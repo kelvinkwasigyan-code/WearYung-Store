@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Compass, Images, User, Sparkles } from 'lucide-react';
+import { Home, Compass, Images, User, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -41,7 +41,7 @@ export default function MobileBottomNav() {
       id: 'just-in',
       label: 'Just In',
       href: '/just-in',
-      icon: Sparkles,
+      icon: Flame,
       isActive: pathname.startsWith('/just-in'),
     },
     {
