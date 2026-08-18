@@ -4,7 +4,6 @@ import ProductCard from '@/components/ui/ProductCard';
 import ShopFilters from '@/components/ShopFilters';
 import { getProducts } from '@/lib/supabase/products';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type Product, type ProductCategory } from '@/types/ecommerce';
-import { Sparkles, Flame, Clock, ArrowLeft, PackageCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Just In — New Drops & Arrivals | WEAR YUNG',
@@ -79,184 +78,110 @@ export default async function JustInPage({ searchParams }: JustInPageProps) {
     products.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 
+  const categoryTitle = activeCategory ? `JUST IN: ${CATEGORY_LABELS[activeCategory]}` : 'JUST IN • FRESH DROPS & ARRIVALS';
+
   return (
-    <div style={{ minHeight: '100vh', background: '#09090B' }}>
-      {/* ─── Editorial Hero Banner ─── */}
+    <div style={{ minHeight: '100vh', background: '#0D0D0D' }}>
+      {/* ─── Editorial Header Banner ─── */}
       <div
         style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255, 200, 0, 0.15), transparent 70%), linear-gradient(180deg, #121216 0%, #09090B 100%)',
-          borderBottom: '1px solid #1E1E24',
-          padding: 'clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.5rem, 4vw, 2.5rem)',
-          position: 'relative',
-          overflow: 'hidden',
+          background: 'linear-gradient(180deg, #16161A 0%, #0D0D0D 100%)',
+          borderBottom: '1px solid #1E1E22',
+          padding: 'clamp(2rem, 5vw, 3.5rem) 0 clamp(1.25rem, 3vw, 2rem)',
         }}
       >
         <div className="container-wy">
-          {/* Breadcrumb / Back Link */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <Link
-              href="/shop"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.78rem',
-                color: '#A1A1AA',
-                textDecoration: 'none',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                transition: 'color 0.15s ease',
-              }}
-            >
-              <ArrowLeft size={14} /> Back to Catalog
-            </Link>
-          </div>
-
+          <div style={{ width: '36px', height: '3px', background: 'var(--wy-yellow)', marginBottom: '0.65rem' }} />
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+              fontSize: 'clamp(2.1rem, 5vw, 3.75rem)',
               color: '#FFFFFF',
               letterSpacing: '0.04em',
               lineHeight: 1.05,
-              marginBottom: '0.75rem',
+              marginBottom: '0.45rem',
               textTransform: 'uppercase',
             }}
           >
-            LATEST DROPS & ARRIVALS
+            {categoryTitle}
           </h1>
-
-          <p style={{ color: '#A1A1AA', fontSize: 'clamp(0.88rem, 2vw, 1.05rem)', maxWidth: '640px', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-            Discover the freshest streetwear pieces, rare footwear, and luxury accessories recently cataloged into the WEAR YUNG vault.
-          </p>
-
-          {/* Quick Metrics Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#FFC800', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              <PackageCheck size={16} />
-              <span>{products.length} New Drop{products.length === 1 ? '' : 's'}</span>
-            </div>
-            <span style={{ color: '#3F3F46' }}>•</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10B981', fontWeight: 700, fontSize: '0.85rem' }}>
-              <Clock size={16} />
-              <span>Sorted by Drop Date (Latest First)</span>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <span style={{ color: 'var(--wy-yellow)', fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              {products.length} {products.length === 1 ? 'New Item' : 'New Items'} Available
+            </span>
+            <span style={{ color: '#52525B' }}>•</span>
+            <span style={{ color: '#A1A1AA', fontSize: '0.82rem' }}>
+              Sorted in Real-Time by Latest Vault Release
+            </span>
           </div>
         </div>
       </div>
 
-      {/* ─── Main Just In Content ─── */}
-      <div className="container-wy" style={{ padding: '2rem 0 5rem' }}>
-        {/* Category Pills & Quick Switcher */}
-        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '1.5rem', scrollbarWidth: 'none' }}>
-          <Link
-            href="/just-in"
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '20px',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              textDecoration: 'none',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              whiteSpace: 'nowrap',
-              background: !activeCategory ? '#FFC800' : '#18181C',
-              color: !activeCategory ? '#000000' : '#A1A1AA',
-              border: !activeCategory ? '1px solid #FFC800' : '1px solid #27272A',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            All Drops
-          </Link>
+      {/* ─── Main Just In Content (Sidebar + Products Grid Side-by-Side) ─── */}
+      <div className="container-wy" style={{ padding: 'clamp(1rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 5rem' }}>
+        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-8 w-full">
+          {/* Filters (Desktop Left Sidebar + Mobile Top Accordion) */}
+          <ShopFilters />
 
-          {ALL_CATEGORIES.map((cat) => {
-            const isCatActive = activeCategory === cat;
-            return (
-              <Link
-                key={cat}
-                href={`/just-in?category=${cat}`}
+          {/* Products Grid Area */}
+          <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
+            {!products.length ? (
+              <div
                 style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '20px',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  whiteSpace: 'nowrap',
-                  background: isCatActive ? '#FFC800' : '#18181C',
-                  color: isCatActive ? '#000000' : '#A1A1AA',
-                  border: isCatActive ? '1px solid #FFC800' : '1px solid #27272A',
-                  transition: 'all 0.15s ease',
+                  textAlign: 'center',
+                  padding: '4.5rem 1.5rem',
+                  background: '#121215',
+                  border: '1px solid #27272A',
+                  borderRadius: '16px',
+                  color: '#71717A',
                 }}
               >
-                {CATEGORY_LABELS[cat as ProductCategory]}
-              </Link>
-            );
-          })}
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: '0 auto 1rem', color: '#52525B' }}>
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: '#FFFFFF', letterSpacing: '0.04em', margin: '0 0 0.4rem' }}>
+                  {query ? `No new items found for "${query}"` : 'No products found in this section'}
+                </p>
+                <p style={{ fontSize: '0.82rem', color: '#A1A1AA', margin: '0 0 1.25rem' }}>
+                  {query ? 'Check your spelling or reset filters to browse full catalog.' : 'Check back soon for the next fresh drop.'}
+                </p>
+                <Link
+                  href="/just-in"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '0.6rem 1.25rem',
+                    borderRadius: '8px',
+                    background: 'var(--wy-yellow)',
+                    color: '#000000',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Reset Filters
+                </Link>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: 'clamp(0.6rem, 2vw, 1.25rem)',
+                }}
+                className="md:grid-cols-3 xl:grid-cols-4"
+              >
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* Filter Controls Bar */}
-        <ShopFilters
-          totalProducts={products.length}
-          activeCategory={activeCategory}
-          currentSort={sort}
-        />
-
-        {/* Products Grid */}
-        {products.length === 0 ? (
-          <div
-            style={{
-              padding: '5rem 1.5rem',
-              textAlign: 'center',
-              background: '#121216',
-              border: '1px solid #27272A',
-              borderRadius: '16px',
-              marginTop: '1.5rem',
-            }}
-          >
-            <Sparkles size={40} style={{ color: '#FFC800', margin: '0 auto 1rem', opacity: 0.8 }} />
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: '#FFFFFF', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
-              NO RECENT DROPS FOUND
-            </h3>
-            <p style={{ color: '#A1A1AA', fontSize: '0.9rem', maxWidth: '420px', margin: '0 auto 1.5rem' }}>
-              We couldn't find any newly added items matching your filter criteria. Check back soon for the next drop.
-            </p>
-            <Link
-              href="/shop"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                background: '#FFC800',
-                color: '#000000',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '8px',
-                fontFamily: 'var(--font-display)',
-                fontSize: '0.95rem',
-                fontWeight: 700,
-                letterSpacing: '0.06em',
-                textDecoration: 'none',
-              }}
-            >
-              Browse Full Catalog
-            </Link>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-              gap: 'clamp(0.75rem, 2vw, 1.25rem)',
-              marginTop: '1.5rem',
-            }}
-          >
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
