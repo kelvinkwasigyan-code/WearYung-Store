@@ -121,10 +121,6 @@ export default function CheckoutPage() {
                       <label htmlFor="state" style={labelStyle}>Region *</label>
                       <input id="state" name="state" type="text" required placeholder="Eastern Region" style={inputStyle} className="input-wy" />
                     </div>
-                    <div>
-                      <label htmlFor="postal_code" style={labelStyle}>Postal Code</label>
-                      <input id="postal_code" name="postal_code" type="text" placeholder="100001" style={inputStyle} className="input-wy" />
-                    </div>
                   </div>
                 </div>
 

@@ -167,13 +167,44 @@ export default function AdminOrdersPage() {
                       ))}
                     </div>
                     {order.shipping_address && Object.keys(order.shipping_address).length > 0 && (
-                      <div style={{ marginTop: '0.85rem', padding: '1rem', background: '#18181B', borderRadius: '8px', border: '1px solid #27272A', fontSize: '0.8rem', color: '#E4E4E7' }}>
-                        <p style={{ marginBottom: '0.35rem', color: '#A1A1AA', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
-                          Shipping Details
+                      <div style={{ marginTop: '0.85rem', padding: '1rem', background: '#18181B', borderRadius: '8px', border: '1px solid #27272A', fontSize: '0.82rem', color: '#E4E4E7' }}>
+                        <p style={{ marginBottom: '0.5rem', color: '#FFC800', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
+                          Delivery & Contact Information
                         </p>
-                        <pre style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap', color: '#D4D4D8', margin: 0 }}>
-                          {JSON.stringify(order.shipping_address, null, 2)}
-                        </pre>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
+                          {(order.shipping_address.full_name || order.customer_name) && (
+                            <div>
+                              <span style={{ color: '#71717A', fontSize: '0.7rem', display: 'block', textTransform: 'uppercase' }}>Recipient</span>
+                              <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{order.shipping_address.full_name || order.customer_name}</span>
+                            </div>
+                          )}
+                          {order.shipping_address.phone && (
+                            <div>
+                              <span style={{ color: '#71717A', fontSize: '0.7rem', display: 'block', textTransform: 'uppercase' }}>Phone</span>
+                              <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{order.shipping_address.phone}</span>
+                            </div>
+                          )}
+                          {order.shipping_address.line1 && (
+                            <div>
+                              <span style={{ color: '#71717A', fontSize: '0.7rem', display: 'block', textTransform: 'uppercase' }}>Street Address</span>
+                              <span style={{ color: '#FFFFFF', fontWeight: 500 }}>{order.shipping_address.line1}</span>
+                            </div>
+                          )}
+                          {(order.shipping_address.city || order.shipping_address.state) && (
+                            <div>
+                              <span style={{ color: '#71717A', fontSize: '0.7rem', display: 'block', textTransform: 'uppercase' }}>Location</span>
+                              <span style={{ color: '#FFFFFF', fontWeight: 500 }}>
+                                {[order.shipping_address.city, order.shipping_address.state].filter(Boolean).join(', ')}
+                              </span>
+                            </div>
+                          )}
+                          {order.shipping_address.digital_address && (
+                            <div>
+                              <span style={{ color: '#71717A', fontSize: '0.7rem', display: 'block', textTransform: 'uppercase' }}>Ghana Post GPS</span>
+                              <span style={{ color: '#FFC800', fontFamily: 'monospace', fontWeight: 600 }}>{order.shipping_address.digital_address}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

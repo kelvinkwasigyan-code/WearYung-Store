@@ -630,8 +630,7 @@ export default function CustomerDashboard({
                     {currentAddress.street}
                   </p>
                   <p style={{ fontSize: '0.8rem', color: '#A1A1AA' }}>
-                    {currentAddress.city}, {currentAddress.region}{' '}
-                    {currentAddress.postal_code && `(${currentAddress.postal_code})`}
+                    {currentAddress.city}, {currentAddress.region}
                   </p>
                   {currentAddress.digital_address && (
                     <p style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#71717A', marginTop: '0.35rem' }}>
@@ -1520,33 +1519,18 @@ export default function CustomerDashboard({
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
-                      Ghana Post GPS
-                    </label>
-                    <input
-                      type="text"
-                      value={digitalAddressInput}
-                      onChange={(e) => setDigitalAddressInput(e.target.value)}
-                      placeholder="e.g. GA-183-9021"
-                      className="input-wy"
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
-                      Postal Code
-                    </label>
-                    <input
-                      type="text"
-                      value={postalCodeInput}
-                      onChange={(e) => setPostalCodeInput(e.target.value)}
-                      placeholder="00233"
-                      className="input-wy"
-                      style={{ width: '100%' }}
-                    />
-                  </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.4rem' }}>
+                    Ghana Post GPS (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={digitalAddressInput}
+                    onChange={(e) => setDigitalAddressInput(e.target.value)}
+                    placeholder="e.g. GA-183-9021"
+                    className="input-wy"
+                    style={{ width: '100%' }}
+                  />
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
