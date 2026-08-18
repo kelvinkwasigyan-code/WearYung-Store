@@ -49,6 +49,7 @@ function LoginForm() {
             email: data.user.email || email,
             name: fullName || data.user.user_metadata?.full_name || 'Anonymous User',
             userId: data.user.id,
+            phone: phone || data.user.user_metadata?.phone_number || '',
           }).catch(console.error);
         }
 
