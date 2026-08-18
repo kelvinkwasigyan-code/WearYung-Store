@@ -167,14 +167,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 </Link>
               </div>
             ) : (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: 'clamp(0.6rem, 2vw, 1.25rem)',
-                }}
-                className="md:grid-cols-3 xl:grid-cols-4"
-              >
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

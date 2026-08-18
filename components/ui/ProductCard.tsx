@@ -26,7 +26,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div
         style={{
           position: 'relative',
-          aspectRatio: '1 / 1.22',
+          aspectRatio: '1 / 1.12',
           width: '100%',
           overflow: 'hidden',
           borderRadius: 'clamp(12px, 2vw, 16px)',
