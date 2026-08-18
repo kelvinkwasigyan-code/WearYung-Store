@@ -270,9 +270,14 @@ export async function syncExistingCustomersAction(): Promise<{ success: boolean;
   }
 }
 
-export async function updateCustomerRoleAction(userId: string, newRole: 'admin' | 'manager' | 'customer') {
+export async function updateCustomerRoleAction(userId: string, newRole: 'manager' | 'customer') {
   try {
     const { db } = await verifyAdmin();
+
+    // Prevent assigning admin role to any customer
+    if (newRole !== 'manager' && newRole !== 'customer') {
+      return { success: false, error: 'Only Manager and Customer roles are configurable.' };
+    }
 
     const { error } = await db
       .from('profiles')

@@ -70,8 +70,8 @@ export default function AdminCustomersPage() {
     loadCustomers();
   }, []);
 
-  const handleSetRole = async (customer: AdminCustomer, targetRole: 'admin' | 'manager' | 'customer') => {
-    const actionLabel = targetRole === 'customer' ? 'Demote to Customer' : `Promote to ${targetRole.toUpperCase()}`;
+  const handleSetRole = async (customer: AdminCustomer, targetRole: 'manager' | 'customer') => {
+    const actionLabel = targetRole === 'customer' ? 'Demote to Customer' : 'Promote to Store Manager';
     const name = customer.full_name || customer.email;
 
     if (!confirm(`${actionLabel} for "${name}"?`)) return;
@@ -565,64 +565,53 @@ export default function AdminCustomersPage() {
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
                         {c.source === 'order_guest' ? (
                           <span style={{ fontSize: '0.72rem', color: '#52525B' }}>Guest (Unregistered)</span>
+                        ) : isAdm ? (
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            fontSize: '0.72rem',
+                            color: '#FFC800',
+                            fontWeight: 700,
+                            background: 'rgba(255, 200, 0, 0.08)',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid rgba(255, 200, 0, 0.25)',
+                          }}>
+                            <Shield size={11} />
+                            <span>Master Admin</span>
+                          </span>
                         ) : (
                           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                            {/* Option to Make Manager */}
+                            {/* If Customer: Option to Make Manager */}
                             {!isMgr && (
                               <button
                                 onClick={() => handleSetRole(c, 'manager')}
                                 disabled={isBusy}
-                                title="Grant staff access to upload products and view orders (revenue hidden)"
+                                title="Grant staff access to upload/edit products and manage orders (revenue & customers hidden)"
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  gap: '0.3rem',
-                                  padding: '0.35rem 0.65rem',
-                                  background: 'rgba(59, 130, 246, 0.1)',
+                                  gap: '0.35rem',
+                                  padding: '0.4rem 0.8rem',
+                                  background: 'rgba(59, 130, 246, 0.12)',
                                   color: '#60A5FA',
-                                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                                  border: '1px solid rgba(59, 130, 246, 0.35)',
                                   borderRadius: '6px',
-                                  fontSize: '0.72rem',
+                                  fontSize: '0.74rem',
                                   fontWeight: 700,
                                   cursor: isBusy ? 'not-allowed' : 'pointer',
                                   opacity: isBusy ? 0.5 : 1,
                                   transition: 'all 0.15s',
                                 }}
                               >
-                                <Briefcase size={11} />
+                                <Briefcase size={12} />
                                 <span>Make Manager</span>
                               </button>
                             )}
 
-                            {/* Option to Make Admin */}
-                            {!isAdm && (
-                              <button
-                                onClick={() => handleSetRole(c, 'admin')}
-                                disabled={isBusy}
-                                title="Grant full administrative privileges"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '0.3rem',
-                                  padding: '0.35rem 0.65rem',
-                                  background: 'rgba(255, 200, 0, 0.1)',
-                                  color: '#FFC800',
-                                  border: '1px solid rgba(255, 200, 0, 0.3)',
-                                  borderRadius: '6px',
-                                  fontSize: '0.72rem',
-                                  fontWeight: 700,
-                                  cursor: isBusy ? 'not-allowed' : 'pointer',
-                                  opacity: isBusy ? 0.5 : 1,
-                                  transition: 'all 0.15s',
-                                }}
-                              >
-                                <Shield size={11} />
-                                <span>Make Admin</span>
-                              </button>
-                            )}
-
-                            {/* Option to Demote to Customer */}
-                            {(isAdm || isMgr) && (
+                            {/* If Manager: Option to Demote to Customer */}
+                            {isMgr && (
                               <button
                                 onClick={() => handleSetRole(c, 'customer')}
                                 disabled={isBusy}
@@ -630,21 +619,21 @@ export default function AdminCustomersPage() {
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  gap: '0.3rem',
-                                  padding: '0.35rem 0.65rem',
+                                  gap: '0.35rem',
+                                  padding: '0.4rem 0.8rem',
                                   background: 'rgba(239, 68, 68, 0.1)',
                                   color: '#EF4444',
                                   border: '1px solid rgba(239, 68, 68, 0.3)',
                                   borderRadius: '6px',
-                                  fontSize: '0.72rem',
+                                  fontSize: '0.74rem',
                                   fontWeight: 700,
                                   cursor: isBusy ? 'not-allowed' : 'pointer',
                                   opacity: isBusy ? 0.5 : 1,
                                   transition: 'all 0.15s',
                                 }}
                               >
-                                <UserX size={11} />
-                                <span>Demote</span>
+                                <UserX size={12} />
+                                <span>Demote to Customer</span>
                               </button>
                             )}
                           </div>
