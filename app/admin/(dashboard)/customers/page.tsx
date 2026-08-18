@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   fetchAdminCustomersAction,
+  syncExistingCustomersAction,
   toggleCustomerRoleAction,
   AdminCustomer,
 } from '@/app/actions/admin-customers';
@@ -18,12 +19,16 @@ import {
   Calendar,
   DollarSign,
   Users,
+  DatabaseZap,
+  CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'customer' | 'admin'>('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -31,7 +36,7 @@ export default function AdminCustomersPage() {
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
   const loadCustomers = async (isManualRefresh = false) => {
@@ -50,6 +55,19 @@ export default function AdminCustomersPage() {
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  };
+
+  const handleSyncExisting = async () => {
+    setSyncing(true);
+    try {
+      const res = await syncExistingCustomersAction();
+      showToast(res.message || 'Synchronization completed!');
+      await loadCustomers(true);
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to sync existing accounts');
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -110,13 +128,17 @@ export default function AdminCustomersPage() {
           background: '#18181B',
           border: '1px solid #FFC800',
           color: '#FFFFFF',
-          padding: '0.75rem 1.25rem',
-          borderRadius: '8px',
+          padding: '0.85rem 1.35rem',
+          borderRadius: '10px',
           zIndex: 9999,
           fontSize: '0.875rem',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem',
+          boxShadow: '0 12px 30px rgba(0,0,0,0.6)',
         }}>
-          {toastMessage}
+          <CheckCircle2 size={16} color="#FFC800" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
@@ -137,36 +159,65 @@ export default function AdminCustomersPage() {
             letterSpacing: '0.04em',
             lineHeight: 1.1,
           }}>
-            REGISTERED CUSTOMERS
+            CUSTOMERS DIRECTORY
           </h1>
           <p style={{ color: '#A1A1AA', fontSize: '0.875rem', marginTop: '0.35rem' }}>
-            Live customer directory, profile details, and account purchase history.
+            Unified directory of registered user profiles, order accounts, and purchase metrics.
           </p>
         </div>
 
-        <button
-          onClick={() => loadCustomers(true)}
-          disabled={refreshing || loading}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: '#18181B',
-            border: '1px solid #27272A',
-            color: '#FFFFFF',
-            padding: '0.65rem 1.1rem',
-            borderRadius: '8px',
-            fontSize: '0.82rem',
-            fontWeight: 600,
-            cursor: refreshing || loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#FFC800')}
-          onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#27272A')}
-        >
-          <RefreshCw size={14} className={refreshing ? 'spin' : ''} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
-          <span>{refreshing ? 'Syncing...' : 'Sync Directory'}</span>
-        </button>
+        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+          {/* Sync Existing Customers */}
+          <button
+            onClick={handleSyncExisting}
+            disabled={syncing || loading}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: '#FFC800',
+              border: 'none',
+              color: '#000000',
+              padding: '0.65rem 1.2rem',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              cursor: syncing || loading ? 'not-allowed' : 'pointer',
+              transition: 'background 0.2s',
+              opacity: syncing ? 0.7 : 1,
+            }}
+          >
+            <DatabaseZap size={15} className={syncing ? 'spin' : ''} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
+            <span>{syncing ? 'Syncing Profiles...' : 'Sync Existing Customers'}</span>
+          </button>
+
+          {/* Quick Refresh */}
+          <button
+            onClick={() => loadCustomers(true)}
+            disabled={refreshing || loading}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              background: '#18181B',
+              border: '1px solid #27272A',
+              color: '#FFFFFF',
+              padding: '0.65rem 1rem',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              cursor: refreshing || loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#FFC800')}
+            onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#27272A')}
+          >
+            <RefreshCw size={14} className={refreshing ? 'spin' : ''} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -200,7 +251,7 @@ export default function AdminCustomersPage() {
           </div>
           <div>
             <p style={{ color: '#71717A', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Total Accounts
+              Total Customers
             </p>
             <p style={{ color: '#FFFFFF', fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-display)', marginTop: '0.15rem' }}>
               {totalRegistered}
@@ -287,7 +338,7 @@ export default function AdminCustomersPage() {
           <Search size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
           <input
             type="text"
-            placeholder="Search by name, email, or phone..."
+            placeholder="Search by name, email, phone..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -341,15 +392,34 @@ export default function AdminCustomersPage() {
         {loading ? (
           <div style={{ padding: '4rem', textAlign: 'center', color: '#A1A1AA', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
             <Loader2 size={24} style={{ animation: 'spin 1s linear infinite', color: '#FFC800' }} />
-            <span style={{ fontSize: '0.85rem' }}>Loading registered customers...</span>
+            <span style={{ fontSize: '0.85rem' }}>Loading customers directory...</span>
           </div>
         ) : filteredCustomers.length === 0 ? (
           <div style={{ padding: '4rem', textAlign: 'center', color: '#71717A' }}>
             <Users size={32} style={{ margin: '0 auto 0.75rem', opacity: 0.4 }} />
-            <p style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: 600 }}>No customers found</p>
-            <p style={{ fontSize: '0.78rem', color: '#71717A', marginTop: '0.25rem' }}>
-              {searchQuery ? 'Try clearing your search query.' : 'New customer registrations will appear here in real-time.'}
+            <p style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: 600 }}>No customer records found</p>
+            <p style={{ fontSize: '0.78rem', color: '#71717A', marginTop: '0.25rem', marginBottom: '1.25rem' }}>
+              Click "Sync Existing Customers" above to pull all accounts and order records.
             </p>
+            <button
+              onClick={handleSyncExisting}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                background: '#18181B',
+                border: '1px solid #FFC800',
+                color: '#FFC800',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              <DatabaseZap size={14} />
+              <span>Sync Customers Now</span>
+            </button>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
@@ -406,9 +476,16 @@ export default function AdminCustomersPage() {
                             {isAdm ? <Shield size={18} color="#FFC800" /> : <User size={18} color="#A1A1AA" />}
                           </div>
                           <div>
-                            <p style={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.9rem', lineHeight: 1.2 }}>
-                              {c.full_name || 'Customer'}
-                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <p style={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.9rem', lineHeight: 1.2 }}>
+                                {c.full_name || 'Customer'}
+                              </p>
+                              {c.source === 'order_guest' && (
+                                <span style={{ fontSize: '0.62rem', background: '#27272A', color: '#A1A1AA', padding: '1px 5px', borderRadius: '3px' }}>
+                                  Guest Buyer
+                                </span>
+                              )}
+                            </div>
                             <p style={{ color: '#A1A1AA', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.2rem' }}>
                               <Mail size={12} style={{ color: '#71717A' }} />
                               <span>{c.email}</span>
@@ -482,7 +559,7 @@ export default function AdminCustomersPage() {
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
                         <button
                           onClick={() => handleRoleToggle(c)}
-                          disabled={updatingId === c.id}
+                          disabled={updatingId === c.id || c.source === 'order_guest'}
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -494,8 +571,8 @@ export default function AdminCustomersPage() {
                             borderRadius: '6px',
                             fontSize: '0.72rem',
                             fontWeight: 700,
-                            cursor: updatingId === c.id ? 'not-allowed' : 'pointer',
-                            opacity: updatingId === c.id ? 0.5 : 1,
+                            cursor: updatingId === c.id || c.source === 'order_guest' ? 'not-allowed' : 'pointer',
+                            opacity: updatingId === c.id || c.source === 'order_guest' ? 0.4 : 1,
                             transition: 'all 0.15s',
                           }}
                         >
