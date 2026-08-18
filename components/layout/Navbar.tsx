@@ -154,7 +154,6 @@ export default function Navbar({ cartCount }: NavbarProps) {
     { label: 'TRACK ORDER', href: '/track-order' },
     { label: 'LOOKBOOK', href: '/lookbook' },
     { label: 'SIZE GUIDE', href: '/size-guide' },
-    { label: 'FAQ', href: '/faq' },
   ];
 
   if (pathname?.startsWith('/admin')) {
