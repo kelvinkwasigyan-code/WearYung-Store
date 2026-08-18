@@ -242,7 +242,23 @@ export default function AdminProductsPage() {
   const [filterCategory, setFilterCategory] = useState('all');
 
   // Form state
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    title: string;
+    slug: string;
+    category: string;
+    description: string;
+    is_published: boolean;
+    price: string;
+    compare_at_price: string;
+    stock_quantity: string;
+    sku: string;
+    clothing_type: string;
+    sleeve_type: string;
+    fit: string;
+    size: string;
+    color: string;
+    size_inventory: Record<string, number>;
+  }>({
     title: '', slug: '', category: 'clothing',
     description: '', is_published: true,
     price: '', compare_at_price: '',
@@ -253,6 +269,7 @@ export default function AdminProductsPage() {
     fit: 'baggy',
     size: '',
     color: '',
+    size_inventory: {},
   });
   const [formImages, setFormImages] = useState<{ url: string; uploading?: boolean; file?: File }[]>([]);
 
@@ -308,6 +325,9 @@ export default function AdminProductsPage() {
 
   useEffect(() => { fetchProducts(); }, []);
 
+  const clothingSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+  const shoeSizes = ['38', '39', '40', '41', '42', '43', '44', '45', '46'];
+
   const openAdd = () => {
     setEditingProduct(null);
     setForm({
@@ -321,6 +341,7 @@ export default function AdminProductsPage() {
       fit: 'baggy',
       size: '',
       color: '',
+      size_inventory: {},
     });
     setFormImages([]);
     setShowForm(true);
@@ -333,6 +354,22 @@ export default function AdminProductsPage() {
     let resolvedType = attrs.clothing_type || '';
     if (resolvedType === 'tops' || resolvedType === 'sleeves') resolvedType = 'tops_sleeves';
     if (resolvedType === 'baggy_jeans' || resolvedType === 'slim_jeans' || resolvedType === 'jeans') resolvedType = 'jeans_pants';
+
+    let loadedSizeInventory: Record<string, number> = {};
+    if (attrs.size_inventory && typeof attrs.size_inventory === 'object') {
+      loadedSizeInventory = { ...attrs.size_inventory };
+    } else if (attrs.size && variant?.stock_quantity) {
+      const parts = attrs.size.toString().split(',').map((s: string) => s.trim()).filter(Boolean);
+      if (parts.length > 0) {
+        parts.forEach((sz: string) => {
+          loadedSizeInventory[sz] = Number(variant.stock_quantity) || 0;
+        });
+      } else {
+        loadedSizeInventory[attrs.size] = Number(variant.stock_quantity) || 0;
+      }
+    } else if (attrs.size_eu && variant?.stock_quantity) {
+      loadedSizeInventory[attrs.size_eu.toString()] = Number(variant.stock_quantity) || 0;
+    }
 
     setForm({
       title: p.title,
@@ -349,6 +386,7 @@ export default function AdminProductsPage() {
       fit: attrs.fit || (attrs.clothing_type === 'slim_jeans' ? 'slim' : attrs.clothing_type === 'baggy_jeans' ? 'baggy' : 'baggy'),
       size: attrs.size || attrs.size_eu?.toString() || '',
       color: attrs.color || attrs.colorway || '',
+      size_inventory: loadedSizeInventory,
     });
     setFormImages((p.images || []).map((url: string) => ({ url })));
     setShowForm(true);
@@ -377,11 +415,22 @@ export default function AdminProductsPage() {
         is_published: form.is_published,
       };
 
-      // Build variant attributes based on category
+      // Build variant attributes based on category & size inventory
       const attributes: Record<string, any> = {};
       if (form.color) attributes.color = form.color;
+
+      const sizeInventoryKeys = Object.keys(form.size_inventory || {});
+      const hasSizeInventory = sizeInventoryKeys.length > 0;
+
+      if (hasSizeInventory) {
+        attributes.size_inventory = form.size_inventory;
+        attributes.sizes = sizeInventoryKeys;
+        attributes.size = sizeInventoryKeys.join(', ');
+      } else if (form.size) {
+        attributes.size = form.size;
+      }
+
       if (form.category === 'clothing') {
-        if (form.size) attributes.size = form.size;
         attributes.clothing_type = form.clothing_type;
         if (form.clothing_type === 'tops_sleeves') {
           attributes.sleeve_type = form.sleeve_type || 'tops';
@@ -389,14 +438,20 @@ export default function AdminProductsPage() {
           attributes.fit = form.fit || 'baggy';
         }
       } else if (['sneakers', 'slides'].includes(form.category)) {
-        if (form.size) attributes.size_eu = parseInt(form.size);
+        if (!hasSizeInventory && form.size) attributes.size_eu = parseInt(form.size);
         if (form.color) attributes.colorway = form.color;
+      }
+
+      // Calculate total stock: sum of size_inventory if available, otherwise manual input
+      let totalStock = parseInt(form.stock_quantity) || 0;
+      if (hasSizeInventory) {
+        totalStock = Object.values(form.size_inventory).reduce((acc, qty) => acc + (Number(qty) || 0), 0);
       }
 
       const variantPayload = (form.price || editingProduct?.product_variants?.[0]) ? {
         id: editingProduct?.product_variants?.[0]?.id,
         price: parseFloat(form.price) || 0,
-        stock_quantity: parseInt(form.stock_quantity) || 0,
+        stock_quantity: totalStock,
         sku: form.sku || `${slug}-default`,
         attributes,
       } : undefined;
@@ -844,35 +899,231 @@ export default function AdminProductsPage() {
                         </div>
                       )}
 
-                      <div>
-                        <label style={LABEL}>Size</label>
-                        <select
-                          value={form.size}
-                          onChange={e => setForm(f => ({ ...f, size: e.target.value }))}
-                          style={{ ...INPUT, cursor: 'pointer' }}
-                        >
-                          <option value="" style={{ background: '#18181B' }}>Select size...</option>
-                          {sizes.map(s => (
-                            <option key={s} value={s} style={{ background: '#18181B' }}>{s}</option>
-                          ))}
-                        </select>
+                      {/* ─── Size & Per-Size Stock Matrix (Clothing) ─── */}
+                      <div style={{ marginTop: '0.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                          <label style={{ ...LABEL, marginBottom: 0, fontWeight: 700, color: '#FFC800' }}>
+                            Available Sizes & Stock Quantity per Size
+                          </label>
+                          {Object.keys(form.size_inventory || {}).length > 0 && (
+                            <span style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 700, background: 'rgba(16, 185, 129, 0.12)', padding: '2px 8px', borderRadius: '4px' }}>
+                              Total Stock: {Object.values(form.size_inventory || {}).reduce((a: number, b: number) => a + (Number(b) || 0), 0)} pcs
+                            </span>
+                          )}
+                        </div>
+
+                        <p style={{ fontSize: '0.72rem', color: '#71717A', marginBottom: '0.65rem' }}>
+                          Click sizes to activate/deactivate, then enter the available stock count for each size:
+                        </p>
+
+                        {/* Size Selection Pills */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.85rem' }}>
+                          {clothingSizes.map(s => {
+                            const isSelected = form.size_inventory && form.size_inventory[s] !== undefined;
+                            return (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => {
+                                  setForm(f => {
+                                    const updated: Record<string, number> = { ...(f.size_inventory || {}) };
+                                    if (isSelected) {
+                                      delete updated[s];
+                                    } else {
+                                      updated[s] = 5;
+                                    }
+                                    const total = Object.values(updated).reduce((a: number, b: number) => a + (Number(b) || 0), 0);
+                                    return {
+                                      ...f,
+                                      size_inventory: updated,
+                                      stock_quantity: total.toString(),
+                                      size: Object.keys(updated).join(', '),
+                                    };
+                                  });
+                                }}
+                                style={{
+                                  padding: '0.4rem 0.8rem',
+                                  borderRadius: '6px',
+                                  border: isSelected ? '1.5px solid #FFC800' : '1px solid #27272A',
+                                  background: isSelected ? '#FFC800' : '#18181B',
+                                  color: isSelected ? '#000000' : '#D4D4D8',
+                                  fontSize: '0.78rem',
+                                  fontWeight: 800,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                }}
+                              >
+                                {s} {isSelected && `(${form.size_inventory[s] ?? 0})`}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Per-Size Stock Input Grid */}
+                        {form.size_inventory && Object.keys(form.size_inventory).length > 0 && (
+                          <div style={{ background: '#121215', border: '1px solid #27272A', borderRadius: '8px', padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#A1A1AA', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                Stock Count per Active Size
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const val = prompt('Enter stock quantity to apply to all selected sizes:', '10');
+                                  if (val !== null && !isNaN(parseInt(val))) {
+                                    const qty = Math.max(0, parseInt(val));
+                                    setForm(f => {
+                                      const updated: Record<string, number> = {};
+                                      Object.keys(f.size_inventory || {}).forEach(k => {
+                                        updated[k] = qty;
+                                      });
+                                      const total = Object.values(updated).reduce((a, b) => a + Number(b || 0), 0);
+                                      return { ...f, size_inventory: updated, stock_quantity: total.toString() };
+                                    });
+                                  }
+                                }}
+                                style={{ background: 'none', border: 'none', color: '#FFC800', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+                              >
+                                Apply quantity to all...
+                              </button>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(115px, 1fr))', gap: '0.5rem' }}>
+                              {Object.keys(form.size_inventory).map(sz => (
+                                <div key={sz} style={{ background: '#18181C', border: '1px solid #27272A', borderRadius: '6px', padding: '0.45rem 0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#FFC800' }}>{sz}</span>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      value={form.size_inventory[sz]}
+                                      onChange={e => {
+                                        const val = Math.max(0, parseInt(e.target.value) || 0);
+                                        setForm(f => {
+                                          const updated = { ...(f.size_inventory || {}), [sz]: val };
+                                          const total = Object.values(updated).reduce((a, b) => a + Number(b || 0), 0);
+                                          return { ...f, size_inventory: updated, stock_quantity: total.toString() };
+                                        });
+                                      }}
+                                      style={{
+                                        width: '50px',
+                                        background: '#0A0A0C',
+                                        border: '1px solid #3F3F46',
+                                        borderRadius: '4px',
+                                        color: '#FFFFFF',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 700,
+                                        textAlign: 'center',
+                                        padding: '2px 4px',
+                                        outline: 'none',
+                                      }}
+                                    />
+                                    <span style={{ fontSize: '0.65rem', color: '#71717A' }}>pcs</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
 
-                  {/* Footwear-specific fields */}
+                  {/* Footwear-specific Size Matrix */}
                   {['sneakers', 'slides'].includes(form.category) && (
-                    <div>
-                      <label style={LABEL}>Size (EU)</label>
-                      <input
-                        type="number"
-                        value={form.size}
-                        onChange={e => setForm(f => ({ ...f, size: e.target.value }))}
-                        placeholder="e.g. 42"
-                        style={INPUT}
-                        onFocus={e => e.target.style.borderColor = '#FFC800'}
-                        onBlur={e => e.target.style.borderColor = '#27272A'}
-                      />
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                        <label style={{ ...LABEL, marginBottom: 0, fontWeight: 700, color: '#FFC800' }}>
+                          Available EU Shoe Sizes & Stock Quantity
+                        </label>
+                        {Object.keys(form.size_inventory || {}).length > 0 && (
+                          <span style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 700, background: 'rgba(16, 185, 129, 0.12)', padding: '2px 8px', borderRadius: '4px' }}>
+                            Total Stock: {Object.values(form.size_inventory || {}).reduce((a, b) => a + Number(b || 0), 0)} pairs
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.85rem' }}>
+                        {shoeSizes.map(s => {
+                          const isSelected = form.size_inventory && form.size_inventory[s] !== undefined;
+                          return (
+                            <button
+                              key={s}
+                              type="button"
+                              onClick={() => {
+                                setForm(f => {
+                                  const updated = { ...(f.size_inventory || {}) };
+                                  if (isSelected) {
+                                    delete updated[s];
+                                  } else {
+                                    updated[s] = 3;
+                                  }
+                                  const total = Object.values(updated).reduce((a, b) => a + Number(b || 0), 0);
+                                  return {
+                                    ...f,
+                                    size_inventory: updated,
+                                    stock_quantity: total.toString(),
+                                    size: Object.keys(updated).join(', '),
+                                  };
+                                });
+                              }}
+                              style={{
+                                padding: '0.4rem 0.8rem',
+                                borderRadius: '6px',
+                                border: isSelected ? '1.5px solid #FFC800' : '1px solid #27272A',
+                                background: isSelected ? '#FFC800' : '#18181B',
+                                color: isSelected ? '#000000' : '#D4D4D8',
+                                fontSize: '0.78rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              EU {s} {isSelected && `(${form.size_inventory[s] ?? 0})`}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {form.size_inventory && Object.keys(form.size_inventory).length > 0 && (
+                        <div style={{ background: '#121215', border: '1px solid #27272A', borderRadius: '8px', padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(115px, 1fr))', gap: '0.5rem' }}>
+                            {Object.keys(form.size_inventory).map(sz => (
+                              <div key={sz} style={{ background: '#18181C', border: '1px solid #27272A', borderRadius: '6px', padding: '0.45rem 0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#FFC800' }}>EU {sz}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={form.size_inventory[sz]}
+                                    onChange={e => {
+                                      const val = Math.max(0, parseInt(e.target.value) || 0);
+                                      setForm(f => {
+                                        const updated = { ...(f.size_inventory || {}), [sz]: val };
+                                        const total = Object.values(updated).reduce((a, b) => a + Number(b || 0), 0);
+                                        return { ...f, size_inventory: updated, stock_quantity: total.toString() };
+                                      });
+                                    }}
+                                    style={{
+                                      width: '50px',
+                                      background: '#0A0A0C',
+                                      border: '1px solid #3F3F46',
+                                      borderRadius: '4px',
+                                      color: '#FFFFFF',
+                                      fontSize: '0.8rem',
+                                      fontWeight: 700,
+                                      textAlign: 'center',
+                                      padding: '2px 4px',
+                                      outline: 'none',
+                                    }}
+                                  />
+                                  <span style={{ fontSize: '0.65rem', color: '#71717A' }}>pairs</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

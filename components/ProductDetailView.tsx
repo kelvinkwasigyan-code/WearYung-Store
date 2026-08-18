@@ -52,9 +52,38 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const { addToCart } = useCartContext();
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId) || variants[0];
-  const stock = selectedVariant?.stock_quantity ?? 0;
-  const inStock = stock > 0;
-  const isLowStock = inStock && stock <= 5;
+  const attrs = (selectedVariant?.attributes || {}) as Record<string, any>;
+  const sizeInventory: Record<string, number> = (attrs.size_inventory && typeof attrs.size_inventory === 'object') ? attrs.size_inventory : {};
+  const hasSizeInventory = Object.keys(sizeInventory).length > 0;
+
+  const [selectedSize, setSelectedSize] = useState<string>(() => {
+    if (hasSizeInventory) {
+      const keys = Object.keys(sizeInventory);
+      const firstInStock = keys.find(k => Number(sizeInventory[k] || 0) > 0);
+      return firstInStock || keys[0] || '';
+    }
+    return attrs.size || (attrs.size_eu ? `EU ${attrs.size_eu}` : '');
+  });
+
+  // Keep size in sync when selected variant changes
+  useEffect(() => {
+    const vAttrs = (selectedVariant?.attributes || {}) as Record<string, any>;
+    const sInv = (vAttrs.size_inventory && typeof vAttrs.size_inventory === 'object') ? vAttrs.size_inventory : {};
+    if (Object.keys(sInv).length > 0) {
+      const keys = Object.keys(sInv);
+      const firstInStock = keys.find(k => Number(sInv[k] || 0) > 0);
+      setSelectedSize(firstInStock || keys[0] || '');
+    } else {
+      setSelectedSize(vAttrs.size || (vAttrs.size_eu ? `EU ${vAttrs.size_eu}` : ''));
+    }
+  }, [selectedVariantId]);
+
+  const totalStock = selectedVariant?.stock_quantity ?? 0;
+  const currentSizeStock = hasSizeInventory && selectedSize ? (Number(sizeInventory[selectedSize]) || 0) : totalStock;
+  const inStock = currentSizeStock > 0;
+  const isLowStock = inStock && currentSizeStock <= 5;
+  const stock = currentSizeStock;
+
   const images = product.images?.length ? product.images : ['https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=80'];
   const currentImage = images[selectedImageIndex];
   const [isZoomed, setIsZoomed] = useState(false);
@@ -72,7 +101,11 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
       sku: selectedVariant.sku,
       price: selectedVariant.price,
       quantity,
-      attributes: selectedVariant.attributes,
+      attributes: {
+        ...selectedVariant.attributes,
+        size: selectedSize || attrs.size,
+        selected_size: selectedSize || attrs.size,
+      },
     });
 
     setAdded(true);
@@ -365,8 +398,70 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           </p>
         )}
 
-        {/* Dynamic Category Variant Selector */}
-        {variants.length > 0 && (
+        {/* Dynamic Category Variant / Size Selector */}
+        {hasSizeInventory ? (
+          <div style={{ padding: '0.85rem 0', borderTop: '1px solid var(--wy-border)', borderBottom: '1px solid var(--wy-border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.55rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.78rem',
+                  letterSpacing: '0.1em',
+                  color: 'var(--wy-muted)',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  margin: 0,
+                }}
+              >
+                {product.category === 'clothing' ? 'Select Size' : ['sneakers', 'slides'].includes(product.category) ? 'Select EU Shoe Size' : 'Select Size'}
+              </label>
+              {selectedSize && (
+                <span style={{ fontSize: '0.75rem', color: inStock ? '#10B981' : '#EF4444', fontWeight: 600 }}>
+                  {inStock ? `${currentSizeStock} available in size ${selectedSize}` : `Size ${selectedSize} is Out of Stock`}
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {Object.entries(sizeInventory).map(([sz, count]) => {
+                const isSelected = selectedSize === sz;
+                const isItemOutOfStock = Number(count) <= 0;
+
+                return (
+                  <button
+                    key={sz}
+                    id={`size-btn-${sz}`}
+                    type="button"
+                    disabled={isItemOutOfStock}
+                    onClick={() => setSelectedSize(sz)}
+                    style={{
+                      padding: '0.5rem 0.95rem',
+                      borderRadius: '8px',
+                      border: isSelected ? '2px solid var(--wy-yellow)' : '1px solid var(--wy-border)',
+                      background: isSelected ? 'rgba(255,200,0,0.12)' : 'var(--wy-surface)',
+                      color: isItemOutOfStock ? 'var(--wy-muted-dim)' : isSelected ? 'var(--wy-yellow)' : '#FFFFFF',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: isItemOutOfStock ? 'not-allowed' : 'pointer',
+                      opacity: isItemOutOfStock ? 0.35 : 1,
+                      textDecoration: isItemOutOfStock ? 'line-through' : 'none',
+                      transition: 'all 150ms ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <span>{['sneakers', 'slides'].includes(product.category) && !sz.startsWith('EU') ? `EU ${sz}` : sz}</span>
+                    {!isItemOutOfStock && Number(count) <= 5 && (
+                      <span style={{ fontSize: '0.68rem', color: '#F59E0B', fontWeight: 600 }}>({count} left)</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : variants.length > 0 ? (
           <div style={{ padding: '0.85rem 0', borderTop: '1px solid var(--wy-border)', borderBottom: '1px solid var(--wy-border)' }}>
             <label
               style={{
@@ -419,7 +514,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               })}
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Quantity and Add to Bag Row */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
