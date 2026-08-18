@@ -720,175 +720,371 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Products Table */}
-      <div style={{ background: '#0D0D0D', border: '1px solid #27272A', borderRadius: '12px', overflow: 'hidden' }}>
-        {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#A1A1AA', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-            <Loader2 size={18} style={{ animation: 'spin 1s linear infinite', color: '#FFC800' }} /> Loading products...
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#A1A1AA' }}>
-            {searchQuery || filterCategory !== 'all' ? 'No products match your filters.' : 'No products yet. Add your first one!'}
-          </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid #27272A', background: '#111113' }}>
-                  {['Product', 'Category', 'Price', 'Stock', 'Status', 'Actions'].map(h => (
-                    <th key={h} style={{
-                      padding: '0.85rem 1.25rem', textAlign: 'left',
-                      color: '#A1A1AA', fontWeight: 600, fontSize: '0.72rem',
-                      textTransform: 'uppercase', letterSpacing: '0.1em',
-                    }}>
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(p => {
-                  const image = p.images?.[0];
-                  const price = p.product_variants?.[0]?.price;
-                  const stock = p.product_variants?.[0]?.stock_quantity;
-                  return (
-                    <tr
-                      key={p.id}
-                      style={{ borderBottom: '1px solid #1E1E24', transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#141417'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      <td style={{ padding: '0.875rem 1.25rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                          <div style={{
-                            width: '44px', height: '44px',
-                            borderRadius: '8px', overflow: 'hidden',
-                            background: '#1A1A1A', flexShrink: 0,
-                            border: '1px solid #27272A',
-                          }}>
-                            {image && <img src={image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                          </div>
-                          <div>
-                            <p style={{ color: '#FFFFFF', fontWeight: 600 }}>{p.title}</p>
-                            <p style={{ color: '#A1A1AA', fontSize: '0.72rem', marginTop: '1px' }}>{p.slug}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ padding: '0.875rem 1.25rem' }}>
-                        <span style={{
-                          padding: '0.25rem 0.6rem',
-                          background: '#18181B', borderRadius: '5px',
-                          color: '#E4E4E7', fontSize: '0.72rem',
-                          textTransform: 'capitalize', fontWeight: 600,
-                          border: '1px solid #27272A',
-                        }}>
-                          {p.category}
-                        </span>
-                      </td>
-                      <td style={{ padding: '0.875rem 1.25rem', color: '#FFC800', fontWeight: 700, fontFamily: 'var(--font-display)', letterSpacing: '0.02em' }}>
-                        {price != null ? `GH₵ ${parseFloat(price).toFixed(2)}` : '—'}
-                      </td>
-                      <td style={{ padding: '0.875rem 1.25rem' }}>
-                        {(() => {
-                          const sizeInv = p.product_variants?.[0]?.attributes?.size_inventory;
-                          const lowSizes: string[] = [];
-                          if (sizeInv && typeof sizeInv === 'object') {
-                            Object.entries(sizeInv).forEach(([sz, count]) => {
-                              if (Number(count) <= 2) {
-                                lowSizes.push(`${sz}: ${count}`);
-                              }
-                            });
-                          }
-                          const isOutOfStock = stock === 0;
-                          const isLowStock = !isOutOfStock && ((stock ?? 0) <= 5 || lowSizes.length > 0);
+      {/* Products Content: Mobile Cards & Desktop Table */}
+      {loading ? (
+        <div style={{ background: '#0D0D0D', border: '1px solid #27272A', borderRadius: '12px', padding: '3rem', textAlign: 'center', color: '#A1A1AA', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+          <Loader2 size={18} style={{ animation: 'spin 1s linear infinite', color: '#FFC800' }} /> Loading products...
+        </div>
+      ) : filtered.length === 0 ? (
+        <div style={{ background: '#0D0D0D', border: '1px solid #27272A', borderRadius: '12px', padding: '3rem', textAlign: 'center', color: '#A1A1AA' }}>
+          {searchQuery || filterCategory !== 'all' || filterStock !== 'all' ? 'No products match your filters.' : 'No products yet. Add your first one!'}
+        </div>
+      ) : (
+        <>
+          {/* ─── 1. MOBILE CARDS VIEW (< 768px) ─── */}
+          <div className="admin-mobile-cards-view" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {filtered.map(p => {
+              const image = p.images?.[0];
+              const price = p.product_variants?.[0]?.price;
+              const stock = p.product_variants?.[0]?.stock_quantity;
+              const sizeInv = p.product_variants?.[0]?.attributes?.size_inventory;
+              const lowSizes: string[] = [];
+              if (sizeInv && typeof sizeInv === 'object') {
+                Object.entries(sizeInv).forEach(([sz, count]) => {
+                  if (Number(count) <= 2) {
+                    lowSizes.push(`${sz}(${count})`);
+                  }
+                });
+              }
+              const isOutOfStock = stock === 0;
+              const isLowStock = !isOutOfStock && ((stock ?? 0) <= 5 || lowSizes.length > 0);
 
-                          return (
-                            <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                                <span style={{
-                                  color: isOutOfStock ? '#EF4444' : isLowStock ? '#F59E0B' : '#10B981',
-                                  fontWeight: 700,
-                                  fontSize: '0.88rem',
-                                }}>
-                                  {stock ?? '—'} pcs
-                                </span>
-                                {isOutOfStock && (
-                                  <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#EF4444', background: 'rgba(239, 68, 68, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
-                                    OUT
-                                  </span>
-                                )}
-                                {isLowStock && (
-                                  <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#F59E0B', background: 'rgba(245, 158, 11, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
-                                    LOW
-                                  </span>
-                                )}
-                              </div>
-                              {lowSizes.length > 0 && (
-                                <p style={{ fontSize: '0.68rem', color: '#A1A1AA', marginTop: '2px' }}>
-                                  Low: {lowSizes.join(', ')}
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })()}
-                      </td>
-                      <td style={{ padding: '0.875rem 1.25rem' }}>
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    background: '#0D0D10',
+                    border: isOutOfStock ? '1px solid rgba(239, 68, 68, 0.4)' : isLowStock ? '1px solid rgba(245, 158, 11, 0.35)' : '1px solid #27272A',
+                    borderRadius: '12px',
+                    padding: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.85rem',
+                  }}
+                >
+                  {/* Top Row: Thumbnail + Title + Category + Publish Status */}
+                  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                    <div style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      background: '#18181C',
+                      flexShrink: 0,
+                      border: '1px solid #27272A',
+                    }}>
+                      {image ? (
+                        <img src={image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#52525B' }}>
+                          <Package size={20} />
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.4rem' }}>
+                        <p style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.25, margin: 0 }}>
+                          {p.title}
+                        </p>
                         <button
                           onClick={() => togglePublish(p.id, p.is_published, p.title)}
                           title={p.is_published ? 'Unpublish' : 'Publish'}
                           style={{
-                            background: 'none', border: 'none', cursor: 'pointer',
-                            color: p.is_published ? '#10B981' : '#52525B',
-                            display: 'flex', alignItems: 'center',
-                            gap: '0.35rem', fontSize: '0.78rem', fontWeight: 500,
+                            background: p.is_published ? 'rgba(16, 185, 129, 0.12)' : 'rgba(113, 113, 122, 0.12)',
+                            border: `1px solid ${p.is_published ? 'rgba(16, 185, 129, 0.3)' : 'rgba(113, 113, 122, 0.3)'}`,
+                            borderRadius: '6px',
+                            padding: '0.2rem 0.5rem',
+                            cursor: 'pointer',
+                            color: p.is_published ? '#10B981' : '#71717A',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            flexShrink: 0,
                           }}
                         >
-                          {p.is_published
-                            ? <><ToggleRight size={18} /> Live</>
-                            : <><ToggleLeft size={18} /> Hidden</>
-                          }
+                          {p.is_published ? <><ToggleRight size={14} /> LIVE</> : <><ToggleLeft size={14} /> HIDDEN</>}
                         </button>
-                      </td>
-                      <td style={{ padding: '0.875rem 1.25rem' }}>
-                        <div style={{ display: 'flex', gap: '0.4rem' }}>
-                          <button
-                            onClick={() => openEdit(p)}
-                            title="Edit"
-                            style={{
-                              background: '#1A1A1A', border: '1px solid #27272A',
-                              borderRadius: '6px', padding: '0.4rem 0.55rem',
-                              cursor: 'pointer', color: '#A1A1AA',
-                              transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.color = '#FFC800'; e.currentTarget.style.borderColor = '#FFC800'; }}
-                            onMouseLeave={e => { e.currentTarget.style.color = '#A1A1AA'; e.currentTarget.style.borderColor = '#27272A'; }}
-                          >
-                            <Pencil size={13} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(p.id, p.title)}
-                            title="Delete"
-                            style={{
-                              background: '#1A1A1A', border: '1px solid #27272A',
-                              borderRadius: '6px', padding: '0.4rem 0.55rem',
-                              cursor: 'pointer', color: '#A1A1AA',
-                              transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.color = '#EF4444'; e.currentTarget.style.borderColor = '#EF4444'; }}
-                            onMouseLeave={e => { e.currentTarget.style.color = '#A1A1AA'; e.currentTarget.style.borderColor = '#27272A'; }}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
+                        <span style={{
+                          padding: '0.15rem 0.45rem',
+                          background: '#18181C',
+                          borderRadius: '4px',
+                          color: '#A1A1AA',
+                          fontSize: '0.68rem',
+                          textTransform: 'uppercase',
+                          fontWeight: 700,
+                          border: '1px solid #27272A',
+                        }}>
+                          {p.category}
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#52525B' }}>
+                          /{p.slug}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metrics Row: Price & Stock Status */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: '#141418',
+                    border: '1px solid #1E1E24',
+                    borderRadius: '8px',
+                    padding: '0.65rem 0.85rem',
+                  }}>
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: '#71717A', textTransform: 'uppercase', fontWeight: 600, display: 'block' }}>PRICE</span>
+                      <span style={{ color: '#FFC800', fontWeight: 800, fontSize: '1rem', fontFamily: 'var(--font-display)', letterSpacing: '0.02em' }}>
+                        {price != null ? `GH₵ ${parseFloat(price).toFixed(2)}` : '—'}
+                      </span>
+                    </div>
+
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.65rem', color: '#71717A', textTransform: 'uppercase', fontWeight: 600, display: 'block' }}>STOCK</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', justifyContent: 'flex-end' }}>
+                        <span style={{
+                          color: isOutOfStock ? '#EF4444' : isLowStock ? '#F59E0B' : '#10B981',
+                          fontWeight: 800,
+                          fontSize: '0.88rem',
+                        }}>
+                          {stock ?? '—'} pcs
+                        </span>
+                        {isOutOfStock && (
+                          <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#EF4444', background: 'rgba(239, 68, 68, 0.2)', padding: '1px 5px', borderRadius: '4px' }}>
+                            OUT
+                          </span>
+                        )}
+                        {isLowStock && (
+                          <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#F59E0B', background: 'rgba(245, 158, 11, 0.2)', padding: '1px 5px', borderRadius: '4px' }}>
+                            LOW
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Low Sizes Pill Tags if any */}
+                  {lowSizes.length > 0 && (
+                    <div style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', borderRadius: '6px', padding: '0.4rem 0.6rem', fontSize: '0.72rem', color: '#F59E0B' }}>
+                      ⚠️ Depleted sizes: <strong>{lowSizes.join(', ')}</strong>
+                    </div>
+                  )}
+
+                  {/* Bottom Action Buttons */}
+                  <div style={{ display: 'flex', gap: '0.5rem', paddingTop: '0.25rem' }}>
+                    <button
+                      onClick={() => openEdit(p)}
+                      style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        background: '#1A1A20',
+                        border: '1px solid #27272A',
+                        borderRadius: '8px',
+                        padding: '0.55rem',
+                        color: '#FFC800',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Pencil size={13} /> Edit Product
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p.id, p.title)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        background: '#1A1A20',
+                        border: '1px solid #27272A',
+                        borderRadius: '8px',
+                        padding: '0.55rem 0.85rem',
+                        color: '#EF4444',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
-      </div>
+
+          {/* ─── 2. DESKTOP TABLE VIEW (≥ 768px) ─── */}
+          <div className="admin-desktop-table-view" style={{ background: '#0D0D0D', border: '1px solid #27272A', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #27272A', background: '#111113' }}>
+                    {['Product', 'Category', 'Price', 'Stock', 'Status', 'Actions'].map(h => (
+                      <th key={h} style={{
+                        padding: '0.85rem 1.25rem', textAlign: 'left',
+                        color: '#A1A1AA', fontWeight: 600, fontSize: '0.72rem',
+                        textTransform: 'uppercase', letterSpacing: '0.1em',
+                      }}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(p => {
+                    const image = p.images?.[0];
+                    const price = p.product_variants?.[0]?.price;
+                    const stock = p.product_variants?.[0]?.stock_quantity;
+                    return (
+                      <tr
+                        key={p.id}
+                        style={{ borderBottom: '1px solid #1E1E24', transition: 'background 0.15s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#141417'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <td style={{ padding: '0.875rem 1.25rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div style={{
+                              width: '44px', height: '44px',
+                              borderRadius: '8px', overflow: 'hidden',
+                              background: '#1A1A1A', flexShrink: 0,
+                              border: '1px solid #27272A',
+                            }}>
+                              {image && <img src={image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                            </div>
+                            <div>
+                              <p style={{ color: '#FFFFFF', fontWeight: 600 }}>{p.title}</p>
+                              <p style={{ color: '#A1A1AA', fontSize: '0.72rem', marginTop: '1px' }}>{p.slug}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.875rem 1.25rem' }}>
+                          <span style={{
+                            padding: '0.25rem 0.6rem',
+                            background: '#18181B', borderRadius: '5px',
+                            color: '#E4E4E7', fontSize: '0.72rem',
+                            textTransform: 'capitalize', fontWeight: 600,
+                            border: '1px solid #27272A',
+                          }}>
+                            {p.category}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.875rem 1.25rem', color: '#FFC800', fontWeight: 700, fontFamily: 'var(--font-display)', letterSpacing: '0.02em' }}>
+                          {price != null ? `GH₵ ${parseFloat(price).toFixed(2)}` : '—'}
+                        </td>
+                        <td style={{ padding: '0.875rem 1.25rem' }}>
+                          {(() => {
+                            const sizeInv = p.product_variants?.[0]?.attributes?.size_inventory;
+                            const lowSizes: string[] = [];
+                            if (sizeInv && typeof sizeInv === 'object') {
+                              Object.entries(sizeInv).forEach(([sz, count]) => {
+                                if (Number(count) <= 2) {
+                                  lowSizes.push(`${sz}: ${count}`);
+                                }
+                              });
+                            }
+                            const isOutOfStock = stock === 0;
+                            const isLowStock = !isOutOfStock && ((stock ?? 0) <= 5 || lowSizes.length > 0);
+
+                            return (
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                  <span style={{
+                                    color: isOutOfStock ? '#EF4444' : isLowStock ? '#F59E0B' : '#10B981',
+                                    fontWeight: 700,
+                                    fontSize: '0.88rem',
+                                  }}>
+                                    {stock ?? '—'} pcs
+                                  </span>
+                                  {isOutOfStock && (
+                                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#EF4444', background: 'rgba(239, 68, 68, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                                      OUT
+                                    </span>
+                                  )}
+                                  {isLowStock && (
+                                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#F59E0B', background: 'rgba(245, 158, 11, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                                      LOW
+                                    </span>
+                                  )}
+                                </div>
+                                {lowSizes.length > 0 && (
+                                  <p style={{ fontSize: '0.68rem', color: '#A1A1AA', marginTop: '2px' }}>
+                                    Low: {lowSizes.join(', ')}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </td>
+                        <td style={{ padding: '0.875rem 1.25rem' }}>
+                          <button
+                            onClick={() => togglePublish(p.id, p.is_published, p.title)}
+                            title={p.is_published ? 'Unpublish' : 'Publish'}
+                            style={{
+                              background: 'none', border: 'none', cursor: 'pointer',
+                              color: p.is_published ? '#10B981' : '#52525B',
+                              display: 'flex', alignItems: 'center',
+                              gap: '0.35rem', fontSize: '0.78rem', fontWeight: 500,
+                            }}
+                          >
+                            {p.is_published
+                              ? <><ToggleRight size={18} /> Live</>
+                              : <><ToggleLeft size={18} /> Hidden</>
+                            }
+                          </button>
+                        </td>
+                        <td style={{ padding: '0.875rem 1.25rem' }}>
+                          <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            <button
+                              onClick={() => openEdit(p)}
+                              title="Edit"
+                              style={{
+                                background: '#1A1A1A', border: '1px solid #27272A',
+                                borderRadius: '6px', padding: '0.4rem 0.55rem',
+                                cursor: 'pointer', color: '#A1A1AA',
+                                transition: 'all 0.15s',
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.color = '#FFC800'; e.currentTarget.style.borderColor = '#FFC800'; }}
+                              onMouseLeave={e => { e.currentTarget.style.color = '#A1A1AA'; e.currentTarget.style.borderColor = '#27272A'; }}
+                            >
+                              <Pencil size={13} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(p.id, p.title)}
+                              title="Delete"
+                              style={{
+                                background: '#1A1A1A', border: '1px solid #27272A',
+                                borderRadius: '6px', padding: '0.4rem 0.55rem',
+                                cursor: 'pointer', color: '#A1A1AA',
+                                transition: 'all 0.15s',
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.color = '#EF4444'; e.currentTarget.style.borderColor = '#EF4444'; }}
+                              onMouseLeave={e => { e.currentTarget.style.color = '#A1A1AA'; e.currentTarget.style.borderColor = '#27272A'; }}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ─── Slide-in Add/Edit Form ─────────────────────────── */}
       {showForm && (
