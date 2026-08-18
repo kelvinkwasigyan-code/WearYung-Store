@@ -70,6 +70,24 @@ export interface SaveProductInput {
   };
 }
 
+export async function fetchAdminProductsAction() {
+  try {
+    const { db } = await verifyStaff();
+
+    const { data: products, error } = await db
+      .from('products')
+      .select('*, product_variants(id, sku, price, stock_quantity, attributes)')
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(error.message);
+
+    return { success: true, products: products || [] };
+  } catch (error: any) {
+    console.error('[fetchAdminProductsAction error]:', error);
+    return { success: false, error: error.message || 'Failed to load products', products: [] };
+  }
+}
+
 export async function saveProductAction(input: SaveProductInput) {
   try {
     const { db } = await verifyStaff();

@@ -7,6 +7,7 @@ import {
   saveProductAction,
   deleteProductAction,
   togglePublishProductAction,
+  fetchAdminProductsAction,
 } from '@/app/actions/products';
 import {
   Plus, Pencil, Trash2, Eye, EyeOff, X, Check, Upload,
@@ -281,12 +282,28 @@ export default function AdminProductsPage() {
 
   const fetchProducts = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from('products')
-      .select('*, product_variants(id, sku, price, stock_quantity, attributes)')
-      .order('created_at', { ascending: false });
-    setProducts(data || []);
-    setLoading(false);
+    try {
+      const serverRes = await fetchAdminProductsAction();
+      if (serverRes.success && serverRes.products && serverRes.products.length > 0) {
+        setProducts(serverRes.products);
+        setLoading(false);
+        return;
+      }
+    } catch (e) {
+      console.warn('[fetchProducts] Server action error, attempting fallback:', e);
+    }
+
+    try {
+      const { data } = await supabase
+        .from('products')
+        .select('*, product_variants(id, sku, price, stock_quantity, attributes)')
+        .order('created_at', { ascending: false });
+      setProducts(data || []);
+    } catch (err) {
+      console.error('[fetchProducts] Fallback error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchProducts(); }, []);
