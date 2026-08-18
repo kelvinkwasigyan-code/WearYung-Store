@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Compass, Images, User, Flame } from 'lucide-react';
+import { Home, ShoppingBag, Images, User, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -46,9 +46,9 @@ export default function MobileBottomNav() {
     },
     {
       id: 'shop',
-      label: 'Drops',
+      label: 'Shop',
       href: '/shop',
-      icon: Compass,
+      icon: ShoppingBag,
       isActive: pathname.startsWith('/shop') || pathname.startsWith('/category'),
     },
     {
