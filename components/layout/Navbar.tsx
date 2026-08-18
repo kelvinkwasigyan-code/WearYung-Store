@@ -144,7 +144,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
   const mainHeaderLinks = [
     { label: 'HOME', href: '/' },
     { label: 'SHOP', href: '/shop' },
-    { label: 'JUST IN', href: '/?filter=just-in' },
+    { label: 'JUST IN', href: '/just-in' },
     { label: 'LOOKBOOK', href: '/lookbook' },
     { label: 'ABOUT', href: '/about' },
     { label: 'CONTACT', href: '/contact' },
