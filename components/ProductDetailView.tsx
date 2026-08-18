@@ -53,7 +53,31 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId) || variants[0];
   const attrs = (selectedVariant?.attributes || {}) as Record<string, any>;
-  const sizeInventory: Record<string, number> = (attrs.size_inventory && typeof attrs.size_inventory === 'object') ? attrs.size_inventory : {};
+
+  const getSizeInventoryMap = (v: typeof selectedVariant): Record<string, number> => {
+    const vAttrs = (v?.attributes || {}) as Record<string, any>;
+    if (vAttrs.size_inventory && typeof vAttrs.size_inventory === 'object' && Object.keys(vAttrs.size_inventory).length > 0) {
+      return vAttrs.size_inventory as Record<string, number>;
+    }
+    if (vAttrs.sizes && Array.isArray(vAttrs.sizes) && vAttrs.sizes.length > 0) {
+      const map: Record<string, number> = {};
+      vAttrs.sizes.forEach((s: string) => {
+        map[s] = v?.stock_quantity ?? 0;
+      });
+      return map;
+    }
+    if (vAttrs.size && typeof vAttrs.size === 'string' && vAttrs.size.includes(',')) {
+      const map: Record<string, number> = {};
+      vAttrs.size.split(',').forEach((s: string) => {
+        const trimmed = s.trim();
+        if (trimmed) map[trimmed] = v?.stock_quantity ?? 0;
+      });
+      return map;
+    }
+    return {};
+  };
+
+  const sizeInventory = getSizeInventoryMap(selectedVariant);
   const hasSizeInventory = Object.keys(sizeInventory).length > 0;
 
   const [selectedSize, setSelectedSize] = useState<string>(() => {
@@ -68,7 +92,8 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   // Keep size in sync when selected variant changes
   useEffect(() => {
     const vAttrs = (selectedVariant?.attributes || {}) as Record<string, any>;
-    const sInv = (vAttrs.size_inventory && typeof vAttrs.size_inventory === 'object') ? vAttrs.size_inventory : {};
+    const sInv = getSizeInventoryMap(selectedVariant);
+
     if (Object.keys(sInv).length > 0) {
       const keys = Object.keys(sInv);
       const firstInStock = keys.find(k => Number(sInv[k] || 0) > 0);
@@ -76,7 +101,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     } else {
       setSelectedSize(vAttrs.size || (vAttrs.size_eu ? `EU ${vAttrs.size_eu}` : ''));
     }
-  }, [selectedVariantId]);
+  }, [selectedVariantId, selectedVariant]);
 
   const totalStock = selectedVariant?.stock_quantity ?? 0;
   const currentSizeStock = hasSizeInventory && selectedSize ? (Number(sizeInventory[selectedSize]) || 0) : totalStock;

@@ -356,19 +356,28 @@ export default function AdminProductsPage() {
     if (resolvedType === 'baggy_jeans' || resolvedType === 'slim_jeans' || resolvedType === 'jeans') resolvedType = 'jeans_pants';
 
     let loadedSizeInventory: Record<string, number> = {};
-    if (attrs.size_inventory && typeof attrs.size_inventory === 'object') {
+    const totalVariantStock = Number(variant?.stock_quantity) || 0;
+    if (attrs.size_inventory && typeof attrs.size_inventory === 'object' && Object.keys(attrs.size_inventory).length > 0) {
       loadedSizeInventory = { ...attrs.size_inventory };
-    } else if (attrs.size && variant?.stock_quantity) {
-      const parts = attrs.size.toString().split(',').map((s: string) => s.trim()).filter(Boolean);
+    } else if (attrs.sizes && Array.isArray(attrs.sizes) && attrs.sizes.length > 0) {
+      const count = attrs.sizes.length;
+      const perSize = Math.floor(totalVariantStock / count);
+      attrs.sizes.forEach((sz: string, idx: number) => {
+        loadedSizeInventory[sz] = idx === 0 ? perSize + (totalVariantStock % count) : perSize;
+      });
+    } else if (attrs.size && typeof attrs.size === 'string' && attrs.size.includes(',')) {
+      const parts = attrs.size.split(',').map((s: string) => s.trim()).filter(Boolean);
       if (parts.length > 0) {
-        parts.forEach((sz: string) => {
-          loadedSizeInventory[sz] = Number(variant.stock_quantity) || 0;
+        const count = parts.length;
+        const perSize = Math.floor(totalVariantStock / count);
+        parts.forEach((sz: string, idx: number) => {
+          loadedSizeInventory[sz] = idx === 0 ? perSize + (totalVariantStock % count) : perSize;
         });
-      } else {
-        loadedSizeInventory[attrs.size] = Number(variant.stock_quantity) || 0;
       }
-    } else if (attrs.size_eu && variant?.stock_quantity) {
-      loadedSizeInventory[attrs.size_eu.toString()] = Number(variant.stock_quantity) || 0;
+    } else if (attrs.size) {
+      loadedSizeInventory[attrs.size.toString()] = totalVariantStock;
+    } else if (attrs.size_eu) {
+      loadedSizeInventory[attrs.size_eu.toString()] = totalVariantStock;
     }
 
     setForm({
@@ -1184,17 +1193,43 @@ export default function AdminProductsPage() {
                   </div>
 
                   <div>
-                    <label style={LABEL}>Stock Quantity *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <label style={{ ...LABEL, marginBottom: 0 }}>Stock Quantity *</label>
+                      {Object.keys(form.size_inventory || {}).length > 0 && (
+                        <span style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 700, background: 'rgba(16, 185, 129, 0.12)', padding: '2px 8px', borderRadius: '4px' }}>
+                          ✓ In Sync ({Object.values(form.size_inventory || {}).reduce((a: number, b: number) => a + (Number(b) || 0), 0)} total)
+                        </span>
+                      )}
+                    </div>
                     <input
                       type="number"
                       min="0"
-                      value={form.stock_quantity}
-                      onChange={e => setForm(f => ({ ...f, stock_quantity: e.target.value }))}
+                      value={Object.keys(form.size_inventory || {}).length > 0
+                        ? Object.values(form.size_inventory || {}).reduce((a: number, b: number) => a + (Number(b) || 0), 0).toString()
+                        : form.stock_quantity
+                      }
+                      disabled={Object.keys(form.size_inventory || {}).length > 0}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setForm(f => ({ ...f, stock_quantity: val }));
+                      }}
                       placeholder="0"
-                      style={INPUT}
+                      style={{
+                        ...INPUT,
+                        background: Object.keys(form.size_inventory || {}).length > 0 ? '#141417' : '#18181B',
+                        color: Object.keys(form.size_inventory || {}).length > 0 ? '#FFC800' : '#FFFFFF',
+                        fontWeight: 700,
+                        cursor: Object.keys(form.size_inventory || {}).length > 0 ? 'not-allowed' : 'text',
+                        borderColor: Object.keys(form.size_inventory || {}).length > 0 ? 'rgba(255, 200, 0, 0.3)' : '#27272A',
+                      }}
                       onFocus={e => e.target.style.borderColor = '#FFC800'}
-                      onBlur={e => e.target.style.borderColor = '#27272A'}
+                      onBlur={e => e.target.style.borderColor = Object.keys(form.size_inventory || {}).length > 0 ? 'rgba(255, 200, 0, 0.3)' : '#27272A'}
                     />
+                    {Object.keys(form.size_inventory || {}).length > 0 && (
+                      <p style={{ fontSize: '0.7rem', color: '#71717A', marginTop: '0.35rem' }}>
+                        Total quantity is automatically synchronized with the per-size breakdown configured above.
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
