@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle, ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
+import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight, KeyRound, ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { isAdminEmail } from '@/lib/constants';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function AdminLoginPage() {
         .maybeSingle();
 
       // Admin check: role-based OR email-based
-      const isAdminUser = profile?.role === 'admin' || data.user.email === 'admin@wearyung.com';
+      const isAdminUser = profile?.role === 'admin' || isAdminEmail(data.user.email);
 
       // If profile exists and user is not admin, deny access
       if (profile && !isAdminUser) {
@@ -210,7 +211,7 @@ export default function AdminLoginPage() {
                 <input
                   type="email"
                   required
-                  placeholder="admin@wearyung.com"
+                  placeholder="wearyungworldwide@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{

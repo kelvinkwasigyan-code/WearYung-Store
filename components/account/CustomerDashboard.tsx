@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { STORE_LOCATION } from '@/lib/constants';
+import { STORE_LOCATION, isAdminEmail } from '@/lib/constants';
 import { updateCustomerProfile } from '@/app/actions/profile';
 import {
   User,
@@ -59,7 +59,7 @@ export default function CustomerDashboard({
   const supabase = createClient();
 
   // ADMIN GUARD: admins must never see the customer dashboard
-  const isAdmin = initialProfile?.role === 'admin' || initialUser.email === 'admin@wearyung.com';
+  const isAdmin = initialProfile?.role === 'admin' || isAdminEmail(initialUser.email);
   if (isAdmin) {
     router.replace('/admin');
     return (

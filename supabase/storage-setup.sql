@@ -9,8 +9,8 @@ VALUES (
   'product-images',
   'product-images',
   true,  -- public access for reading
-  5242880,  -- 5MB max
-  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif']
+  10485760,  -- 10MB max
+  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'image/heic', 'image/heif']
 )
 ON CONFLICT (id) DO NOTHING;
 
@@ -22,7 +22,7 @@ TO authenticated
 WITH CHECK (
   bucket_id = 'product-images'
   AND (
-    (auth.jwt() ->> 'email') = 'admin@wearyung.com' 
+    (auth.jwt() ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
     OR EXISTS (
       SELECT 1 FROM public.profiles
       WHERE id = auth.uid() AND role = 'admin'::app_role
@@ -45,7 +45,7 @@ TO authenticated
 USING (
   bucket_id = 'product-images'
   AND (
-    (auth.jwt() ->> 'email') = 'admin@wearyung.com' 
+    (auth.jwt() ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
     OR EXISTS (
       SELECT 1 FROM public.profiles
       WHERE id = auth.uid() AND role = 'admin'::app_role
@@ -61,7 +61,7 @@ TO authenticated
 USING (
   bucket_id = 'product-images'
   AND (
-    (auth.jwt() ->> 'email') = 'admin@wearyung.com' 
+    (auth.jwt() ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
     OR EXISTS (
       SELECT 1 FROM public.profiles
       WHERE id = auth.uid() AND role = 'admin'::app_role

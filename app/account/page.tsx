@@ -1,22 +1,24 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import CustomerDashboard from '@/components/account/CustomerDashboard';
+import { isAdminEmail } from '@/lib/constants';
 
 export const metadata = {
   title: 'Customer Account | WEAR YUNG',
   description: 'Manage your WEAR YUNG profile, orders, and VIP drop access.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function AccountPage() {
   const supabase = await createClient();
 
-  // 1. Authenticate user
+  // 1. Authenticate user session
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser();
 
-  if (authError || !user) {
+  if (!user) {
     redirect('/login?redirect=/account');
   }
 
@@ -27,8 +29,8 @@ export default async function AccountPage() {
     .eq('id', user.id)
     .maybeSingle();
 
-  // Admin check: role-based OR email-based (admin@wearyung.com)
-  const isAdmin = profile?.role === 'admin' || user.email === 'admin@wearyung.com';
+  // Admin check: role-based OR verified admin email
+  const isAdmin = profile?.role === 'admin' || isAdminEmail(user.email);
 
   // If user is an Admin, redirect to the Admin Dashboard (admins do not have customer account)
   if (isAdmin) {

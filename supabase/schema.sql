@@ -126,7 +126,8 @@ CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
   RETURN (
-    (current_setting('request.jwt.claims', true)::jsonb ->> 'email') = 'admin@wearyung.com'
+    (current_setting('request.jwt.claims', true)::jsonb ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
+    OR (auth.jwt() ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
     OR EXISTS (
       SELECT 1 FROM public.profiles 
       WHERE id = auth.uid() AND role = 'admin'::app_role

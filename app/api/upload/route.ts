@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { isAdminEmail } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -15,9 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
-    const userEmail = (user.email || '').toLowerCase();
-    const isAdminByEmail = userEmail === 'admin@wearyung.com' ||
-      (!!process.env.ADMIN_EMAIL && userEmail === process.env.ADMIN_EMAIL.toLowerCase());
+    const isAdminByEmail = isAdminEmail(user.email);
 
     let isAdmin = isAdminByEmail;
     if (!isAdmin) {

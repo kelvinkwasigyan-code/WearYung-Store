@@ -1,11 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-
-const ADMIN_EMAILS = [
-  'admin@wearyung.com',
-  process.env.ADMIN_EMAIL,
-].filter(Boolean).map(e => e?.toLowerCase());
+import { ADMIN_EMAILS } from '@/lib/constants';
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

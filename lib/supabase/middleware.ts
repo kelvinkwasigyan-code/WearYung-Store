@@ -37,8 +37,10 @@ export async function updateSession(request: NextRequest) {
     }
 
     const userEmail = (user.email || '').toLowerCase();
-    const isAdminByEmail = userEmail === 'admin@wearyung.com' ||
-      (!!process.env.ADMIN_EMAIL && userEmail === process.env.ADMIN_EMAIL.toLowerCase());
+    const isAdminByEmail = userEmail === 'wearyungworldwide@gmail.com' ||
+      userEmail === 'admin@wearyung.com' ||
+      (!!process.env.ADMIN_EMAIL && userEmail === process.env.ADMIN_EMAIL.toLowerCase()) ||
+      (!!process.env.ADMIN_NOTIFICATION_EMAIL && userEmail === process.env.ADMIN_NOTIFICATION_EMAIL.toLowerCase());
 
     if (!isAdminByEmail) {
       const { data: profile } = await supabase
