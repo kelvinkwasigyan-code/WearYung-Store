@@ -312,7 +312,7 @@ function LoginForm() {
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
             >
-              <div style={{ marginBottom: '1rem' }}>
+              <div style={{ marginBottom: '1.15rem', textAlign: 'center' }}>
                 <h1
                   style={{
                     fontFamily: 'var(--font-display)',
@@ -320,7 +320,7 @@ function LoginForm() {
                     color: '#FFFFFF',
                     letterSpacing: '0.04em',
                     lineHeight: 1.1,
-                    margin: '0 0 0.25rem',
+                    margin: '0 0 0.3rem',
                   }}
                 >
                   {view === 'sign-in' ? 'WELCOME BACK' : 'JOIN THE CREW'}
@@ -328,7 +328,7 @@ function LoginForm() {
                 <p
                   style={{
                     color: '#A1A1AA',
-                    fontSize: '0.76rem',
+                    fontSize: '0.78rem',
                     margin: 0,
                     lineHeight: 1.35,
                   }}
