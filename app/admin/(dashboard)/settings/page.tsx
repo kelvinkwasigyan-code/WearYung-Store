@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { isAdminEmail } from '@/lib/constants';
 import {
   User,
   Mail,
@@ -52,11 +54,21 @@ export default function AdminSettingsPage() {
     setTimeout(() => setToast(null), 5000);
   };
 
+  const router = useRouter();
+
   // Fetch current user and profile
   const loadUserData = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      if (!isAdminEmail(user.email)) {
+        const { data: prof } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+        if (prof?.role === 'manager') {
+          router.replace('/admin/products');
+          return;
+        }
+      }
+
       setCurrentUser(user);
       setNewEmail(user.email || '');
 

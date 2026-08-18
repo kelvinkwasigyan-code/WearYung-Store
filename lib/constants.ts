@@ -7,6 +7,8 @@ export const STORE_LOCATION = {
   directionsUrl: 'https://www.google.com/maps/dir/?api=1&destination=6.094673,-0.260387',
 };
 
+export type AppRole = 'admin' | 'manager' | 'customer';
+
 export const ADMIN_EMAILS: string[] = [
   'wearyungworldwide@gmail.com',
   ...(process.env.ADMIN_EMAIL ? [process.env.ADMIN_EMAIL.toLowerCase()] : []),
@@ -16,4 +18,9 @@ export const ADMIN_EMAILS: string[] = [
 export function isAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false;
   return ADMIN_EMAILS.some((e) => e.toLowerCase() === email.trim().toLowerCase());
+}
+
+export function isStaffRole(role: string | null | undefined, email?: string | null): boolean {
+  if (isAdminEmail(email)) return true;
+  return role === 'admin' || role === 'manager';
 }

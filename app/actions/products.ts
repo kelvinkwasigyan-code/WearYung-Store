@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { isAdminEmail } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
-async function verifyAdmin() {
+async function verifyStaff() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -14,6 +14,8 @@ async function verifyAdmin() {
   }
 
   const isEmailAdmin = isAdminEmail(user.email);
+  let userRole = isEmailAdmin ? 'admin' : 'customer';
+
   if (!isEmailAdmin) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -21,9 +23,11 @@ async function verifyAdmin() {
       .eq('id', user.id)
       .maybeSingle();
 
-    if (profile?.role !== 'admin') {
-      throw new Error('Forbidden. Admin privileges required.');
-    }
+    userRole = profile?.role || 'customer';
+  }
+
+  if (userRole !== 'admin' && userRole !== 'manager') {
+    throw new Error('Forbidden. Staff privileges required.');
   }
 
   // Ensure role is admin in profile if authorized by email
@@ -44,7 +48,7 @@ async function verifyAdmin() {
     }
   }
 
-  return { user, db, supabase };
+  return { user, db, supabase, role: userRole };
 }
 
 export interface SaveProductInput {
@@ -68,7 +72,7 @@ export interface SaveProductInput {
 
 export async function saveProductAction(input: SaveProductInput) {
   try {
-    const { db } = await verifyAdmin();
+    const { db } = await verifyStaff();
     const { id, productPayload, variantPayload } = input;
 
     if (id) {
@@ -150,7 +154,7 @@ export async function saveProductAction(input: SaveProductInput) {
 
 export async function deleteProductAction(id: string) {
   try {
-    const { db } = await verifyAdmin();
+    const { db } = await verifyStaff();
 
     // 1. Delete associated variants
     await db.from('product_variants').delete().eq('product_id', id);
@@ -170,7 +174,7 @@ export async function deleteProductAction(id: string) {
 
 export async function togglePublishProductAction(id: string, is_published: boolean) {
   try {
-    const { db } = await verifyAdmin();
+    const { db } = await verifyStaff();
     const { error } = await db
       .from('products')
       .update({ is_published })

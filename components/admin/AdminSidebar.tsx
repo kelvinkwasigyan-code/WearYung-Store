@@ -17,24 +17,33 @@ import {
   Menu,
   X,
   Shield,
+  Briefcase,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { AppRole } from '@/lib/constants';
 
-const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-  { href: '/admin/products', label: 'Products', icon: <Package size={18} /> },
-  { href: '/admin/orders', label: 'Orders', icon: <ShoppingBag size={18} /> },
-  { href: '/admin/customers', label: 'Customers', icon: <Users size={18} /> },
-  { href: '/admin/lookbook', label: 'Lookbook', icon: <Images size={18} /> },
-  { href: '/admin/reviews', label: 'Reviews', icon: <Star size={18} /> },
-  { href: '/admin/settings', label: 'Settings', icon: <Settings size={18} /> },
+interface AdminSidebarProps {
+  userRole?: AppRole;
+}
+
+const allNavItems = [
+  { href: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} />, adminOnly: false },
+  { href: '/admin/products', label: 'Products', icon: <Package size={18} />, adminOnly: false },
+  { href: '/admin/orders', label: 'Orders', icon: <ShoppingBag size={18} />, adminOnly: false },
+  { href: '/admin/lookbook', label: 'Lookbook', icon: <Images size={18} />, adminOnly: false },
+  { href: '/admin/customers', label: 'Customers', icon: <Users size={18} />, adminOnly: true },
+  { href: '/admin/reviews', label: 'Reviews', icon: <Star size={18} />, adminOnly: true },
+  { href: '/admin/settings', label: 'Settings', icon: <Settings size={18} />, adminOnly: true },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ userRole = 'admin' }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const isManager = userRole === 'manager';
+  const navItems = allNavItems.filter((item) => !isManager || !item.adminOnly);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -74,7 +83,7 @@ export default function AdminSidebar() {
               borderRadius: '8px',
               background: '#1A1A20',
               border: '1px solid #27272A',
-              color: 'var(--wy-yellow)',
+              color: isManager ? '#60A5FA' : 'var(--wy-yellow)',
               cursor: 'pointer',
             }}
           >
@@ -87,9 +96,9 @@ export default function AdminSidebar() {
             </span>
             <span
               style={{
-                background: 'rgba(255, 200, 0, 0.15)',
-                border: '1px solid rgba(255, 200, 0, 0.3)',
-                color: 'var(--wy-yellow)',
+                background: isManager ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 200, 0, 0.15)',
+                border: isManager ? '1px solid rgba(59, 130, 246, 0.35)' : '1px solid rgba(255, 200, 0, 0.3)',
+                color: isManager ? '#60A5FA' : 'var(--wy-yellow)',
                 fontSize: '0.62rem',
                 fontWeight: 800,
                 padding: '0.1rem 0.4rem',
@@ -98,7 +107,7 @@ export default function AdminSidebar() {
                 textTransform: 'uppercase',
               }}
             >
-              ADMIN
+              {isManager ? 'MANAGER' : 'ADMIN'}
             </span>
           </Link>
         </div>
@@ -165,11 +174,24 @@ export default function AdminSidebar() {
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #1E1E24' }}>
                 <div>
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: '#FFC800', letterSpacing: '0.08em' }}>
-                    WEAR YUNG
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: '#FFC800', letterSpacing: '0.08em' }}>
+                      WEAR YUNG
+                    </span>
+                    <span style={{
+                      fontSize: '0.6rem',
+                      fontWeight: 800,
+                      padding: '1px 5px',
+                      borderRadius: '3px',
+                      background: isManager ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 200, 0, 0.2)',
+                      color: isManager ? '#60A5FA' : '#FFC800',
+                      border: isManager ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid rgba(255, 200, 0, 0.4)',
+                    }}>
+                      {isManager ? 'MANAGER' : 'ADMIN'}
+                    </span>
+                  </div>
                   <div style={{ fontSize: '0.65rem', color: '#71717A', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '2px' }}>
-                    Administrator Portal
+                    {isManager ? 'Store Operations' : 'Master Control'}
                   </div>
                 </div>
 
@@ -212,9 +234,9 @@ export default function AdminSidebar() {
                         fontWeight: isActive ? 800 : 500,
                         textDecoration: 'none',
                         transition: 'all 0.15s ease',
-                        background: isActive ? 'rgba(255, 200, 0, 0.15)' : 'transparent',
-                        color: isActive ? 'var(--wy-yellow)' : '#A1A1AA',
-                        borderLeft: isActive ? '3px solid var(--wy-yellow)' : '3px solid transparent',
+                        background: isActive ? (isManager ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 200, 0, 0.15)') : 'transparent',
+                        color: isActive ? (isManager ? '#60A5FA' : '#FFC800') : '#A1A1AA',
+                        borderLeft: isActive ? `3px solid ${isManager ? '#60A5FA' : '#FFC800'}` : '3px solid transparent',
                       }}
                     >
                       {item.icon}
@@ -287,14 +309,29 @@ export default function AdminSidebar() {
           zIndex: 40,
         }}
       >
-        {/* Brand Logo */}
+        {/* Brand Logo & Role Badge */}
         <div style={{ padding: '1.5rem', borderBottom: '1px solid #1A1A1E' }}>
           <Link href="/admin" style={{ textDecoration: 'none', display: 'block' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: '#FFC800', letterSpacing: '0.08em' }}>
-              WEAR YUNG
-            </span>
-            <span style={{ display: 'block', fontSize: '0.68rem', color: '#A1A1AA', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: '2px', fontWeight: 600 }}>
-              Admin Portal
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', color: '#FFC800', letterSpacing: '0.08em' }}>
+                WEAR YUNG
+              </span>
+              <span style={{
+                background: isManager ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 200, 0, 0.15)',
+                border: isManager ? '1px solid rgba(59, 130, 246, 0.35)' : '1px solid rgba(255, 200, 0, 0.3)',
+                color: isManager ? '#60A5FA' : '#FFC800',
+                fontSize: '0.62rem',
+                fontWeight: 800,
+                padding: '0.1rem 0.4rem',
+                borderRadius: '4px',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+              }}>
+                {isManager ? 'MANAGER' : 'ADMIN'}
+              </span>
+            </div>
+            <span style={{ display: 'block', fontSize: '0.68rem', color: '#A1A1AA', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '3px', fontWeight: 600 }}>
+              {isManager ? 'Store Management Portal' : 'Master Control Portal'}
             </span>
           </Link>
         </div>
@@ -317,9 +354,9 @@ export default function AdminSidebar() {
                   fontWeight: isActive ? 800 : 600,
                   textDecoration: 'none',
                   transition: 'all 0.15s ease',
-                  background: isActive ? 'rgba(255,200,0,0.12)' : 'transparent',
-                  color: isActive ? '#FFC800' : '#D4D4D8',
-                  borderLeft: isActive ? '3px solid #FFC800' : '3px solid transparent',
+                  background: isActive ? (isManager ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,200,0,0.12)') : 'transparent',
+                  color: isActive ? (isManager ? '#60A5FA' : '#FFC800') : '#D4D4D8',
+                  borderLeft: isActive ? `3px solid ${isManager ? '#60A5FA' : '#FFC800'}` : '3px solid transparent',
                 }}
               >
                 {item.icon}

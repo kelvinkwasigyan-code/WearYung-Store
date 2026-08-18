@@ -36,11 +36,6 @@ export default function AdminLoginPage() {
     const supabase = createClient();
 
     try {
-      // Reject unauthorized emails upfront
-      if (!checkIsAdminEmail(email)) {
-        throw new Error('Wrong credentials');
-      }
-
       let authUser = null;
 
       // 1. Sign in with email and password
@@ -50,7 +45,7 @@ export default function AdminLoginPage() {
       });
 
       if (signInError) {
-        // If authorized admin email doesn't exist in Supabase auth yet, auto-provision
+        // If owner email doesn't exist in Supabase auth yet, auto-provision
         if (checkIsAdminEmail(email)) {
           const { data: signUpData } = await supabase.auth.signUp({
             email: email.trim(),
@@ -80,34 +75,43 @@ export default function AdminLoginPage() {
         authUser = signInData.user;
       }
 
-      if (!authUser || !checkIsAdminEmail(authUser.email)) {
-        if (authUser) {
-          await supabase.auth.signOut();
-        }
+      if (!authUser) {
         throw new Error('Wrong credentials');
       }
 
-      // 2. Fetch or update profile
+      // 2. Fetch profile to check role
+      const isOwnerEmail = checkIsAdminEmail(authUser.email);
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', authUser.id)
         .maybeSingle();
 
-      // Ensure admin role is set in the database for authorized admin
-      if (!profile) {
-        await supabase.from('profiles').upsert({
-          id: authUser.id,
-          role: 'admin',
-          full_name: authUser.user_metadata?.full_name || 'Admin',
-        });
-      } else if (profile.role !== 'admin') {
-        await supabase.from('profiles').update({ role: 'admin' }).eq('id', authUser.id);
+      const userRole = isOwnerEmail ? 'admin' : (profile?.role || 'customer');
+      const isAuthorizedStaff = userRole === 'admin' || userRole === 'manager';
+
+      if (!isAuthorizedStaff) {
+        await supabase.auth.signOut();
+        throw new Error('Wrong credentials');
+      }
+
+      // Ensure admin role in profile for owner
+      if (isOwnerEmail) {
+        if (!profile) {
+          await supabase.from('profiles').upsert({
+            id: authUser.id,
+            role: 'admin',
+            full_name: authUser.user_metadata?.full_name || 'Admin',
+          });
+        } else if (profile.role !== 'admin') {
+          await supabase.from('profiles').update({ role: 'admin' }).eq('id', authUser.id);
+        }
       }
 
       setSuccess(true);
       setTimeout(() => {
-        router.push('/admin');
+        // Redirect manager to products directly or dashboard
+        router.push(userRole === 'manager' ? '/admin/products' : '/admin');
         router.refresh();
       }, 700);
 

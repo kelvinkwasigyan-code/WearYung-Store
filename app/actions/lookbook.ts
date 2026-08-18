@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { isAdminEmail } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
-async function verifyAdmin() {
+async function verifyStaff() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -14,6 +14,8 @@ async function verifyAdmin() {
   }
 
   const isEmailAdmin = isAdminEmail(user.email);
+  let userRole = isEmailAdmin ? 'admin' : 'customer';
+
   if (!isEmailAdmin) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -21,9 +23,11 @@ async function verifyAdmin() {
       .eq('id', user.id)
       .maybeSingle();
 
-    if (profile?.role !== 'admin') {
-      throw new Error('Forbidden. Admin privileges required.');
-    }
+    userRole = profile?.role || 'customer';
+  }
+
+  if (userRole !== 'admin' && userRole !== 'manager') {
+    throw new Error('Forbidden. Staff privileges required.');
   }
 
   // Ensure role is admin in profile if authorized by email
@@ -44,7 +48,7 @@ async function verifyAdmin() {
     }
   }
 
-  return { user, db, supabase };
+  return { user, db, supabase, role: userRole };
 }
 
 export interface SaveLookbookInput {
@@ -63,7 +67,7 @@ export interface SaveLookbookInput {
 
 export async function saveLookbookAction(input: SaveLookbookInput) {
   try {
-    const { db } = await verifyAdmin();
+    const { db } = await verifyStaff();
     const { id, payload } = input;
 
     if (id) {
@@ -96,7 +100,7 @@ export async function saveLookbookAction(input: SaveLookbookInput) {
 
 export async function deleteLookbookAction(id: string) {
   try {
-    const { db } = await verifyAdmin();
+    const { db } = await verifyStaff();
     const { error } = await db.from('lookbooks').delete().eq('id', id);
     if (error) throw new Error(error.message);
 
@@ -111,7 +115,7 @@ export async function deleteLookbookAction(id: string) {
 
 export async function togglePublishLookbookAction(id: string, is_published: boolean) {
   try {
-    const { db } = await verifyAdmin();
+    const { db } = await verifyStaff();
     const { error } = await db
       .from('lookbooks')
       .update({ is_published })

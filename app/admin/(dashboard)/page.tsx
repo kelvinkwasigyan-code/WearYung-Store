@@ -1,30 +1,60 @@
 import { createClient } from '@/lib/supabase/server';
 import StatsCard from '@/components/admin/StatsCard';
-import { Package, ShoppingBag, Users, TrendingUp } from 'lucide-react';
+import { Package, ShoppingBag, Users, TrendingUp, Clock, AlertTriangle } from 'lucide-react';
+import { isAdminEmail } from '@/lib/constants';
 
 export const metadata = { title: 'Admin Dashboard | WEAR YUNG' };
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  const isOwner = isAdminEmail(user?.email);
+
+  let userRole = isOwner ? 'admin' : 'customer';
+  let userName = 'Admin';
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, full_name')
+      .eq('id', user.id)
+      .maybeSingle();
+    
+    if (isOwner) {
+      userRole = 'admin';
+    } else {
+      userRole = profile?.role || 'customer';
+    }
+    userName = profile?.full_name || (isOwner ? 'Dani' : 'Manager');
+  }
+
+  const isManager = userRole === 'manager';
+
+  // Fetch metrics based on role permissions
   const [
     { count: productCount },
     { count: orderCount },
+    { count: pendingOrderCount },
     { count: customerCount },
     { data: recentOrders },
     { data: revenueData },
+    { data: lowStockVariants },
   ] = await Promise.all([
     supabase.from('products').select('*', { count: 'exact', head: true }),
     supabase.from('orders').select('*', { count: 'exact', head: true }),
+    supabase.from('orders').select('*', { count: 'exact', head: true }).in('status', ['pending', 'processing']),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('orders')
-      .select('id, total_amount, status, payment_status, created_at, guest_email, profiles(full_name)')
+      .select('id, total_amount, status, payment_status, created_at, guest_email, customer_name, profiles(full_name)')
       .order('created_at', { ascending: false })
       .limit(8),
-    supabase.from('orders').select('total_amount').eq('payment_status', 'paid'),
+    !isManager ? supabase.from('orders').select('total_amount').eq('payment_status', 'paid') : Promise.resolve({ data: null }),
+    supabase.from('product_variants').select('id, stock_quantity').lte('stock_quantity', 2),
   ]);
 
   const totalRevenue = revenueData?.reduce((sum, o) => sum + Number(o.total_amount), 0) ?? 0;
+  const lowStockCount = lowStockVariants?.length ?? 0;
 
   const statusColors: Record<string, string> = {
     pending: '#f59e0b',
@@ -43,17 +73,35 @@ export default async function AdminDashboardPage() {
     <div>
       {/* Header */}
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(2rem, 4vw, 2.75rem)',
-          color: '#FFFFFF',
-          letterSpacing: '0.04em',
-          marginBottom: '0.25rem',
-        }}>
-          {greeting}, DANI
-        </h1>
-        <p style={{ color: '#A1A1AA', fontSize: '0.875rem' }}>
-          Live overview of your WEAR YUNG store
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h1 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(2rem, 4vw, 2.75rem)',
+            color: '#FFFFFF',
+            letterSpacing: '0.04em',
+            lineHeight: 1.1,
+          }}>
+            {greeting}, {userName.toUpperCase()}
+          </h1>
+          <span style={{
+            fontSize: '0.65rem',
+            fontWeight: 800,
+            padding: '2px 8px',
+            borderRadius: '4px',
+            background: isManager ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 200, 0, 0.15)',
+            color: isManager ? '#60A5FA' : '#FFC800',
+            border: isManager ? '1px solid rgba(59, 130, 246, 0.35)' : '1px solid rgba(255, 200, 0, 0.3)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+          }}>
+            {isManager ? 'STORE MANAGER' : 'MASTER ADMIN'}
+          </span>
+        </div>
+        <p style={{ color: '#A1A1AA', fontSize: '0.875rem', marginTop: '0.35rem' }}>
+          {isManager
+            ? 'Store management and live catalog operations overview.'
+            : 'Live business overview and master controls of your WEAR YUNG store.'
+          }
         </p>
       </div>
 
@@ -67,31 +115,55 @@ export default async function AdminDashboardPage() {
         <StatsCard
           title="Total Products"
           value={productCount ?? 0}
-          subtitle="Published in store"
+          subtitle="In product catalog"
           icon={<Package size={20} />}
           accent="#FFC800"
         />
         <StatsCard
           title="Total Orders"
           value={orderCount ?? 0}
-          subtitle="All time"
+          subtitle="Processed orders"
           icon={<ShoppingBag size={20} />}
           accent="#3b82f6"
         />
-        <StatsCard
-          title="Revenue"
-          value={`GH₵ ${totalRevenue.toFixed(2)}`}
-          subtitle="From paid orders"
-          icon={<TrendingUp size={20} />}
-          accent="#10b981"
-        />
-        <StatsCard
-          title="Customers"
-          value={customerCount ?? 0}
-          subtitle="Registered accounts"
-          icon={<Users size={20} />}
-          accent="#8b5cf6"
-        />
+
+        {/* Manager View: Operational metrics only (Revenue & Customers are hidden) */}
+        {isManager ? (
+          <>
+            <StatsCard
+              title="Active / Pending Orders"
+              value={pendingOrderCount ?? 0}
+              subtitle="Requires fulfillment"
+              icon={<Clock size={20} />}
+              accent="#f59e0b"
+            />
+            <StatsCard
+              title="Low Stock Alerts"
+              value={lowStockCount}
+              subtitle="Items with ≤ 2 stock"
+              icon={<AlertTriangle size={20} />}
+              accent="#ef4444"
+            />
+          </>
+        ) : (
+          /* Admin View: Full financial revenue & customer growth */
+          <>
+            <StatsCard
+              title="Sales Revenue"
+              value={`GH₵ ${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` }
+              subtitle="From completed payments"
+              icon={<TrendingUp size={20} />}
+              accent="#10b981"
+            />
+            <StatsCard
+              title="Customers"
+              value={customerCount ?? 0}
+              subtitle="Registered user accounts"
+              icon={<Users size={20} />}
+              accent="#8b5cf6"
+            />
+          </>
+        )}
       </div>
 
       {/* Recent Orders */}
@@ -131,7 +203,7 @@ export default async function AdminDashboardPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #27272A', background: '#111113' }}>
-                  {['Order ID', 'Customer', 'Amount', 'Status', 'Date'].map((h) => (
+                  {['Order ID', 'Customer', 'Items/Amount', 'Status', 'Date'].map((h) => (
                     <th key={h} style={{
                       padding: '0.85rem 1.5rem',
                       textAlign: 'left',
@@ -153,7 +225,7 @@ export default async function AdminDashboardPage() {
                       #{order.id.slice(0, 8)}
                     </td>
                     <td style={{ padding: '0.875rem 1.5rem', color: '#FFFFFF', fontWeight: 500 }}>
-                      {(order.profiles as any)?.full_name || order.guest_email || 'Guest'}
+                      {(order.profiles as any)?.full_name || order.customer_name || order.guest_email || 'Customer'}
                     </td>
                     <td style={{ padding: '0.875rem 1.5rem', color: '#FFC800', fontWeight: 700 }}>
                       GH₵ {order.total_amount}

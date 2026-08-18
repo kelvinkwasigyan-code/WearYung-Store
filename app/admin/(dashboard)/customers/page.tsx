@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   fetchAdminCustomersAction,
   syncExistingCustomersAction,
-  toggleCustomerRoleAction,
+  updateCustomerRoleAction,
   AdminCustomer,
 } from '@/app/actions/admin-customers';
 import {
@@ -20,14 +21,19 @@ import {
   DollarSign,
   Users,
   CheckCircle2,
+  Briefcase,
+  UserCheck,
+  UserX,
+  ChevronDown,
 } from 'lucide-react';
 
 export default function AdminCustomersPage() {
+  const router = useRouter();
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'customer' | 'admin'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'customer' | 'manager' | 'admin'>('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -41,13 +47,15 @@ export default function AdminCustomersPage() {
     else setLoading(true);
 
     try {
-      // Auto-sync in the background on refresh or initial load
       syncExistingCustomersAction().catch(() => {});
-
       const res = await fetchAdminCustomersAction();
       if (res.success && res.customers) {
         setCustomers(res.customers);
       } else {
+        if (res.error?.includes('Forbidden') || res.error?.includes('Unauthorized')) {
+          router.replace('/admin/products');
+          return;
+        }
         showToast(res.error || 'Failed to fetch registered customers');
       }
     } catch (err: any) {
@@ -62,19 +70,17 @@ export default function AdminCustomersPage() {
     loadCustomers();
   }, []);
 
-  const handleRoleToggle = async (customer: AdminCustomer) => {
-    const newRole = customer.role === 'admin' ? 'customer' : 'admin';
-    const confirmText = customer.role === 'admin'
-      ? `Demote ${customer.full_name || customer.email} from Admin to Customer?`
-      : `Promote ${customer.full_name || customer.email} to Admin?`;
+  const handleSetRole = async (customer: AdminCustomer, targetRole: 'admin' | 'manager' | 'customer') => {
+    const actionLabel = targetRole === 'customer' ? 'Demote to Customer' : `Promote to ${targetRole.toUpperCase()}`;
+    const name = customer.full_name || customer.email;
 
-    if (!confirm(confirmText)) return;
+    if (!confirm(`${actionLabel} for "${name}"?`)) return;
 
     setUpdatingId(customer.id);
     try {
-      const res = await toggleCustomerRoleAction(customer.id, newRole);
+      const res = await updateCustomerRoleAction(customer.id, targetRole);
       if (res.success) {
-        showToast(res.message || `Updated role to ${newRole}`);
+        showToast(res.message || `Updated role to ${targetRole.toUpperCase()}`);
         await loadCustomers(true);
       } else {
         showToast(res.error || 'Failed to update role');
@@ -101,6 +107,7 @@ export default function AdminCustomersPage() {
   });
 
   const totalRegistered = customers.length;
+  const totalManagers = customers.filter((c) => c.role === 'manager').length;
   const activeBuyers = customers.filter((c) => c.orders_count > 0).length;
   const totalCustomerRevenue = customers.reduce((sum, c) => sum + (c.total_spent || 0), 0);
 
@@ -149,7 +156,7 @@ export default function AdminCustomersPage() {
             CUSTOMERS DIRECTORY
           </h1>
           <p style={{ color: '#A1A1AA', fontSize: '0.875rem', marginTop: '0.35rem' }}>
-            Unified directory of registered user profiles, order accounts, and purchase metrics.
+            Unified directory of registered customer profiles, staff managers, and purchase metrics.
           </p>
         </div>
 
@@ -212,10 +219,42 @@ export default function AdminCustomersPage() {
           </div>
           <div>
             <p style={{ color: '#71717A', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Total Customers
+              Total Accounts
             </p>
             <p style={{ color: '#FFFFFF', fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-display)', marginTop: '0.15rem' }}>
               {totalRegistered}
+            </p>
+          </div>
+        </div>
+
+        <div style={{
+          background: '#0F0F12',
+          border: '1px solid #27272A',
+          borderRadius: '12px',
+          padding: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+        }}>
+          <div style={{
+            width: '46px',
+            height: '46px',
+            borderRadius: '10px',
+            background: 'rgba(59, 130, 246, 0.1)',
+            border: '1px solid rgba(59, 130, 246, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#60A5FA',
+          }}>
+            <Briefcase size={22} />
+          </div>
+          <div>
+            <p style={{ color: '#71717A', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Staff Managers
+            </p>
+            <p style={{ color: '#FFFFFF', fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-display)', marginTop: '0.15rem' }}>
+              {totalManagers}
             </p>
           </div>
         </div>
@@ -265,12 +304,12 @@ export default function AdminCustomersPage() {
             width: '46px',
             height: '46px',
             borderRadius: '10px',
-            background: 'rgba(59, 130, 246, 0.1)',
-            border: '1px solid rgba(59, 130, 246, 0.25)',
+            background: 'rgba(255, 200, 0, 0.1)',
+            border: '1px solid rgba(255, 200, 0, 0.25)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#60A5FA',
+            color: '#FFC800',
           }}>
             <DollarSign size={22} />
           </div>
@@ -319,16 +358,21 @@ export default function AdminCustomersPage() {
 
         {/* Role Tabs */}
         <div style={{ display: 'flex', gap: '0.4rem', background: '#121214', padding: '4px', borderRadius: '8px', border: '1px solid #27272A' }}>
-          {(['all', 'customer', 'admin'] as const).map((tab) => (
+          {([
+            { key: 'all', label: `All (${customers.length})` },
+            { key: 'customer', label: 'Customers' },
+            { key: 'manager', label: `Managers (${totalManagers})` },
+            { key: 'admin', label: 'Admins' },
+          ] as const).map((tab) => (
             <button
-              key={tab}
-              onClick={() => setRoleFilter(tab)}
+              key={tab.key}
+              onClick={() => setRoleFilter(tab.key)}
               style={{
                 padding: '0.4rem 0.85rem',
                 borderRadius: '6px',
                 border: 'none',
-                background: roleFilter === tab ? '#FFC800' : 'transparent',
-                color: roleFilter === tab ? '#000000' : '#A1A1AA',
+                background: roleFilter === tab.key ? '#FFC800' : 'transparent',
+                color: roleFilter === tab.key ? '#000000' : '#A1A1AA',
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 textTransform: 'uppercase',
@@ -337,7 +381,7 @@ export default function AdminCustomersPage() {
                 transition: 'all 0.2s',
               }}
             >
-              {tab === 'all' ? `All (${customers.length})` : tab}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -369,7 +413,7 @@ export default function AdminCustomersPage() {
               <thead>
                 <tr style={{ borderBottom: '1px solid #27272A', background: '#111114' }}>
                   <th style={{ padding: '0.9rem 1.25rem', textAlign: 'left', color: '#71717A', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    Customer
+                    Customer / Staff
                   </th>
                   <th style={{ padding: '0.9rem 1.25rem', textAlign: 'left', color: '#71717A', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Contact
@@ -378,19 +422,22 @@ export default function AdminCustomersPage() {
                     Orders & Spend
                   </th>
                   <th style={{ padding: '0.9rem 1.25rem', textAlign: 'left', color: '#71717A', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    Role
+                    Role & Access
                   </th>
                   <th style={{ padding: '0.9rem 1.25rem', textAlign: 'left', color: '#71717A', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Joined
                   </th>
                   <th style={{ padding: '0.9rem 1.25rem', textAlign: 'right', color: '#71717A', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    Actions
+                    Manage Role
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredCustomers.map((c) => {
                   const isAdm = c.role === 'admin';
+                  const isMgr = c.role === 'manager';
+                  const isBusy = updatingId === c.id;
+
                   return (
                     <tr
                       key={c.id}
@@ -408,14 +455,20 @@ export default function AdminCustomersPage() {
                             width: '40px',
                             height: '40px',
                             borderRadius: '50%',
-                            background: isAdm ? 'rgba(255,200,0,0.15)' : '#1A1A20',
-                            border: `1px solid ${isAdm ? 'rgba(255,200,0,0.35)' : '#27272A'}`,
+                            background: isAdm ? 'rgba(255,200,0,0.15)' : (isMgr ? 'rgba(59,130,246,0.15)' : '#1A1A20'),
+                            border: `1px solid ${isAdm ? 'rgba(255,200,0,0.35)' : (isMgr ? 'rgba(59,130,246,0.35)' : '#27272A')}`,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             flexShrink: 0,
                           }}>
-                            {isAdm ? <Shield size={18} color="#FFC800" /> : <User size={18} color="#A1A1AA" />}
+                            {isAdm ? (
+                              <Shield size={18} color="#FFC800" />
+                            ) : isMgr ? (
+                              <Briefcase size={18} color="#60A5FA" />
+                            ) : (
+                              <User size={18} color="#A1A1AA" />
+                            )}
                           </div>
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -471,22 +524,33 @@ export default function AdminCustomersPage() {
                         </div>
                       </td>
 
-                      {/* Role */}
+                      {/* Role & Access Badge */}
                       <td style={{ padding: '1rem 1.25rem' }}>
-                        <span style={{
-                          display: 'inline-block',
-                          padding: '0.25rem 0.6rem',
-                          borderRadius: '4px',
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          letterSpacing: '0.06em',
-                          textTransform: 'uppercase',
-                          background: isAdm ? 'rgba(255, 200, 0, 0.15)' : '#18181B',
-                          color: isAdm ? '#FFC800' : '#A1A1AA',
-                          border: isAdm ? '1px solid rgba(255, 200, 0, 0.35)' : '1px solid #27272A',
-                        }}>
-                          {c.role}
-                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            padding: '0.25rem 0.6rem',
+                            borderRadius: '4px',
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            letterSpacing: '0.06em',
+                            textTransform: 'uppercase',
+                            width: 'fit-content',
+                            background: isAdm ? 'rgba(255, 200, 0, 0.15)' : (isMgr ? 'rgba(59, 130, 246, 0.15)' : '#18181B'),
+                            color: isAdm ? '#FFC800' : (isMgr ? '#60A5FA' : '#A1A1AA'),
+                            border: isAdm ? '1px solid rgba(255, 200, 0, 0.35)' : (isMgr ? '1px solid rgba(59, 130, 246, 0.35)' : '1px solid #27272A'),
+                          }}>
+                            {isAdm && <Shield size={11} />}
+                            {isMgr && <Briefcase size={11} />}
+                            <span>{c.role}</span>
+                          </span>
+
+                          <span style={{ fontSize: '0.68rem', color: '#71717A' }}>
+                            {isAdm ? 'Full Access' : isMgr ? 'Products & Orders (No Revenue)' : 'Storefront Customer'}
+                          </span>
+                        </div>
                       </td>
 
                       {/* Joined Date */}
@@ -497,30 +561,94 @@ export default function AdminCustomersPage() {
                         </div>
                       </td>
 
-                      {/* Actions */}
+                      {/* Role Actions */}
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
-                        <button
-                          onClick={() => handleRoleToggle(c)}
-                          disabled={updatingId === c.id || c.source === 'order_guest'}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                            padding: '0.4rem 0.8rem',
-                            background: isAdm ? '#18181B' : 'rgba(255, 200, 0, 0.1)',
-                            color: isAdm ? '#EF4444' : '#FFC800',
-                            border: `1px solid ${isAdm ? '#27272A' : 'rgba(255, 200, 0, 0.3)'}`,
-                            borderRadius: '6px',
-                            fontSize: '0.72rem',
-                            fontWeight: 700,
-                            cursor: updatingId === c.id || c.source === 'order_guest' ? 'not-allowed' : 'pointer',
-                            opacity: updatingId === c.id || c.source === 'order_guest' ? 0.4 : 1,
-                            transition: 'all 0.15s',
-                          }}
-                        >
-                          <Shield size={12} />
-                          <span>{isAdm ? 'Demote' : 'Promote'}</span>
-                        </button>
+                        {c.source === 'order_guest' ? (
+                          <span style={{ fontSize: '0.72rem', color: '#52525B' }}>Guest (Unregistered)</span>
+                        ) : (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                            {/* Option to Make Manager */}
+                            {!isMgr && (
+                              <button
+                                onClick={() => handleSetRole(c, 'manager')}
+                                disabled={isBusy}
+                                title="Grant staff access to upload products and view orders (revenue hidden)"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.3rem',
+                                  padding: '0.35rem 0.65rem',
+                                  background: 'rgba(59, 130, 246, 0.1)',
+                                  color: '#60A5FA',
+                                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                                  borderRadius: '6px',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 700,
+                                  cursor: isBusy ? 'not-allowed' : 'pointer',
+                                  opacity: isBusy ? 0.5 : 1,
+                                  transition: 'all 0.15s',
+                                }}
+                              >
+                                <Briefcase size={11} />
+                                <span>Make Manager</span>
+                              </button>
+                            )}
+
+                            {/* Option to Make Admin */}
+                            {!isAdm && (
+                              <button
+                                onClick={() => handleSetRole(c, 'admin')}
+                                disabled={isBusy}
+                                title="Grant full administrative privileges"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.3rem',
+                                  padding: '0.35rem 0.65rem',
+                                  background: 'rgba(255, 200, 0, 0.1)',
+                                  color: '#FFC800',
+                                  border: '1px solid rgba(255, 200, 0, 0.3)',
+                                  borderRadius: '6px',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 700,
+                                  cursor: isBusy ? 'not-allowed' : 'pointer',
+                                  opacity: isBusy ? 0.5 : 1,
+                                  transition: 'all 0.15s',
+                                }}
+                              >
+                                <Shield size={11} />
+                                <span>Make Admin</span>
+                              </button>
+                            )}
+
+                            {/* Option to Demote to Customer */}
+                            {(isAdm || isMgr) && (
+                              <button
+                                onClick={() => handleSetRole(c, 'customer')}
+                                disabled={isBusy}
+                                title="Revoke staff privileges and return to regular customer"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.3rem',
+                                  padding: '0.35rem 0.65rem',
+                                  background: 'rgba(239, 68, 68, 0.1)',
+                                  color: '#EF4444',
+                                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                                  borderRadius: '6px',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 700,
+                                  cursor: isBusy ? 'not-allowed' : 'pointer',
+                                  opacity: isBusy ? 0.5 : 1,
+                                  transition: 'all 0.15s',
+                                }}
+                              >
+                                <UserX size={11} />
+                                <span>Demote</span>
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );

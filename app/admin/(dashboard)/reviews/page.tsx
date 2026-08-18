@@ -1,16 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { isAdminEmail } from '@/lib/constants';
 import { Star, Trash2, Loader2 } from 'lucide-react';
 
 export default function AdminReviewsPage() {
+  const router = useRouter();
   const supabase = createClient();
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchReviews = async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user && !isAdminEmail(user.email)) {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+      if (profile?.role === 'manager') {
+        router.replace('/admin/products');
+        return;
+      }
+    }
+
     const { data } = await supabase
       .from('product_reviews')
       .select('*, products(title)')

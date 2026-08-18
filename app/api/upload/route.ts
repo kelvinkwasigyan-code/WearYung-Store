@@ -25,11 +25,11 @@ export async function POST(request: NextRequest) {
         .select('role')
         .eq('id', user.id)
         .maybeSingle();
-      isAdmin = profile?.role === 'admin';
+      isAdmin = profile?.role === 'admin' || profile?.role === 'manager';
     }
 
     if (!isAdmin) {
-      return NextResponse.json({ error: 'Forbidden. Admin privileges required.' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden. Staff privileges required.' }, { status: 403 });
     }
 
     // 2. Extract File from FormData

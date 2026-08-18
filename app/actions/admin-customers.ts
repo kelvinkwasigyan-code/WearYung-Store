@@ -270,7 +270,7 @@ export async function syncExistingCustomersAction(): Promise<{ success: boolean;
   }
 }
 
-export async function toggleCustomerRoleAction(userId: string, newRole: 'admin' | 'customer') {
+export async function updateCustomerRoleAction(userId: string, newRole: 'admin' | 'manager' | 'customer') {
   try {
     const { db } = await verifyAdmin();
 
@@ -282,9 +282,12 @@ export async function toggleCustomerRoleAction(userId: string, newRole: 'admin' 
     if (error) throw new Error(error.message);
 
     revalidatePath('/admin/customers');
-    return { success: true, message: `User role updated to ${newRole}` };
+    return { success: true, message: `User role updated to ${newRole.toUpperCase()}` };
   } catch (error: any) {
-    console.error('[toggleCustomerRoleAction error]:', error);
+    console.error('[updateCustomerRoleAction error]:', error);
     return { success: false, error: error.message || 'Failed to update user role' };
   }
 }
+
+// Alias for backwards compatibility
+export const toggleCustomerRoleAction = updateCustomerRoleAction;

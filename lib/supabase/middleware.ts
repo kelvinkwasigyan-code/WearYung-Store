@@ -42,10 +42,29 @@ export async function updateSession(request: NextRequest) {
       (!!process.env.ADMIN_NOTIFICATION_EMAIL && userEmail === process.env.ADMIN_NOTIFICATION_EMAIL.toLowerCase());
 
     if (!isAdminByEmail) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin/login';
-      url.searchParams.set('error', 'unauthorized');
-      return NextResponse.redirect(url);
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const isManager = profile?.role === 'manager';
+      const isAdmin = profile?.role === 'admin';
+
+      if (!isManager && !isAdmin) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/admin/login';
+        url.searchParams.set('error', 'unauthorized');
+        return NextResponse.redirect(url);
+      }
+
+      // Restrict Manager from sensitive admin-only pages (Customers, Reviews, Settings)
+      const pathname = request.nextUrl.pathname;
+      if (isManager && (pathname.startsWith('/admin/customers') || pathname.startsWith('/admin/reviews') || pathname.startsWith('/admin/settings'))) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/admin/products';
+        return NextResponse.redirect(url);
+      }
     }
   }
 

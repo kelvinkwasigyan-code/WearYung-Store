@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import { ADMIN_EMAILS } from '@/lib/constants';
+import { ADMIN_EMAILS, AppRole } from '@/lib/constants';
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -21,33 +21,33 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     .eq('id', user.id)
     .maybeSingle();
 
-  // Strict check: ONLY authorized admin emails are granted access
-  if (!isAdminByEmail) {
-    // Revoke 'admin' role from any unauthorized email in database
-    if (profile?.role === 'admin') {
-      await supabase
-        .from('profiles')
-        .update({ role: 'customer' })
-        .eq('id', user.id);
-    }
+  const isManager = profile?.role === 'manager';
+  const isAdmin = isAdminByEmail || profile?.role === 'admin';
+
+  // Strict check: ONLY authorized admin or manager can access staff portal
+  if (!isAdmin && !isManager) {
     redirect('/admin/login');
   }
 
-  // Ensure authorized admin has 'admin' role in profiles table
-  if (!profile) {
-    await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        role: 'admin',
-        full_name: user.user_metadata?.full_name || 'Admin',
-      });
-  } else if (profile.role !== 'admin') {
-    await supabase
-      .from('profiles')
-      .update({ role: 'admin' })
-      .eq('id', user.id);
+  // Ensure authorized owner has 'admin' role in profiles table
+  if (isAdminByEmail) {
+    if (!profile) {
+      await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          role: 'admin',
+          full_name: user.user_metadata?.full_name || 'Admin',
+        });
+    } else if (profile.role !== 'admin') {
+      await supabase
+        .from('profiles')
+        .update({ role: 'admin' })
+        .eq('id', user.id);
+    }
   }
+
+  const effectiveRole: AppRole = isAdmin ? 'admin' : 'manager';
 
   return (
     <div style={{
@@ -58,7 +58,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
       width: '100%',
       overflowX: 'hidden',
     }}>
-      <AdminSidebar />
+      <AdminSidebar userRole={effectiveRole} />
       <main className="admin-layout-main">
         {children}
       </main>
