@@ -127,6 +127,9 @@ export async function fetchAdminCustomersAction(): Promise<{ success: boolean; c
       const email = p.email || authInfo?.email || stats?.email || 'Registered User';
       const name = p.full_name || authInfo?.raw_user_meta_data?.full_name || stats?.name || 'Customer';
       const phone = p.phone_number || authInfo?.raw_user_meta_data?.phone_number || stats?.phone || '';
+      const resolvedRole = (p.role === 'manager' || authInfo?.raw_user_meta_data?.role === 'manager')
+        ? 'manager'
+        : (p.role === 'admin' || isAdminEmail(email) ? 'admin' : (p.role || 'customer'));
 
       if (email && email !== 'Registered User') {
         trackedEmails.add(email.toLowerCase());
@@ -137,7 +140,7 @@ export async function fetchAdminCustomersAction(): Promise<{ success: boolean; c
         email,
         full_name: name,
         phone_number: phone,
-        role: p.role || 'customer',
+        role: resolvedRole,
         orders_count: stats?.count || 0,
         total_spent: stats?.spent || 0,
         created_at: p.created_at || authInfo?.created_at || new Date().toISOString(),
@@ -152,6 +155,8 @@ export async function fetchAdminCustomersAction(): Promise<{ success: boolean; c
         const email = authUser.email || '';
         const stats = orderStatsByUser[userId] || (email ? orderStatsByEmail[email.toLowerCase()] : undefined);
         const isAdm = isAdminEmail(email);
+        const userMetaRole = authUser.raw_user_meta_data?.role;
+        const resolvedRole = isAdm ? 'admin' : (userMetaRole === 'manager' ? 'manager' : 'customer');
 
         if (email) {
           trackedEmails.add(email.toLowerCase());
@@ -162,7 +167,7 @@ export async function fetchAdminCustomersAction(): Promise<{ success: boolean; c
           email: email || 'Registered User',
           full_name: authUser.raw_user_meta_data?.full_name || (isAdm ? 'Admin' : 'Customer'),
           phone_number: authUser.raw_user_meta_data?.phone_number || stats?.phone || '',
-          role: isAdm ? 'admin' : 'customer',
+          role: resolvedRole,
           orders_count: stats?.count || 0,
           total_spent: stats?.spent || 0,
           created_at: authUser.created_at || new Date().toISOString(),
@@ -208,20 +213,27 @@ export async function syncExistingCustomersAction(): Promise<{ success: boolean;
     const { db } = await verifyAdmin();
     let syncedCount = 0;
 
-    // 1. If service role key is available, sync from auth.users into profiles
+    // 1. If service role key is available, sync from auth.users into profiles WITHOUT overwriting existing manager roles
     try {
       if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
         const adminClient = createAdminClient();
         const { data: authData } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
         if (authData?.users) {
+          const { data: existingProfiles } = await db.from('profiles').select('id, role');
+          const existingRoleMap = new Map((existingProfiles || []).map((p: any) => [p.id, p.role]));
+
           for (const u of authData.users) {
             const isAdm = isAdminEmail(u.email);
+            const currentRole = existingRoleMap.get(u.id);
+            const metaRole = u.user_metadata?.role;
+            const roleToSave = isAdm ? 'admin' : (currentRole || metaRole || 'customer');
+
             const { error: upsertErr } = await db.from('profiles').upsert({
               id: u.id,
               email: u.email,
               full_name: u.user_metadata?.full_name || (isAdm ? 'Admin' : 'Customer'),
               phone_number: u.user_metadata?.phone_number || '',
-              role: isAdm ? 'admin' : 'customer',
+              role: roleToSave,
             });
             if (!upsertErr) syncedCount++;
           }
@@ -279,15 +291,34 @@ export async function updateCustomerRoleAction(userId: string, newRole: 'manager
       return { success: false, error: 'Only Manager and Customer roles are configurable.' };
     }
 
-    const { error } = await db
+    // 1. Update profiles table
+    const { error: profileError } = await db
       .from('profiles')
       .update({ role: newRole })
       .eq('id', userId);
 
-    if (error) throw new Error(error.message);
+    if (profileError) {
+      console.warn('[updateCustomerRoleAction] Profile table update warning:', profileError);
+    }
+
+    // 2. Also update Supabase auth.users metadata
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      try {
+        const adminClient = createAdminClient();
+        await adminClient.auth.admin.updateUserById(userId, {
+          user_metadata: { role: newRole },
+        });
+      } catch (authErr) {
+        console.warn('[updateCustomerRoleAction] Auth user metadata update warning:', authErr);
+      }
+    }
 
     revalidatePath('/admin/customers');
-    return { success: true, message: `User role updated to ${newRole.toUpperCase()}` };
+    revalidatePath('/admin');
+    return {
+      success: true,
+      message: `User role successfully updated to ${newRole === 'manager' ? 'STORE MANAGER' : 'CUSTOMER'}`,
+    };
   } catch (error: any) {
     console.error('[updateCustomerRoleAction error]:', error);
     return { success: false, error: error.message || 'Failed to update user role' };

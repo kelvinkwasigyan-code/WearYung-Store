@@ -77,15 +77,27 @@ export default function AdminCustomersPage() {
     if (!confirm(`${actionLabel} for "${name}"?`)) return;
 
     setUpdatingId(customer.id);
+    // Optimistic update
+    setCustomers((prev) =>
+      prev.map((c) => (c.id === customer.id ? { ...c, role: targetRole } : c))
+    );
+
     try {
       const res = await updateCustomerRoleAction(customer.id, targetRole);
       if (res.success) {
         showToast(res.message || `Updated role to ${targetRole.toUpperCase()}`);
         await loadCustomers(true);
       } else {
+        // Revert on error
+        setCustomers((prev) =>
+          prev.map((c) => (c.id === customer.id ? { ...c, role: customer.role } : c))
+        );
         showToast(res.error || 'Failed to update role');
       }
     } catch (err: any) {
+      setCustomers((prev) =>
+        prev.map((c) => (c.id === customer.id ? { ...c, role: customer.role } : c))
+      );
       showToast(err?.message || 'Role update error');
     } finally {
       setUpdatingId(null);
