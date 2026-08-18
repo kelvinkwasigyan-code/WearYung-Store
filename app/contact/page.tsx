@@ -228,7 +228,7 @@ export default function ContactPage() {
                   background: '#FFFFFF',
                   border: '1px solid #E5E7EB',
                   borderRadius: '16px',
-                  padding: '3rem 2.5rem',
+                  padding: 'clamp(1.5rem, 5vw, 3rem) clamp(1.2rem, 4vw, 2.5rem)',
                   boxShadow: '0 10px 40px -10px rgba(0,0,0,0.04)',
                 }}
               >
@@ -248,8 +248,8 @@ export default function ContactPage() {
                   Fill out the form below and we will get back to you as soon as possible.
                 </p>
 
-                <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+                <form style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <label htmlFor="name" style={{ color: '#3F3F46', fontSize: '0.85rem', fontWeight: 600 }}>
                         Full Name *
@@ -257,7 +257,7 @@ export default function ContactPage() {
                       <input
                         type="text"
                         id="name"
-                        placeholder="John Doe"
+                        placeholder="Kwesi Gyan"
                         className="input-wy"
                         required
                         style={{ padding: '0.85rem 1rem', background: '#F8F9FA', color: '#18181B', border: '1px solid #E5E7EB', borderRadius: '8px' }}
@@ -270,7 +270,7 @@ export default function ContactPage() {
                       <input
                         type="email"
                         id="email"
-                        placeholder="john@example.com"
+                        placeholder="kwesi@example.com"
                         className="input-wy"
                         required
                         style={{ padding: '0.85rem 1rem', background: '#F8F9FA', color: '#18181B', border: '1px solid #E5E7EB', borderRadius: '8px' }}
@@ -278,7 +278,7 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <label htmlFor="phone" style={{ color: '#3F3F46', fontSize: '0.85rem', fontWeight: 600 }}>
                         Phone Number
@@ -314,14 +314,15 @@ export default function ContactPage() {
                       className="input-wy"
                       required
                       defaultValue=""
-                      style={{ padding: '0.85rem 1rem', background: '#F8F9FA', color: '#18181B', border: '1px solid #E5E7EB', borderRadius: '8px', cursor: 'pointer', appearance: 'none' }}
+                      style={{ padding: '0.85rem 1rem', background: '#F8F9FA', color: '#18181B', border: '1px solid #E5E7EB', borderRadius: '8px', cursor: 'pointer' }}
                     >
                       <option value="" disabled>Select an inquiry type</option>
-                      <option value="order_status">Order Status</option>
-                      <option value="returns">Returns & Exchanges</option>
-                      <option value="sizing">Sizing & Fit</option>
-                      <option value="general">General Inquiry</option>
+                      <option value="order_status">Order Status & Tracking</option>
+                      <option value="sizing">Sizing & Fit Advice</option>
+                      <option value="delivery">Delivery & Shipping Inquiries</option>
+                      <option value="product_restock">Product Restocks & Capsule Drops</option>
                       <option value="wholesale">Wholesale / Partnerships</option>
+                      <option value="general">General Inquiry</option>
                     </select>
                   </div>
 
