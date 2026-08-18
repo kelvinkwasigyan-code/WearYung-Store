@@ -37,17 +37,47 @@ export default function AdminLoginPage() {
     const supabase = createClient();
 
     try {
+      let authUser = null;
+
       // 1. Sign in with email and password
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
       if (signInError) {
-        throw new Error('Wrong credentials');
+        // If user is authorized admin by email but doesn't exist in Supabase auth yet, auto-provision
+        if (checkIsAdminEmail(email)) {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: email.trim(),
+            password,
+            options: {
+              data: { role: 'admin', full_name: 'WEAR YUNG Admin' },
+            },
+          });
+
+          if (signUpData?.session) {
+            authUser = signUpData.user;
+          } else if (signUpData?.user) {
+            // Try signing in again immediately
+            const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+              email: email.trim(),
+              password,
+            });
+            if (!retryError && retryData?.user) {
+              authUser = retryData.user;
+            }
+          }
+        }
+
+        if (!authUser) {
+          throw new Error('Wrong credentials');
+        }
+      } else {
+        authUser = signInData.user;
       }
 
-      if (!data?.user) {
+      if (!authUser) {
         throw new Error('Wrong credentials');
       }
 
@@ -55,11 +85,11 @@ export default function AdminLoginPage() {
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
-        .eq('id', data.user.id)
+        .eq('id', authUser.id)
         .maybeSingle();
 
       // Admin check: role-based OR authorized admin email
-      const isAdminUser = profile?.role === 'admin' || checkIsAdminEmail(data.user.email);
+      const isAdminUser = profile?.role === 'admin' || checkIsAdminEmail(authUser.email);
 
       // If profile exists and user is not admin, deny access
       if (!isAdminUser) {
@@ -69,15 +99,15 @@ export default function AdminLoginPage() {
 
       // Auto-fix: ensure admin role is set in the database
       if (profile && profile.role !== 'admin' && isAdminUser) {
-        await supabase.from('profiles').update({ role: 'admin' }).eq('id', data.user.id);
+        await supabase.from('profiles').update({ role: 'admin' }).eq('id', authUser.id);
       }
 
       // If no profile yet, create one with admin role
       if (!profile && isAdminUser) {
         await supabase.from('profiles').upsert({
-          id: data.user.id,
+          id: authUser.id,
           role: 'admin',
-          full_name: data.user.user_metadata?.full_name || 'Admin',
+          full_name: authUser.user_metadata?.full_name || 'Admin',
         });
       }
 

@@ -1,33 +1,88 @@
 -- ========================================================
--- WEAR YUNG: Create or Promote Admin Account
+-- WEAR YUNG: Instantly Create / Reset Admin Account in Supabase
 -- Email: wearyungworldwide@gmail.com
 -- Password: Admin@123
--- Run this in your Supabase Dashboard > SQL Editor
+-- 
+-- Instructions:
+-- Copy and run this script in your Supabase Dashboard > SQL Editor
+-- (https://supabase.com/dashboard/project/atjpjuwwmlymsdkahqts/sql)
 -- ========================================================
 
--- 1. Ensure the user profile has 'admin' role if the account already exists
-UPDATE public.profiles
-SET role = 'admin', full_name = 'WEAR YUNG Admin'
-WHERE id IN (
-  SELECT id FROM auth.users WHERE LOWER(email) = 'wearyungworldwide@gmail.com'
-);
+-- Enable pgcrypto extension for password hashing
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- 2. If the user doesn't exist yet in auth.users, you can create them directly via Supabase Dashboard (Authentication > Users > Add user)
--- or execute the function below:
-DO $$
-DECLARE
-  new_user_id uuid;
-BEGIN
-  -- Check if user already exists
-  SELECT id INTO new_user_id FROM auth.users WHERE LOWER(email) = 'wearyungworldwide@gmail.com';
-  
-  IF new_user_id IS NOT NULL THEN
-    -- Update existing profile
-    INSERT INTO public.profiles (id, role, full_name, phone_number)
-    VALUES (new_user_id, 'admin', 'WEAR YUNG Admin', '+233 55 000 0000')
-    ON CONFLICT (id) DO UPDATE SET role = 'admin';
-    RAISE NOTICE 'Existing user % updated to admin role.', new_user_id;
-  ELSE
-    RAISE NOTICE 'User wearyungworldwide@gmail.com does not exist in auth.users yet. Please create it in Supabase Auth Dashboard with password Admin@123 or sign up once.';
-  END IF;
-END $$;
+-- 1. Insert or Update wearyungworldwide@gmail.com in auth.users
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  last_sign_in_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  created_at,
+  updated_at,
+  confirmation_token,
+  email_change,
+  email_change_token_new,
+  recovery_token
+)
+VALUES (
+  '00000000-0000-0000-0000-000000000000',
+  gen_random_uuid(),
+  'authenticated',
+  'authenticated',
+  'wearyungworldwide@gmail.com',
+  crypt('Admin@123', gen_salt('bf')),
+  now(),
+  now(),
+  '{"provider":"email","providers":["email"]}'::jsonb,
+  '{"full_name":"WEAR YUNG Admin","role":"admin"}'::jsonb,
+  now(),
+  now(),
+  '',
+  '',
+  '',
+  ''
+)
+ON CONFLICT (email) DO UPDATE
+SET 
+  encrypted_password = crypt('Admin@123', gen_salt('bf')),
+  email_confirmed_at = now(),
+  raw_user_meta_data = '{"full_name":"WEAR YUNG Admin","role":"admin"}'::jsonb,
+  updated_at = now();
+
+-- 2. Insert or update identity in auth.identities (required by Supabase Auth v2)
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  identity_data,
+  provider,
+  provider_id,
+  last_sign_in_at,
+  created_at,
+  updated_at
+)
+SELECT 
+  id,
+  id,
+  json_build_object('sub', id::text, 'email', email),
+  'email',
+  email,
+  now(),
+  now(),
+  now()
+FROM auth.users
+WHERE LOWER(email) = 'wearyungworldwide@gmail.com'
+ON CONFLICT (provider, provider_id) DO NOTHING;
+
+-- 3. Ensure profile has admin role
+INSERT INTO public.profiles (id, role, full_name, phone_number)
+SELECT id, 'admin', 'WEAR YUNG Admin', '+233 55 000 0000'
+FROM auth.users
+WHERE LOWER(email) = 'wearyungworldwide@gmail.com'
+ON CONFLICT (id) DO UPDATE
+SET role = 'admin', full_name = 'WEAR YUNG Admin';
