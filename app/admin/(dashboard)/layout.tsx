@@ -21,8 +21,9 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     .eq('id', user.id)
     .maybeSingle();
 
-  const isManager = profile?.role === 'manager';
-  const isAdmin = isAdminByEmail || profile?.role === 'admin';
+  const userMetaRole = user.user_metadata?.role;
+  const isManager = profile?.role === 'manager' || userMetaRole === 'manager';
+  const isAdmin = isAdminByEmail || profile?.role === 'admin' || userMetaRole === 'admin';
 
   // Strict check: ONLY authorized admin or manager can access staff portal
   if (!isAdmin && !isManager) {

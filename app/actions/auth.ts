@@ -20,8 +20,15 @@ export async function loginAction(formData: FormData) {
       .eq('id', data.user.id)
       .maybeSingle();
 
-    if (profile?.role === 'admin') {
+    const userMetaRole = data.user.user_metadata?.role;
+    const isManager = profile?.role === 'manager' || userMetaRole === 'manager';
+    const isAdmin = profile?.role === 'admin' || userMetaRole === 'admin';
+
+    if (isAdmin) {
       redirect('/admin');
+    }
+    if (isManager) {
+      redirect('/admin/products');
     }
   }
 

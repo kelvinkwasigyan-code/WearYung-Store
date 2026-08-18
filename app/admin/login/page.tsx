@@ -87,7 +87,8 @@ export default function AdminLoginPage() {
         .eq('id', authUser.id)
         .maybeSingle();
 
-      const userRole = isOwnerEmail ? 'admin' : (profile?.role || 'customer');
+      const userMetaRole = authUser.user_metadata?.role;
+      const userRole = isOwnerEmail ? 'admin' : (profile?.role || userMetaRole || 'customer');
       const isAuthorizedStaff = userRole === 'admin' || userRole === 'manager';
 
       if (!isAuthorizedStaff) {

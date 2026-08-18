@@ -48,8 +48,9 @@ export async function updateSession(request: NextRequest) {
         .eq('id', user.id)
         .maybeSingle();
 
-      const isManager = profile?.role === 'manager';
-      const isAdmin = profile?.role === 'admin';
+      const userMetaRole = user.user_metadata?.role;
+      const isManager = profile?.role === 'manager' || userMetaRole === 'manager';
+      const isAdmin = profile?.role === 'admin' || userMetaRole === 'admin';
 
       if (!isManager && !isAdmin) {
         const url = request.nextUrl.clone();
