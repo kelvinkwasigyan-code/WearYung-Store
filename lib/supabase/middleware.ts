@@ -38,23 +38,14 @@ export async function updateSession(request: NextRequest) {
 
     const userEmail = (user.email || '').toLowerCase();
     const isAdminByEmail = userEmail === 'wearyungworldwide@gmail.com' ||
-      userEmail === 'admin@wearyung.com' ||
       (!!process.env.ADMIN_EMAIL && userEmail === process.env.ADMIN_EMAIL.toLowerCase()) ||
       (!!process.env.ADMIN_NOTIFICATION_EMAIL && userEmail === process.env.ADMIN_NOTIFICATION_EMAIL.toLowerCase());
 
     if (!isAdminByEmail) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profile?.role !== 'admin') {
-        const url = request.nextUrl.clone();
-        url.pathname = '/admin/login';
-        url.searchParams.set('error', 'unauthorized');
-        return NextResponse.redirect(url);
-      }
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin/login';
+      url.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(url);
     }
   }
 

@@ -1,17 +1,22 @@
 -- ========================================================
--- WEAR YUNG: Instantly Create / Reset Admin Account in Supabase
--- Email: wearyungworldwide@gmail.com
--- Password: Admin@123
+-- WEAR YUNG: Set wearyungworldwide@gmail.com as Sole Admin & Revoke Old Admin
 -- 
 -- Instructions:
--- Copy and run this script in your Supabase Dashboard > SQL Editor
+-- Run this script in your Supabase Dashboard > SQL Editor
 -- (https://supabase.com/dashboard/project/atjpjuwwmlymsdkahqts/sql)
 -- ========================================================
 
 -- Enable pgcrypto extension for password hashing
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- 1. Insert or Update wearyungworldwide@gmail.com in auth.users
+-- 1. Demote any old admin account(s)
+UPDATE public.profiles
+SET role = 'customer'
+WHERE id IN (
+  SELECT id FROM auth.users WHERE LOWER(email) = 'admin@wearyung.com'
+);
+
+-- 2. Insert or Update wearyungworldwide@gmail.com in auth.users with password Admin@123
 INSERT INTO auth.users (
   instance_id,
   id,
@@ -55,7 +60,7 @@ SET
   raw_user_meta_data = '{"full_name":"WEAR YUNG Admin","role":"admin"}'::jsonb,
   updated_at = now();
 
--- 2. Insert or update identity in auth.identities (required by Supabase Auth v2)
+-- 3. Insert or update identity in auth.identities (required by Supabase Auth v2)
 INSERT INTO auth.identities (
   id,
   user_id,
@@ -79,7 +84,7 @@ FROM auth.users
 WHERE LOWER(email) = 'wearyungworldwide@gmail.com'
 ON CONFLICT (provider, provider_id) DO NOTHING;
 
--- 3. Ensure profile has admin role
+-- 4. Ensure profile has admin role for wearyungworldwide@gmail.com
 INSERT INTO public.profiles (id, role, full_name, phone_number)
 SELECT id, 'admin', 'WEAR YUNG Admin', '+233 55 000 0000'
 FROM auth.users

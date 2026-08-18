@@ -9,7 +9,6 @@ export const STORE_LOCATION = {
 
 export const ADMIN_EMAILS: string[] = [
   'wearyungworldwide@gmail.com',
-  'admin@wearyung.com',
   ...(process.env.ADMIN_EMAIL ? [process.env.ADMIN_EMAIL.toLowerCase()] : []),
   ...(process.env.ADMIN_NOTIFICATION_EMAIL ? [process.env.ADMIN_NOTIFICATION_EMAIL.toLowerCase()] : []),
 ];

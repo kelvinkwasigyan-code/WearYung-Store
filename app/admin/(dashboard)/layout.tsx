@@ -21,30 +21,28 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
     .eq('id', user.id)
     .maybeSingle();
 
-  // If no profile exists yet, assign 'admin' ONLY if email matches authorized admin emails
-  if (!profile) {
-    const defaultRole = isAdminByEmail ? 'admin' : 'customer';
-    const { data: newProfile } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        role: defaultRole,
-        full_name: user.user_metadata?.full_name || (isAdminByEmail ? 'Admin' : 'Customer'),
-      })
-      .select('role')
-      .maybeSingle();
-    profile = newProfile;
-  }
-
-  // Strict Admin check: role-based OR verified admin email
-  const isAdmin = profile?.role === 'admin' || isAdminByEmail;
-
-  if (!isAdmin) {
+  // Strict check: ONLY authorized admin emails are granted access
+  if (!isAdminByEmail) {
+    // Revoke 'admin' role from any unauthorized email in database
+    if (profile?.role === 'admin') {
+      await supabase
+        .from('profiles')
+        .update({ role: 'customer' })
+        .eq('id', user.id);
+    }
     redirect('/admin/login');
   }
 
-  // Auto-sync: if authorized admin by email but role in DB is still 'customer', update to 'admin'
-  if (profile && profile.role !== 'admin' && isAdminByEmail) {
+  // Ensure authorized admin has 'admin' role in profiles table
+  if (!profile) {
+    await supabase
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        role: 'admin',
+        full_name: user.user_metadata?.full_name || 'Admin',
+      });
+  } else if (profile.role !== 'admin') {
     await supabase
       .from('profiles')
       .update({ role: 'admin' })
