@@ -4,6 +4,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { compressImage } from '@/lib/image-compression';
 import {
+  saveProductAction,
+  deleteProductAction,
+  togglePublishProductAction,
+} from '@/app/actions/products';
+import {
   Plus, Pencil, Trash2, Eye, EyeOff, X, Check, Upload,
   ImagePlus, GripVertical, DollarSign, Package, Tag, FileText,
   ToggleLeft, ToggleRight, Loader2, AlertCircle, CheckCircle2,
@@ -371,52 +376,25 @@ export default function AdminProductsPage() {
         if (form.color) attributes.colorway = form.color;
       }
 
-      if (editingProduct) {
-        // Update product
-        await supabase.from('products').update(productPayload).eq('id', editingProduct.id);
+      const variantPayload = (form.price || editingProduct?.product_variants?.[0]) ? {
+        id: editingProduct?.product_variants?.[0]?.id,
+        price: parseFloat(form.price) || 0,
+        stock_quantity: parseInt(form.stock_quantity) || 0,
+        sku: form.sku || `${slug}-default`,
+        attributes,
+      } : undefined;
 
-        // Update or create variant
-        if (editingProduct.product_variants?.[0]) {
-          await supabase.from('product_variants').update({
-            price: parseFloat(form.price) || 0,
-            stock_quantity: parseInt(form.stock_quantity) || 0,
-            sku: form.sku || `${slug}-default`,
-            attributes,
-          }).eq('id', editingProduct.product_variants[0].id);
-        } else if (form.price) {
-          await supabase.from('product_variants').insert({
-            product_id: editingProduct.id,
-            sku: form.sku || `${slug}-default`,
-            price: parseFloat(form.price) || 0,
-            stock_quantity: parseInt(form.stock_quantity) || 0,
-            attributes,
-          });
-        }
+      const result = await saveProductAction({
+        id: editingProduct?.id,
+        productPayload,
+        variantPayload,
+      });
 
-        setToast({ message: `"${form.title}" updated successfully!`, type: 'success' });
-      } else {
-        // Create product
-        const { data: newProduct, error } = await supabase
-          .from('products')
-          .insert(productPayload)
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        if (newProduct) {
-          await supabase.from('product_variants').insert({
-            product_id: newProduct.id,
-            sku: form.sku || `${slug}-default`,
-            price: parseFloat(form.price) || 0,
-            stock_quantity: parseInt(form.stock_quantity) || 0,
-            attributes,
-          });
-        }
-
-        setToast({ message: `"${form.title}" created successfully!`, type: 'success' });
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save product');
       }
 
+      setToast({ message: result.message || 'Product saved successfully!', type: 'success' });
       await fetchProducts();
       setShowForm(false);
     } catch (err: any) {
@@ -428,13 +406,21 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
-    await supabase.from('products').delete().eq('id', id);
+    const result = await deleteProductAction(id);
+    if (!result.success) {
+      setToast({ message: result.error || 'Failed to delete product', type: 'error' });
+      return;
+    }
     setToast({ message: `"${title}" deleted.`, type: 'success' });
     fetchProducts();
   };
 
   const togglePublish = async (id: string, current: boolean, title: string) => {
-    await supabase.from('products').update({ is_published: !current }).eq('id', id);
+    const result = await togglePublishProductAction(id, !current);
+    if (!result.success) {
+      setToast({ message: result.error || 'Failed to update visibility', type: 'error' });
+      return;
+    }
     setToast({ message: `"${title}" ${!current ? 'published' : 'hidden'}.`, type: 'success' });
     fetchProducts();
   };

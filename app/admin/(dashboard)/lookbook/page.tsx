@@ -4,6 +4,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { compressImage } from '@/lib/image-compression';
 import {
+  saveLookbookAction,
+  deleteLookbookAction,
+  togglePublishLookbookAction,
+} from '@/app/actions/lookbook';
+import {
   Plus, Pencil, Trash2, Eye, EyeOff, X, Check, Upload,
   ImagePlus, FileText, Tag, Loader2, AlertCircle, CheckCircle2,
   ToggleLeft, ToggleRight, LayoutTemplate
@@ -281,16 +286,16 @@ export default function AdminLookbookPage() {
         tagged_items: taggedItems.filter(t => t.name.trim() !== ''),
       };
 
-      if (editingItem) {
-        const { error } = await supabase.from('lookbooks').update(payload).eq('id', editingItem.id);
-        if (error) throw error;
-        setToast({ message: 'Lookbook updated!', type: 'success' });
-      } else {
-        const { error } = await supabase.from('lookbooks').insert(payload);
-        if (error) throw error;
-        setToast({ message: 'Lookbook created!', type: 'success' });
+      const result = await saveLookbookAction({
+        id: editingItem?.id,
+        payload,
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save lookbook');
       }
 
+      setToast({ message: result.message || 'Lookbook saved!', type: 'success' });
       await fetchLookbooks();
       setShowForm(false);
     } catch (err: any) {
@@ -302,13 +307,21 @@ export default function AdminLookbookPage() {
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Delete "${title}"?`)) return;
-    await supabase.from('lookbooks').delete().eq('id', id);
+    const result = await deleteLookbookAction(id);
+    if (!result.success) {
+      setToast({ message: result.error || 'Failed to delete lookbook', type: 'error' });
+      return;
+    }
     setToast({ message: `"${title}" deleted.`, type: 'success' });
     fetchLookbooks();
   };
 
   const togglePublish = async (id: string, current: boolean, title: string) => {
-    await supabase.from('lookbooks').update({ is_published: !current }).eq('id', id);
+    const result = await togglePublishLookbookAction(id, !current);
+    if (!result.success) {
+      setToast({ message: result.error || 'Failed to update visibility', type: 'error' });
+      return;
+    }
     setToast({ message: `"${title}" ${!current ? 'published' : 'hidden'}.`, type: 'success' });
     fetchLookbooks();
   };
