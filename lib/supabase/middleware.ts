@@ -2,6 +2,16 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const isProtectedAdmin = pathname.startsWith('/admin') && !pathname.startsWith('/admin/login');
+  const isProtectedAccount = pathname.startsWith('/account');
+
+  // Fast-path: If visiting public storefront routes (home, shop, lookbook, products, etc.),
+  // avoid making blocking remote auth network requests so page transitions are instant!
+  if (!isProtectedAdmin && !isProtectedAccount) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -25,11 +35,11 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh session — do not add logic between createServerClient and getUser()
+  // Refresh session & verify user for protected routes only
   const { data: { user } } = await supabase.auth.getUser();
 
   // 1. Strict /admin Route Guard
-  if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
+  if (isProtectedAdmin) {
     if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = '/admin/login';
@@ -60,7 +70,6 @@ export async function updateSession(request: NextRequest) {
       }
 
       // Restrict Manager from sensitive admin-only pages (Customers, Reviews, Settings)
-      const pathname = request.nextUrl.pathname;
       if (isManager && (pathname.startsWith('/admin/customers') || pathname.startsWith('/admin/reviews') || pathname.startsWith('/admin/settings'))) {
         const url = request.nextUrl.clone();
         url.pathname = '/admin/products';
@@ -70,10 +79,10 @@ export async function updateSession(request: NextRequest) {
   }
 
   // 2. Protect /account customer routes
-  if (!user && request.nextUrl.pathname.startsWith('/account')) {
+  if (isProtectedAccount && !user) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    url.searchParams.set('redirect', request.nextUrl.pathname);
+    url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
   }
 
