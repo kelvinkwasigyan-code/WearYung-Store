@@ -118,7 +118,7 @@ export default async function JustInPage({ searchParams }: JustInPageProps) {
       </div>
 
       {/* ─── Main Just In Content (Sidebar + Products Grid Side-by-Side) ─── */}
-      <div className="container-wy" style={{ padding: 'clamp(1rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 5rem' }}>
+      <div className="container-wy pb-28 md:pb-16" style={{ padding: 'clamp(1rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 6rem' }}>
         <div className="flex flex-col lg:flex-row lg:items-start lg:gap-8 w-full">
           {/* Filters (Desktop Left Sidebar + Mobile Top Accordion) */}
           <ShopFilters />
