@@ -65,7 +65,7 @@ function LoginForm() {
         password,
       });
       if (error) {
-        setError(error.message);
+        setError('Wrong credentials');
       } else {
         router.push(redirectTarget);
         router.refresh();

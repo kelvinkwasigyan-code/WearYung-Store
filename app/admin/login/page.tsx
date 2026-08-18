@@ -3,9 +3,22 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight, KeyRound, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle, CheckCircle2, KeyRound, ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { isAdminEmail } from '@/lib/constants';
+
+const AUTHORIZED_ADMIN_EMAILS = [
+  'wearyungworldwide@gmail.com',
+  'admin@wearyung.com',
+];
+
+function checkIsAdminEmail(email?: string | null): boolean {
+  if (!email) return false;
+  const normalized = email.trim().toLowerCase();
+  return (
+    AUTHORIZED_ADMIN_EMAILS.includes(normalized) ||
+    (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_ADMIN_EMAIL?.toLowerCase() === normalized)
+  );
+}
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -31,27 +44,27 @@ export default function AdminLoginPage() {
       });
 
       if (signInError) {
-        throw new Error(signInError.message || 'Invalid administrator credentials');
+        throw new Error('Wrong credentials');
       }
 
-      if (!data.user) {
-        throw new Error('Authentication failed: No user found');
+      if (!data?.user) {
+        throw new Error('Wrong credentials');
       }
 
       // 2. Verify admin role in profiles table
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .maybeSingle();
 
-      // Admin check: role-based OR email-based
-      const isAdminUser = profile?.role === 'admin' || isAdminEmail(data.user.email);
+      // Admin check: role-based OR authorized admin email
+      const isAdminUser = profile?.role === 'admin' || checkIsAdminEmail(data.user.email);
 
       // If profile exists and user is not admin, deny access
-      if (profile && !isAdminUser) {
+      if (!isAdminUser) {
         await supabase.auth.signOut();
-        throw new Error('Access Denied: Your account does not have administrative privileges.');
+        throw new Error('Wrong credentials');
       }
 
       // Auto-fix: ensure admin role is set in the database
@@ -75,7 +88,7 @@ export default function AdminLoginPage() {
       }, 700);
 
     } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please check your credentials.');
+      setError(err?.message === 'Wrong credentials' ? 'Wrong credentials' : 'Wrong credentials');
     } finally {
       setLoading(false);
     }
@@ -159,18 +172,18 @@ export default function AdminLoginPage() {
           {error && (
             <div style={{
               display: 'flex',
-              alignItems: 'flex-start',
+              alignItems: 'center',
               gap: '0.65rem',
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
               borderRadius: '8px',
               padding: '0.85rem 1rem',
               color: '#F87171',
-              fontSize: '0.82rem',
+              fontSize: '0.86rem',
               marginBottom: '1.5rem',
-              lineHeight: 1.4,
+              fontWeight: 500,
             }}>
-              <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
               <span>{error}</span>
             </div>
           )}
@@ -200,7 +213,7 @@ export default function AdminLoginPage() {
                 display: 'block',
                 fontSize: '0.72rem',
                 fontWeight: 700,
-                color: '#A1A1AA',
+                color: '#D4D4D8',
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
                 marginBottom: '0.45rem',
@@ -226,47 +239,43 @@ export default function AdminLoginPage() {
                     outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.currentTarget.style.borderColor = '#FFC800'}
-                  onBlur={(e) => e.currentTarget.style.borderColor = '#27272A'}
+                  onFocus={(e) => e.target.style.borderColor = '#FFC800'}
+                  onBlur={(e) => e.target.style.borderColor = '#27272A'}
                 />
-                <Mail
-                  size={16}
-                  style={{
-                    position: 'absolute',
-                    left: '0.85rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#71717A',
-                    pointerEvents: 'none',
-                  }}
-                />
+                <Mail size={16} style={{
+                  position: 'absolute',
+                  left: '0.9rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#71717A',
+                }} />
               </div>
             </div>
 
             {/* Password Field */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
-                <label style={{
-                  fontSize: '0.72rem',
-                  fontWeight: 700,
-                  color: '#A1A1AA',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                }}>
-                  Security Key / Password
-                </label>
-              </div>
+              <label style={{
+                display: 'block',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                color: '#D4D4D8',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: '0.45rem',
+              }}>
+                Security Key / Password
+              </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
-                  placeholder="••••••••••••"
+                  placeholder="••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{
                     width: '100%',
                     height: '48px',
-                    padding: '0 2.75rem 0 2.6rem',
+                    padding: '0 2.6rem 0 2.6rem',
                     background: '#18181B',
                     border: '1px solid #27272A',
                     borderRadius: '10px',
@@ -275,26 +284,22 @@ export default function AdminLoginPage() {
                     outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.currentTarget.style.borderColor = '#FFC800'}
-                  onBlur={(e) => e.currentTarget.style.borderColor = '#27272A'}
+                  onFocus={(e) => e.target.style.borderColor = '#FFC800'}
+                  onBlur={(e) => e.target.style.borderColor = '#27272A'}
                 />
-                <Lock
-                  size={16}
-                  style={{
-                    position: 'absolute',
-                    left: '0.85rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#71717A',
-                    pointerEvents: 'none',
-                  }}
-                />
+                <Lock size={16} style={{
+                  position: 'absolute',
+                  left: '0.9rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#71717A',
+                }} />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
                     position: 'absolute',
-                    right: '0.85rem',
+                    right: '0.9rem',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     background: 'none',
