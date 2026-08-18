@@ -506,11 +506,49 @@ export default function AdminProductsPage() {
     fetchProducts();
   };
 
+  const [filterStock, setFilterStock] = useState<'all' | 'low_stock' | 'out_of_stock' | 'in_stock'>('all');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const stockParam = params.get('filter');
+      if (stockParam === 'low_stock' || stockParam === 'out_of_stock' || stockParam === 'in_stock') {
+        setFilterStock(stockParam);
+      }
+    }
+  }, []);
+
+  const lowStockProducts = products.filter(p => {
+    const v = p.product_variants?.[0];
+    const s = Number(v?.stock_quantity ?? 0);
+    const sizeInv = v?.attributes?.size_inventory;
+    const hasLowSize = sizeInv && typeof sizeInv === 'object' && Object.values(sizeInv).some((qty: any) => Number(qty) <= 2);
+    return s <= 5 || hasLowSize;
+  });
+
+  const lowStockCount = lowStockProducts.length;
+  const outOfStockCount = products.filter(p => (p.product_variants?.[0]?.stock_quantity ?? 0) === 0).length;
+
   // Filter products
   const filtered = products.filter(p => {
-    const matchSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.slug.toLowerCase().includes(searchQuery.toLowerCase());
     const matchCategory = filterCategory === 'all' || p.category === filterCategory;
-    return matchSearch && matchCategory;
+    
+    const variant = p.product_variants?.[0];
+    const stock = Number(variant?.stock_quantity ?? 0);
+    const sizeInv = variant?.attributes?.size_inventory;
+    const hasLowSize = sizeInv && typeof sizeInv === 'object' && Object.values(sizeInv).some((qty: any) => Number(qty) <= 2);
+
+    let matchStock = true;
+    if (filterStock === 'low_stock') {
+      matchStock = stock <= 5 || Boolean(hasLowSize);
+    } else if (filterStock === 'out_of_stock') {
+      matchStock = stock === 0;
+    } else if (filterStock === 'in_stock') {
+      matchStock = stock > 5 && !hasLowSize;
+    }
+
+    return matchSearch && matchCategory && matchStock;
   });
 
   const totalStock = products.reduce((acc, p) => acc + (p.product_variants?.[0]?.stock_quantity || 0), 0);
@@ -532,12 +570,52 @@ export default function AdminProductsPage() {
         </p>
       </div>
 
+      {/* ─── Low Stock Alert Banner ─── */}
+      {lowStockCount > 0 && filterStock !== 'low_stock' && (
+        <div style={{
+          background: 'rgba(239, 68, 68, 0.08)',
+          border: '1px solid rgba(239, 68, 68, 0.4)',
+          borderRadius: '10px',
+          padding: '0.9rem 1.25rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+            <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 600 }}>
+              <strong style={{ color: '#EF4444' }}>{lowStockCount} item{lowStockCount > 1 ? 's' : ''}</strong> running low on stock (≤ 5 units or depleted sizes).
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setFilterStock('low_stock')}
+            style={{
+              background: '#EF4444',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '0.4rem 0.85rem',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              letterSpacing: '0.04em',
+            }}
+          >
+            VIEW LOW STOCK ITEMS ({lowStockCount})
+          </button>
+        </div>
+      )}
+
       {/* Quick Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
         {[
           { label: 'Total Products', value: products.length, color: '#FFC800' },
           { label: 'Published', value: publishedCount, color: '#10B981' },
-          { label: 'Hidden', value: products.length - publishedCount, color: '#71717A' },
+          { label: 'Low Stock Alerts', value: lowStockCount, color: lowStockCount > 0 ? '#EF4444' : '#10B981' },
           { label: 'Total Stock', value: totalStock, color: '#3B82F6' },
         ].map(stat => (
           <div key={stat.label} style={{
@@ -550,49 +628,96 @@ export default function AdminProductsPage() {
         ))}
       </div>
 
-      {/* Search & Filter Bar */}
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
-          <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#3F3F46' }} />
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            style={{ ...INPUT, paddingLeft: '2.4rem' }}
-            onFocus={e => e.target.style.borderColor = '#FFC800'}
-            onBlur={e => e.target.style.borderColor = '#27272A'}
-          />
+      {/* Search, Category Filter & Stock Filter Tabs */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
+            <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#3F3F46' }} />
+            <input
+              type="text"
+              placeholder="Search products by title or slug..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              style={{ ...INPUT, paddingLeft: '2.4rem' }}
+              onFocus={e => e.target.style.borderColor = '#FFC800'}
+              onBlur={e => e.target.style.borderColor = '#27272A'}
+            />
+          </div>
+          <select
+            value={filterCategory}
+            onChange={e => setFilterCategory(e.target.value)}
+            style={{ ...INPUT, width: 'auto', minWidth: '140px', cursor: 'pointer' }}
+          >
+            <option value="all" style={{ background: '#18181B' }}>All Categories</option>
+            {categories.map(c => (
+              <option key={c} value={c} style={{ background: '#18181B' }}>
+                {c.charAt(0).toUpperCase() + c.slice(1)}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={openAdd}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+              padding: '0.7rem 1.25rem',
+              background: '#FFC800', color: '#000',
+              border: 'none', borderRadius: '8px',
+              fontFamily: 'var(--font-display)', fontSize: '0.85rem',
+              letterSpacing: '0.06em', cursor: 'pointer',
+              fontWeight: 700,
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#e6b400'}
+            onMouseLeave={e => e.currentTarget.style.background = '#FFC800'}
+          >
+            <Plus size={16} /> ADD PRODUCT
+          </button>
         </div>
-        <select
-          value={filterCategory}
-          onChange={e => setFilterCategory(e.target.value)}
-          style={{ ...INPUT, width: 'auto', minWidth: '140px', cursor: 'pointer' }}
-        >
-          <option value="all" style={{ background: '#18181B' }}>All Categories</option>
-          {categories.map(c => (
-            <option key={c} value={c} style={{ background: '#18181B' }}>
-              {c.charAt(0).toUpperCase() + c.slice(1)}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={openAdd}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '0.5rem',
-            padding: '0.7rem 1.25rem',
-            background: '#FFC800', color: '#000',
-            border: 'none', borderRadius: '8px',
-            fontFamily: 'var(--font-display)', fontSize: '0.85rem',
-            letterSpacing: '0.06em', cursor: 'pointer',
-            fontWeight: 700,
-            transition: 'background 0.2s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = '#e6b400'}
-          onMouseLeave={e => e.currentTarget.style.background = '#FFC800'}
-        >
-          <Plus size={16} /> ADD PRODUCT
-        </button>
+
+        {/* Stock Filter Pills */}
+        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.72rem', color: '#71717A', fontWeight: 600, marginRight: '0.25rem' }}>Stock Status:</span>
+          {[
+            { id: 'all', label: 'All Inventory', count: products.length },
+            { id: 'low_stock', label: '⚠️ Low Stock', count: lowStockCount, isAlert: lowStockCount > 0 },
+            { id: 'out_of_stock', label: '🔴 Out of Stock', count: outOfStockCount, isAlert: outOfStockCount > 0 },
+            { id: 'in_stock', label: '🟢 In Stock', count: products.length - lowStockCount },
+          ].map(tab => {
+            const isActive = filterStock === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setFilterStock(tab.id as any)}
+                style={{
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '6px',
+                  border: isActive
+                    ? '1.5px solid #FFC800'
+                    : tab.isAlert
+                    ? '1px solid rgba(239, 68, 68, 0.4)'
+                    : '1px solid #27272A',
+                  background: isActive
+                    ? '#FFC800'
+                    : tab.isAlert
+                    ? 'rgba(239, 68, 68, 0.1)'
+                    : '#141418',
+                  color: isActive
+                    ? '#000000'
+                    : tab.isAlert
+                    ? '#EF4444'
+                    : '#A1A1AA',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {tab.label} ({tab.count})
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Products Table */}
@@ -664,18 +789,48 @@ export default function AdminProductsPage() {
                         {price != null ? `GH₵ ${parseFloat(price).toFixed(2)}` : '—'}
                       </td>
                       <td style={{ padding: '0.875rem 1.25rem' }}>
-                        <span style={{
-                          color: stock === 0 ? '#EF4444' : stock < 5 ? '#F59E0B' : '#10B981',
-                          fontWeight: 600,
-                        }}>
-                          {stock ?? '—'}
-                        </span>
-                        {stock != null && stock < 5 && stock > 0 && (
-                          <span style={{ fontSize: '0.65rem', color: '#F59E0B', marginLeft: '0.4rem' }}>LOW</span>
-                        )}
-                        {stock === 0 && (
-                          <span style={{ fontSize: '0.65rem', color: '#EF4444', marginLeft: '0.4rem' }}>OUT</span>
-                        )}
+                        {(() => {
+                          const sizeInv = p.product_variants?.[0]?.attributes?.size_inventory;
+                          const lowSizes: string[] = [];
+                          if (sizeInv && typeof sizeInv === 'object') {
+                            Object.entries(sizeInv).forEach(([sz, count]) => {
+                              if (Number(count) <= 2) {
+                                lowSizes.push(`${sz}: ${count}`);
+                              }
+                            });
+                          }
+                          const isOutOfStock = stock === 0;
+                          const isLowStock = !isOutOfStock && ((stock ?? 0) <= 5 || lowSizes.length > 0);
+
+                          return (
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                <span style={{
+                                  color: isOutOfStock ? '#EF4444' : isLowStock ? '#F59E0B' : '#10B981',
+                                  fontWeight: 700,
+                                  fontSize: '0.88rem',
+                                }}>
+                                  {stock ?? '—'} pcs
+                                </span>
+                                {isOutOfStock && (
+                                  <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#EF4444', background: 'rgba(239, 68, 68, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                                    OUT
+                                  </span>
+                                )}
+                                {isLowStock && (
+                                  <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#F59E0B', background: 'rgba(245, 158, 11, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                                    LOW
+                                  </span>
+                                )}
+                              </div>
+                              {lowSizes.length > 0 && (
+                                <p style={{ fontSize: '0.68rem', color: '#A1A1AA', marginTop: '2px' }}>
+                                  Low: {lowSizes.join(', ')}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td style={{ padding: '0.875rem 1.25rem' }}>
                         <button

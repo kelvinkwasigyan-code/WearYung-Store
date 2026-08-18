@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,6 +41,27 @@ export default function AdminSidebar({ userRole = 'admin' }: AdminSidebarProps) 
   const router = useRouter();
   const supabase = createClient();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [lowStockCount, setLowStockCount] = useState<number>(0);
+
+  useEffect(() => {
+    async function checkLowStock() {
+      try {
+        const { data: variants } = await supabase
+          .from('product_variants')
+          .select('stock_quantity, attributes');
+        if (variants) {
+          const count = variants.filter(v => {
+            const s = Number(v.stock_quantity ?? 0);
+            const sizeInv = (v.attributes as any)?.size_inventory;
+            const hasLowSize = sizeInv && typeof sizeInv === 'object' && Object.values(sizeInv).some((qty: any) => Number(qty) <= 2);
+            return s <= 5 || Boolean(hasLowSize);
+          }).length;
+          setLowStockCount(count);
+        }
+      } catch {}
+    }
+    checkLowStock();
+  }, []);
 
   const isManager = userRole === 'manager';
   const navItems = allNavItems.filter((item) => !isManager || !item.adminOnly);
@@ -240,7 +261,21 @@ export default function AdminSidebar({ userRole = 'admin' }: AdminSidebarProps) 
                       }}
                     >
                       {item.icon}
-                      <span>{item.label}</span>
+                      <span style={{ flex: 1 }}>{item.label}</span>
+                      {item.href === '/admin/products' && lowStockCount > 0 && (
+                        <span style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 800,
+                          background: 'rgba(239, 68, 68, 0.2)',
+                          color: '#EF4444',
+                          border: '1px solid rgba(239, 68, 68, 0.4)',
+                          padding: '1px 6px',
+                          borderRadius: '10px',
+                          marginLeft: 'auto',
+                        }}>
+                          {lowStockCount} ⚠️
+                        </span>
+                      )}
                     </Link>
                   );
                 })}
@@ -360,7 +395,21 @@ export default function AdminSidebar({ userRole = 'admin' }: AdminSidebarProps) 
                 }}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span style={{ flex: 1 }}>{item.label}</span>
+                {item.href === '/admin/products' && lowStockCount > 0 && (
+                  <span style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 800,
+                    background: 'rgba(239, 68, 68, 0.2)',
+                    color: '#EF4444',
+                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                    padding: '1px 6px',
+                    borderRadius: '10px',
+                    marginLeft: 'auto',
+                  }}>
+                    {lowStockCount} ⚠️
+                  </span>
+                )}
               </Link>
             );
           })}
