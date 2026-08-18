@@ -108,9 +108,9 @@ export default async function AdminDashboardPage() {
       {/* Stats Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2.5rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gap: '0.75rem',
+        marginBottom: '2rem',
       }}>
         <StatsCard
           title="Total Products"
