@@ -88,6 +88,7 @@ export default function Navbar({ cartCount }: NavbarProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isManager, setIsManager] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { itemCount, toggleCart } = useCartContext();
@@ -104,9 +105,14 @@ export default function Navbar({ cartCount }: NavbarProps) {
           .select('role')
           .eq('id', currentUser.id)
           .maybeSingle();
-        setIsAdmin(profile?.role === 'admin');
+
+        const role = profile?.role || currentUser.user_metadata?.role;
+        const isEmailAdmin = (currentUser.email || '').toLowerCase() === 'wearyungworldwide@gmail.com';
+        setIsAdmin(isEmailAdmin || role === 'admin');
+        setIsManager(role === 'manager');
       } else {
         setIsAdmin(false);
+        setIsManager(false);
       }
     };
 
@@ -431,6 +437,59 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   </motion.button>
                 </motion.div>
 
+                {/* Top Auth Banner (when signed in) */}
+                {user && (
+                  <motion.div
+                    variants={drawerSectionVariants}
+                    style={{
+                      marginBottom: '1.5rem',
+                      padding: '0.85rem 1rem',
+                      background: 'rgba(255, 200, 0, 0.08)',
+                      border: '1px solid rgba(255, 200, 0, 0.25)',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.65rem',
+                    }}
+                  >
+                    <p style={{ fontSize: '0.78rem', color: 'var(--wy-muted)', margin: 0 }}>
+                      Signed in as <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{user.email}</span>
+                      {isAdmin && <span style={{ color: '#FFC800', marginLeft: '0.4rem', fontWeight: 800 }}>(ADMIN)</span>}
+                      {isManager && !isAdmin && <span style={{ color: '#60A5FA', marginLeft: '0.4rem', fontWeight: 800 }}>(MANAGER)</span>}
+                    </p>
+                    {isAdmin ? (
+                      <Link
+                        href="/admin"
+                        onClick={() => setDrawerOpen(false)}
+                        className="btn btn-primary btn-sm"
+                        style={{ width: '100%', gap: '0.45rem', justifyContent: 'center', fontWeight: 800, letterSpacing: '0.04em' }}
+                      >
+                        <Shield size={15} />
+                        <span>ADMIN DASHBOARD</span>
+                      </Link>
+                    ) : isManager ? (
+                      <Link
+                        href="/admin/products"
+                        onClick={() => setDrawerOpen(false)}
+                        className="btn btn-primary btn-sm"
+                        style={{ width: '100%', gap: '0.45rem', justifyContent: 'center', background: '#3B82F6', borderColor: '#3B82F6', color: '#FFFFFF', fontWeight: 800, letterSpacing: '0.04em' }}
+                      >
+                        <Shield size={15} />
+                        <span>STORE OPERATIONS</span>
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/account"
+                        onClick={() => setDrawerOpen(false)}
+                        className="btn btn-ghost btn-sm"
+                        style={{ width: '100%', justifyContent: 'center' }}
+                      >
+                        My Account
+                      </Link>
+                    )}
+                  </motion.div>
+                )}
+
                 {/* Main Navigation Links */}
                 <motion.div variants={drawerSectionVariants} style={{ marginBottom: '1.75rem' }}>
                   <p
@@ -553,31 +612,29 @@ export default function Navbar({ cartCount }: NavbarProps) {
                 }}
               >
                 {user ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <p style={{ fontSize: '0.78rem', color: 'var(--wy-muted)' }}>
-                      Signed in as <span style={{ color: '#FFFFFF' }}>{user.email}</span>
-                      {isAdmin && <span style={{ color: '#FFC800', marginLeft: '0.4rem', fontWeight: 700 }}>(ADMIN)</span>}
-                    </p>
-                    {isAdmin ? (
-                      <Link
-                        href="/admin"
-                        onClick={() => setDrawerOpen(false)}
-                        className="btn btn-primary btn-sm"
-                        style={{ width: '100%', gap: '0.4rem', justifyContent: 'center' }}
-                      >
-                        <Shield size={14} />
-                        <span>Admin Dashboard</span>
-                      </Link>
-                    ) : (
-                      <Link
-                        href="/account"
-                        onClick={() => setDrawerOpen(false)}
-                        className="btn btn-ghost btn-sm"
-                        style={{ width: '100%' }}
-                      >
-                        My Account
-                      </Link>
-                    )}
+                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                    <Link
+                      href="/account"
+                      onClick={() => setDrawerOpen(false)}
+                      className="btn btn-ghost btn-sm"
+                      style={{ flex: 1, justifyContent: 'center' }}
+                    >
+                      <UserIcon size={14} style={{ marginRight: '0.35rem' }} />
+                      <span>Account</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setDrawerOpen(false);
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        window.location.reload();
+                      }}
+                      className="btn btn-ghost btn-sm"
+                      style={{ flex: 1, justifyContent: 'center', color: '#EF4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                    >
+                      Sign Out
+                    </button>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', gap: '0.75rem' }}>
