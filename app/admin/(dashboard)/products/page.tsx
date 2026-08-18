@@ -12,7 +12,7 @@ import {
 
 // ─── Shared field styles ──────────────────────────────────────
 const LABEL: React.CSSProperties = {
-  display: 'block', fontSize: '0.7rem', color: '#71717A',
+  display: 'block', fontSize: '0.72rem', color: '#D4D4D8',
   textTransform: 'uppercase', letterSpacing: '0.1em',
   marginBottom: '0.45rem', fontWeight: 700,
 };
@@ -529,24 +529,24 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Products Table */}
-      <div style={{ background: '#0D0D0D', border: '1px solid #1A1A1A', borderRadius: '12px', overflow: 'hidden' }}>
+      <div style={{ background: '#0D0D0D', border: '1px solid #27272A', borderRadius: '12px', overflow: 'hidden' }}>
         {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#3F3F46', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-            <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Loading products...
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#A1A1AA', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+            <Loader2 size={18} style={{ animation: 'spin 1s linear infinite', color: '#FFC800' }} /> Loading products...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#3F3F46' }}>
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#A1A1AA' }}>
             {searchQuery || filterCategory !== 'all' ? 'No products match your filters.' : 'No products yet. Add your first one!'}
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #1A1A1A' }}>
+                <tr style={{ borderBottom: '1px solid #27272A', background: '#111113' }}>
                   {['Product', 'Category', 'Price', 'Stock', 'Status', 'Actions'].map(h => (
                     <th key={h} style={{
-                      padding: '0.8rem 1.25rem', textAlign: 'left',
-                      color: '#3F3F46', fontWeight: 600, fontSize: '0.68rem',
+                      padding: '0.85rem 1.25rem', textAlign: 'left',
+                      color: '#A1A1AA', fontWeight: 600, fontSize: '0.72rem',
                       textTransform: 'uppercase', letterSpacing: '0.1em',
                     }}>
                       {h}
@@ -562,8 +562,8 @@ export default function AdminProductsPage() {
                   return (
                     <tr
                       key={p.id}
-                      style={{ borderBottom: '1px solid #111', transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#111113'}
+                      style={{ borderBottom: '1px solid #1E1E24', transition: 'background 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#141417'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       <td style={{ padding: '0.875rem 1.25rem' }}>
@@ -577,17 +577,17 @@ export default function AdminProductsPage() {
                             {image && <img src={image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                           </div>
                           <div>
-                            <p style={{ color: '#E4E4E7', fontWeight: 600 }}>{p.title}</p>
-                            <p style={{ color: '#3F3F46', fontSize: '0.72rem', marginTop: '1px' }}>{p.slug}</p>
+                            <p style={{ color: '#FFFFFF', fontWeight: 600 }}>{p.title}</p>
+                            <p style={{ color: '#A1A1AA', fontSize: '0.72rem', marginTop: '1px' }}>{p.slug}</p>
                           </div>
                         </div>
                       </td>
                       <td style={{ padding: '0.875rem 1.25rem' }}>
                         <span style={{
                           padding: '0.25rem 0.6rem',
-                          background: '#1A1A1A', borderRadius: '5px',
-                          color: '#71717A', fontSize: '0.72rem',
-                          textTransform: 'capitalize', fontWeight: 500,
+                          background: '#18181B', borderRadius: '5px',
+                          color: '#E4E4E7', fontSize: '0.72rem',
+                          textTransform: 'capitalize', fontWeight: 600,
                           border: '1px solid #27272A',
                         }}>
                           {p.category}

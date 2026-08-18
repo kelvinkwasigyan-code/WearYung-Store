@@ -11,7 +11,7 @@ import {
 
 // Shared styles
 const LABEL: React.CSSProperties = {
-  display: 'block', fontSize: '0.7rem', color: '#71717A',
+  display: 'block', fontSize: '0.72rem', color: '#D4D4D8',
   textTransform: 'uppercase', letterSpacing: '0.1em',
   marginBottom: '0.45rem', fontWeight: 700,
 };

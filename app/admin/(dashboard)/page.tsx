@@ -46,13 +46,13 @@ export default async function AdminDashboardPage() {
         <h1 style={{
           fontFamily: 'var(--font-display)',
           fontSize: 'clamp(2rem, 4vw, 2.75rem)',
-          color: '#fff',
+          color: '#FFFFFF',
           letterSpacing: '0.04em',
           marginBottom: '0.25rem',
         }}>
           {greeting}, DANI
         </h1>
-        <p style={{ color: '#555', fontSize: '0.875rem' }}>
+        <p style={{ color: '#A1A1AA', fontSize: '0.875rem' }}>
           Live overview of your WEAR YUNG store
         </p>
       </div>
@@ -97,13 +97,13 @@ export default async function AdminDashboardPage() {
       {/* Recent Orders */}
       <div style={{
         background: '#0d0d0d',
-        border: '1px solid #1a1a1a',
+        border: '1px solid #27272A',
         borderRadius: '12px',
         overflow: 'hidden',
       }}>
         <div style={{
           padding: '1.25rem 1.5rem',
-          borderBottom: '1px solid #1a1a1a',
+          borderBottom: '1px solid #27272A',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -111,32 +111,32 @@ export default async function AdminDashboardPage() {
           <h2 style={{
             fontFamily: 'var(--font-display)',
             fontSize: '1.1rem',
-            color: '#fff',
+            color: '#FFFFFF',
             letterSpacing: '0.05em',
           }}>
             RECENT ORDERS
           </h2>
-          <a href="/admin/orders" style={{ fontSize: '0.8rem', color: '#FFC800', textDecoration: 'none' }}>
+          <a href="/admin/orders" style={{ fontSize: '0.8rem', color: '#FFC800', textDecoration: 'none', fontWeight: 600 }}>
             View all →
           </a>
         </div>
 
         {!recentOrders || recentOrders.length === 0 ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#444' }}>
-            <ShoppingBag size={36} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#A1A1AA' }}>
+            <ShoppingBag size={36} style={{ margin: '0 auto 1rem', opacity: 0.5, color: '#A1A1AA' }} />
             <p>No orders yet</p>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
+                <tr style={{ borderBottom: '1px solid #27272A', background: '#111113' }}>
                   {['Order ID', 'Customer', 'Amount', 'Status', 'Date'].map((h) => (
                     <th key={h} style={{
-                      padding: '0.75rem 1.5rem',
+                      padding: '0.85rem 1.5rem',
                       textAlign: 'left',
-                      color: '#444',
-                      fontWeight: 500,
+                      color: '#A1A1AA',
+                      fontWeight: 600,
                       fontSize: '0.75rem',
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
@@ -148,33 +148,33 @@ export default async function AdminDashboardPage() {
               </thead>
               <tbody>
                 {recentOrders.map((order) => (
-                  <tr key={order.id} style={{ borderBottom: '1px solid #111' }}>
-                    <td style={{ padding: '0.875rem 1.5rem', color: '#888', fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                  <tr key={order.id} style={{ borderBottom: '1px solid #1E1E24' }}>
+                    <td style={{ padding: '0.875rem 1.5rem', color: '#E4E4E7', fontFamily: 'monospace', fontSize: '0.8rem' }}>
                       #{order.id.slice(0, 8)}
                     </td>
-                    <td style={{ padding: '0.875rem 1.5rem', color: '#ccc' }}>
+                    <td style={{ padding: '0.875rem 1.5rem', color: '#FFFFFF', fontWeight: 500 }}>
                       {(order.profiles as any)?.full_name || order.guest_email || 'Guest'}
                     </td>
-                    <td style={{ padding: '0.875rem 1.5rem', color: '#FFC800', fontWeight: 600 }}>
+                    <td style={{ padding: '0.875rem 1.5rem', color: '#FFC800', fontWeight: 700 }}>
                       GH₵ {order.total_amount}
                     </td>
                     <td style={{ padding: '0.875rem 1.5rem' }}>
                       <span style={{
                         display: 'inline-block',
-                        padding: '0.2rem 0.6rem',
+                        padding: '0.25rem 0.65rem',
                         borderRadius: '4px',
                         fontSize: '0.7rem',
-                        fontWeight: 600,
+                        fontWeight: 700,
                         letterSpacing: '0.08em',
                         textTransform: 'uppercase',
                         background: `${statusColors[order.status] ?? '#555'}22`,
-                        color: statusColors[order.status] ?? '#888',
-                        border: `1px solid ${statusColors[order.status] ?? '#555'}44`,
+                        color: statusColors[order.status] ?? '#A1A1AA',
+                        border: `1px solid ${statusColors[order.status] ?? '#555'}55`,
                       }}>
                         {order.status}
                       </span>
                     </td>
-                    <td style={{ padding: '0.875rem 1.5rem', color: '#555', fontSize: '0.8rem' }}>
+                    <td style={{ padding: '0.875rem 1.5rem', color: '#A1A1AA', fontSize: '0.8rem' }}>
                       {new Date(order.created_at).toLocaleDateString()}
                     </td>
                   </tr>

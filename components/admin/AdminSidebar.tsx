@@ -293,7 +293,7 @@ export default function AdminSidebar() {
             <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: '#FFC800', letterSpacing: '0.08em' }}>
               WEAR YUNG
             </span>
-            <span style={{ display: 'block', fontSize: '0.68rem', color: '#71717A', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: '2px' }}>
+            <span style={{ display: 'block', fontSize: '0.68rem', color: '#A1A1AA', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: '2px', fontWeight: 600 }}>
               Admin Portal
             </span>
           </Link>
@@ -314,12 +314,12 @@ export default function AdminSidebar() {
                   padding: '0.65rem 0.875rem',
                   borderRadius: '8px',
                   fontSize: '0.875rem',
-                  fontWeight: isActive ? 800 : 500,
+                  fontWeight: isActive ? 800 : 600,
                   textDecoration: 'none',
                   transition: 'all 0.15s ease',
-                  background: isActive ? 'rgba(255,200,0,0.1)' : 'transparent',
-                  color: isActive ? '#FFC800' : '#888890',
-                  borderLeft: isActive ? '2px solid #FFC800' : '2px solid transparent',
+                  background: isActive ? 'rgba(255,200,0,0.12)' : 'transparent',
+                  color: isActive ? '#FFC800' : '#D4D4D8',
+                  borderLeft: isActive ? '3px solid #FFC800' : '3px solid transparent',
                 }}
               >
                 {item.icon}
@@ -340,8 +340,9 @@ export default function AdminSidebar() {
               gap: '0.6rem',
               padding: '0.55rem 0.875rem',
               borderRadius: '8px',
-              fontSize: '0.8rem',
-              color: '#888890',
+              fontSize: '0.82rem',
+              fontWeight: 500,
+              color: '#D4D4D8',
               textDecoration: 'none',
               transition: 'color 0.15s',
             }}
