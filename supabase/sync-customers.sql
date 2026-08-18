@@ -17,8 +17,8 @@ SELECT
   COALESCE(u.raw_user_meta_data->>'full_name', 'Customer'),
   COALESCE(u.raw_user_meta_data->>'phone_number', ''),
   CASE 
-    WHEN LOWER(u.email) = 'wearyungworldwide@gmail.com' THEN 'admin'::app_role
-    ELSE 'customer'::app_role
+    WHEN LOWER(u.email) = 'wearyungworldwide@gmail.com' THEN 'admin'
+    ELSE 'customer'
   END,
   u.created_at
 FROM auth.users u
@@ -36,7 +36,7 @@ SET
     ELSE public.profiles.phone_number
   END,
   role = CASE 
-    WHEN LOWER(EXCLUDED.email) = 'wearyungworldwide@gmail.com' THEN 'admin'::app_role
+    WHEN LOWER(EXCLUDED.email) = 'wearyungworldwide@gmail.com' THEN 'admin'
     ELSE public.profiles.role
   END;
 
@@ -65,8 +65,8 @@ BEGIN
     COALESCE(new.raw_user_meta_data->>'full_name', 'Customer'),
     COALESCE(new.raw_user_meta_data->>'phone_number', ''),
     CASE 
-      WHEN LOWER(new.email) = 'wearyungworldwide@gmail.com' THEN 'admin'::app_role
-      ELSE 'customer'::app_role
+      WHEN LOWER(new.email) = 'wearyungworldwide@gmail.com' THEN 'admin'
+      ELSE 'customer'
     END
   )
   ON CONFLICT (id) DO UPDATE

@@ -126,11 +126,11 @@ CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
   RETURN (
-    (current_setting('request.jwt.claims', true)::jsonb ->> 'email') = 'wearyungworldwide@gmail.com'
-    OR (auth.jwt() ->> 'email') = 'wearyungworldwide@gmail.com'
+    LOWER(COALESCE((current_setting('request.jwt.claims', true)::jsonb ->> 'email'), '')) = 'wearyungworldwide@gmail.com'
+    OR LOWER(COALESCE((auth.jwt() ->> 'email'), '')) = 'wearyungworldwide@gmail.com'
     OR EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND role = 'admin'::app_role
+      WHERE id = auth.uid() AND role::text = 'admin'
     )
   );
 END;
@@ -207,7 +207,7 @@ BEGIN
     new.id, 
     COALESCE(new.raw_user_meta_data->>'full_name', ''),
     COALESCE(new.raw_user_meta_data->>'phone_number', ''),
-    'customer'::app_role
+    'customer'
   );
   RETURN new;
 END;
