@@ -113,14 +113,6 @@ export default async function JustInPage({ searchParams }: JustInPageProps) {
             </Link>
           </div>
 
-          {/* Glowing Badge */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 200, 0, 0.12)', border: '1px solid rgba(255, 200, 0, 0.35)', padding: '4px 12px', borderRadius: '20px', marginBottom: '1rem' }}>
-            <Sparkles size={14} style={{ color: '#FFC800' }} />
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#FFC800', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-              JUST IN • NEW ARRIVALS
-            </span>
-          </div>
-
           <h1
             style={{
               fontFamily: 'var(--font-display)',
