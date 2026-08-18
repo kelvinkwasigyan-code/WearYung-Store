@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Phone, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, Phone, CheckCircle2, AlertCircle } from 'lucide-react';
 import { notifyNewUserAction } from '@/app/actions/auth';
 
 function LoginForm() {
@@ -146,7 +146,7 @@ function LoginForm() {
           style={{
             position: 'relative',
             zIndex: 10,
-            padding: '1.75rem 1.5rem 1.5rem',
+            padding: '2rem 1.75rem 1.75rem',
             marginBottom: '0.5rem',
           }}
         >
@@ -183,7 +183,7 @@ function LoginForm() {
       </div>
 
       {/* ─── Right: Auth Form Stage (Desktop Right Column / Mobile Full Width) ─── */}
-      <div className="relative flex flex-col justify-center items-center p-4 py-8 pb-20 lg:p-10 lg:overflow-y-auto h-full w-full">
+      <div className="relative flex flex-col justify-center items-center p-4 py-10 pb-24 sm:p-6 lg:p-12 lg:overflow-y-auto h-full w-full">
         {/* Mobile Background Dual Image Layer (Mobile Only < 1024px) */}
         <div
           className="lg:hidden"
@@ -236,15 +236,15 @@ function LoginForm() {
             borderRadius: '24px',
             boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 200, 0, 0.03), inset 0 1px 0 0 rgba(255, 255, 255, 0.12)',
           }}
-          className="max-w-[420px] p-6 sm:max-w-[480px] sm:p-9"
+          className="max-w-[450px] p-6 sm:max-w-[500px] sm:p-10 md:p-11"
         >
           {/* Top Bar: Back Button & Glassy Tab Switcher */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.75rem',
-              marginBottom: '1.75rem',
+              gap: '0.85rem',
+              marginBottom: '2rem',
             }}
           >
             {/* Back Button */}
@@ -259,8 +259,8 @@ function LoginForm() {
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '12px',
-                width: '44px',
-                height: '44px',
+                width: '46px',
+                height: '46px',
                 color: '#D4D4D8',
                 cursor: 'pointer',
                 flexShrink: 0,
@@ -269,7 +269,7 @@ function LoginForm() {
               onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(255, 200, 0, 0.4)'}
               onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={17} />
             </button>
 
             {/* Glassy Tabs Switcher */}
@@ -281,7 +281,7 @@ function LoginForm() {
                 borderRadius: '12px',
                 padding: '4px',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
-                height: '44px',
+                height: '46px',
               }}
             >
               {(['sign-in', 'sign-up'] as const).map((tab) => (
@@ -295,7 +295,7 @@ function LoginForm() {
                     border: 'none',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.82rem',
+                    fontSize: '0.84rem',
                     fontWeight: 600,
                     letterSpacing: '0.02em',
                     transition: 'all 0.25s ease',
@@ -319,15 +319,15 @@ function LoginForm() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18 }}
             >
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ marginBottom: '1.75rem' }}>
                 <h1
                   style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: 'clamp(1.75rem, 4vw, 2.25rem)',
+                    fontSize: 'clamp(1.8rem, 4vw, 2.35rem)',
                     color: '#FFFFFF',
                     letterSpacing: '0.04em',
-                    lineHeight: 1.1,
-                    margin: '0 0 0.4rem',
+                    lineHeight: 1.15,
+                    margin: '0 0 0.5rem',
                   }}
                 >
                   {view === 'sign-in' ? 'WELCOME BACK' : 'JOIN WEAR YUNG'}
@@ -335,9 +335,9 @@ function LoginForm() {
                 <p
                   style={{
                     color: '#A1A1AA',
-                    fontSize: '0.85rem',
+                    fontSize: '0.88rem',
                     margin: 0,
-                    lineHeight: 1.45,
+                    lineHeight: 1.5,
                   }}
                 >
                   {view === 'sign-in'
@@ -353,13 +353,13 @@ function LoginForm() {
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '0.65rem',
-                    padding: '0.85rem 1rem',
+                    padding: '0.9rem 1.1rem',
                     background: 'rgba(239, 68, 68, 0.15)',
                     border: '1px solid rgba(239, 68, 68, 0.35)',
                     borderRadius: '12px',
                     color: '#FCA5A5',
-                    fontSize: '0.82rem',
-                    marginBottom: '1.25rem',
+                    fontSize: '0.84rem',
+                    marginBottom: '1.5rem',
                   }}
                 >
                   <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -373,13 +373,13 @@ function LoginForm() {
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '0.65rem',
-                    padding: '0.85rem 1rem',
+                    padding: '0.9rem 1.1rem',
                     background: 'rgba(34, 197, 94, 0.15)',
                     border: '1px solid rgba(34, 197, 94, 0.35)',
                     borderRadius: '12px',
                     color: '#86EFAC',
-                    fontSize: '0.82rem',
-                    marginBottom: '1.25rem',
+                    fontSize: '0.84rem',
+                    marginBottom: '1.5rem',
                   }}
                 >
                   <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -388,7 +388,7 @@ function LoginForm() {
               )}
 
               {/* Form */}
-              <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 {view === 'sign-up' && (
                   <>
                     {/* Full Name */}
@@ -396,12 +396,12 @@ function LoginForm() {
                       <label
                         style={{
                           display: 'block',
-                          fontSize: '0.72rem',
+                          fontSize: '0.74rem',
                           fontWeight: 600,
                           color: '#E4E4E7',
                           textTransform: 'uppercase',
                           letterSpacing: '0.08em',
-                          marginBottom: '0.45rem',
+                          marginBottom: '0.5rem',
                         }}
                       >
                         Full Name
@@ -415,8 +415,8 @@ function LoginForm() {
                           onChange={(e) => setFullName(e.target.value)}
                           style={{
                             width: '100%',
-                            height: '48px',
-                            padding: '0 1rem 0 2.75rem',
+                            height: '50px',
+                            padding: '0 1.25rem 0 2.9rem',
                             background: 'rgba(255, 255, 255, 0.05)',
                             borderRadius: '12px',
                             border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -434,7 +434,7 @@ function LoginForm() {
                             e.target.style.background = 'rgba(255, 255, 255, 0.05)';
                           }}
                         />
-                        <User size={16} style={{ position: 'absolute', left: '0.95rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
+                        <User size={17} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
                       </div>
                     </div>
 
@@ -443,12 +443,12 @@ function LoginForm() {
                       <label
                         style={{
                           display: 'block',
-                          fontSize: '0.72rem',
+                          fontSize: '0.74rem',
                           fontWeight: 600,
                           color: '#E4E4E7',
                           textTransform: 'uppercase',
                           letterSpacing: '0.08em',
-                          marginBottom: '0.45rem',
+                          marginBottom: '0.5rem',
                         }}
                       >
                         Phone Number
@@ -461,8 +461,8 @@ function LoginForm() {
                           onChange={(e) => setPhone(e.target.value)}
                           style={{
                             width: '100%',
-                            height: '48px',
-                            padding: '0 1rem 0 2.75rem',
+                            height: '50px',
+                            padding: '0 1.25rem 0 2.9rem',
                             background: 'rgba(255, 255, 255, 0.05)',
                             borderRadius: '12px',
                             border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -480,7 +480,7 @@ function LoginForm() {
                             e.target.style.background = 'rgba(255, 255, 255, 0.05)';
                           }}
                         />
-                        <Phone size={16} style={{ position: 'absolute', left: '0.95rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
+                        <Phone size={17} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
                       </div>
                     </div>
                   </>
@@ -491,12 +491,12 @@ function LoginForm() {
                   <label
                     style={{
                       display: 'block',
-                      fontSize: '0.72rem',
+                      fontSize: '0.74rem',
                       fontWeight: 600,
                       color: '#E4E4E7',
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
-                      marginBottom: '0.45rem',
+                      marginBottom: '0.5rem',
                     }}
                   >
                     Email Address
@@ -510,8 +510,8 @@ function LoginForm() {
                       onChange={(e) => setEmail(e.target.value)}
                       style={{
                         width: '100%',
-                        height: '48px',
-                        padding: '0 1rem 0 2.75rem',
+                        height: '50px',
+                        padding: '0 1.25rem 0 2.9rem',
                         background: 'rgba(255, 255, 255, 0.05)',
                         borderRadius: '12px',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -529,16 +529,16 @@ function LoginForm() {
                         e.target.style.background = 'rgba(255, 255, 255, 0.05)';
                       }}
                     />
-                    <Mail size={16} style={{ position: 'absolute', left: '0.95rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
+                    <Mail size={17} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
                   </div>
                 </div>
 
                 {/* Password */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <label
                       style={{
-                        fontSize: '0.72rem',
+                        fontSize: '0.74rem',
                         fontWeight: 600,
                         color: '#E4E4E7',
                         textTransform: 'uppercase',
@@ -554,7 +554,7 @@ function LoginForm() {
                           e.preventDefault();
                           alert('Please contact support or email concierge@wearyung.com to reset your password.');
                         }}
-                        style={{ fontSize: '0.75rem', color: '#FFC800', fontWeight: 600, textDecoration: 'none' }}
+                        style={{ fontSize: '0.78rem', color: '#FFC800', fontWeight: 600, textDecoration: 'none' }}
                       >
                         Forgot?
                       </Link>
@@ -569,8 +569,8 @@ function LoginForm() {
                       onChange={(e) => setPassword(e.target.value)}
                       style={{
                         width: '100%',
-                        height: '48px',
-                        padding: '0 2.75rem 0 2.75rem',
+                        height: '50px',
+                        padding: '0 2.9rem 0 2.9rem',
                         background: 'rgba(255, 255, 255, 0.05)',
                         borderRadius: '12px',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -588,13 +588,13 @@ function LoginForm() {
                         e.target.style.background = 'rgba(255, 255, 255, 0.05)';
                       }}
                     />
-                    <Lock size={16} style={{ position: 'absolute', left: '0.95rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
+                    <Lock size={17} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#A1A1AA' }} />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       style={{
                         position: 'absolute',
-                        right: '0.95rem',
+                        right: '1rem',
                         top: '50%',
                         transform: 'translateY(-50%)',
                         background: 'none',
@@ -604,7 +604,7 @@ function LoginForm() {
                         display: 'flex',
                       }}
                     >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                     </button>
                   </div>
                 </div>
@@ -615,20 +615,20 @@ function LoginForm() {
                   disabled={loading}
                   style={{
                     width: '100%',
-                    height: '50px',
-                    marginTop: '0.4rem',
+                    height: '52px',
+                    marginTop: '0.5rem',
                     borderRadius: '12px',
                     background: '#FFC800',
                     border: 'none',
                     color: '#000000',
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.92rem',
+                    fontSize: '0.94rem',
                     fontWeight: 700,
                     letterSpacing: '0.03em',
                     textTransform: 'uppercase',
                     cursor: loading ? 'not-allowed' : 'pointer',
                     opacity: loading ? 0.7 : 1,
-                    boxShadow: '0 4px 22px rgba(255, 200, 0, 0.28)',
+                    boxShadow: '0 4px 24px rgba(255, 200, 0, 0.3)',
                     transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#e6b400'}
@@ -639,8 +639,8 @@ function LoginForm() {
               </form>
 
               {/* Bottom Switcher Link */}
-              <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.1rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <p style={{ color: '#A1A1AA', fontSize: '0.84rem', margin: 0 }}>
+              <div style={{ textAlign: 'center', marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <p style={{ color: '#A1A1AA', fontSize: '0.86rem', margin: 0 }}>
                   {view === 'sign-in' ? "Don't have an account yet?" : 'Already have an account?'}{' '}
                   <button
                     type="button"
@@ -651,8 +651,8 @@ function LoginForm() {
                       color: '#FFC800',
                       fontWeight: 700,
                       cursor: 'pointer',
-                      fontSize: '0.84rem',
-                      marginLeft: '0.2rem',
+                      fontSize: '0.86rem',
+                      marginLeft: '0.25rem',
                     }}
                   >
                     {view === 'sign-in' ? 'Create VIP Account' : 'Sign In Here'}
