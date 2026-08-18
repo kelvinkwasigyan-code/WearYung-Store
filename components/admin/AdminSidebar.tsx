@@ -367,7 +367,7 @@ export default function AdminSidebar({ userRole = 'admin' }: AdminSidebarProps) 
         </nav>
 
         {/* Bottom Actions */}
-        <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid #1A1A1E', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ padding: '1rem 0.75rem 1.75rem 0.75rem', borderTop: '1px solid #1A1A1E', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <Link
             href="/"
             target="_blank"

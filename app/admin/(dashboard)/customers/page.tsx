@@ -445,7 +445,7 @@ export default function AdminCustomersPage() {
       ) : (
         <>
           {/* ─── 1. MOBILE CARD VIEW (< 768px) ─── */}
-          <div className="block md:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="admin-mobile-cards-view">
             {filteredCustomers.map((c) => {
               const isAdm = c.role === 'admin';
               const isMgr = c.role === 'manager';
@@ -650,7 +650,7 @@ export default function AdminCustomersPage() {
           </div>
 
           {/* ─── 2. DESKTOP TABULAR VIEW (≥ 768px) ─── */}
-          <div className="hidden md:block" style={{
+          <div className="admin-desktop-table-view" style={{
             background: '#0D0D10',
             border: '1px solid #27272A',
             borderRadius: '12px',
