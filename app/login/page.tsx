@@ -179,7 +179,7 @@ function LoginForm() {
       </div>
 
       {/* ─── Right: Auth Form Stage (Desktop Right Column / Mobile Full Width) ─── */}
-      <div className="relative flex flex-col justify-center items-center p-4 py-8 pb-24 lg:p-8 lg:overflow-y-auto bg-[#070709] h-full w-full">
+      <div className="relative flex flex-col justify-center items-center p-3 py-6 pb-24 sm:p-6 lg:p-8 lg:overflow-y-auto bg-[#070709] h-full w-full">
         {/* Mobile Background Dual Image Layer (Mobile Only < 1024px) */}
         <div
           className="lg:hidden"
@@ -190,7 +190,7 @@ function LoginForm() {
             pointerEvents: 'none',
           }}
         >
-          <div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', opacity: 0.22, filter: 'contrast(1.15) brightness(0.55)' }}>
+          <div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', opacity: 0.18, filter: 'contrast(1.15) brightness(0.55)' }}>
             <div style={{ position: 'relative', height: '100%', width: '100%' }}>
               <img
                 src="/sign-in-image.jpg"
@@ -212,35 +212,35 @@ function LoginForm() {
               position: 'absolute',
               inset: 0,
               background: `
-                linear-gradient(180deg, rgba(7, 7, 9, 0.75) 0%, rgba(7, 7, 9, 0.92) 40%, rgba(7, 7, 9, 0.99) 100%),
-                radial-gradient(circle at 50% 20%, rgba(255, 200, 0, 0.05) 0%, transparent 60%)
+                linear-gradient(180deg, rgba(7, 7, 9, 0.8) 0%, rgba(7, 7, 9, 0.94) 40%, rgba(7, 7, 9, 0.99) 100%),
+                radial-gradient(circle at 50% 20%, rgba(255, 200, 0, 0.04) 0%, transparent 60%)
               `,
             }}
           />
         </div>
 
-        {/* Form Container Card: Subtle Dark Glassmorphic Card (Unhighlighted) */}
+        {/* Form Container Card: Slim, compact, perfectly fitted for mobile & desktop */}
         <div
           style={{
             position: 'relative',
             zIndex: 10,
             width: '100%',
-            background: 'rgba(18, 18, 22, 0.85)',
+            background: 'rgba(16, 16, 20, 0.85)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid #27272A',
-            borderRadius: '18px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            borderRadius: '16px',
+            boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
           }}
-          className="max-w-[390px] p-4 sm:max-w-[440px] sm:p-6"
+          className="max-w-[340px] xs:max-w-[360px] sm:max-w-[390px] p-4 sm:p-6"
         >
           {/* Top Bar: Back Button & Tab Switcher */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.65rem',
-              marginBottom: '1.5rem',
+              gap: '0.5rem',
+              marginBottom: '1.15rem',
             }}
           >
             {/* Back Button */}
@@ -254,16 +254,16 @@ function LoginForm() {
                 justifyContent: 'center',
                 background: '#16161A',
                 border: '1px solid #27272A',
-                borderRadius: '10px',
-                width: '42px',
-                height: '42px',
+                borderRadius: '8px',
+                width: '38px',
+                height: '38px',
                 color: '#D4D4D8',
                 cursor: 'pointer',
                 flexShrink: 0,
                 transition: 'all 0.2s',
               }}
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={15} />
             </button>
 
             {/* Tabs Switcher */}
@@ -272,10 +272,10 @@ function LoginForm() {
                 display: 'flex',
                 flex: 1,
                 background: '#121215',
-                borderRadius: '10px',
-                padding: '4px',
+                borderRadius: '8px',
+                padding: '3px',
                 border: '1px solid #27272A',
-                height: '42px',
+                height: '38px',
               }}
             >
               {(['sign-in', 'sign-up'] as const).map((tab) => (
@@ -285,11 +285,11 @@ function LoginForm() {
                   onClick={() => switchView(tab)}
                   style={{
                     flex: 1,
-                    borderRadius: '8px',
+                    borderRadius: '6px',
                     border: 'none',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.8rem',
+                    fontSize: '0.75rem',
                     fontWeight: 600,
                     letterSpacing: '0.02em',
                     transition: 'all 0.2s ease',
@@ -307,20 +307,20 @@ function LoginForm() {
           <AnimatePresence mode="wait">
             <motion.div
               key={view}
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
             >
-              <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ marginBottom: '1rem' }}>
                 <h1
                   style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: 'clamp(1.6rem, 3.8vw, 2rem)',
+                    fontSize: 'clamp(1.4rem, 3.4vw, 1.75rem)',
                     color: '#FFFFFF',
                     letterSpacing: '0.04em',
                     lineHeight: 1.1,
-                    margin: '0 0 0.35rem',
+                    margin: '0 0 0.25rem',
                   }}
                 >
                   {view === 'sign-in' ? 'WELCOME BACK' : 'JOIN THE CREW'}
@@ -328,13 +328,13 @@ function LoginForm() {
                 <p
                   style={{
                     color: '#A1A1AA',
-                    fontSize: '0.82rem',
+                    fontSize: '0.76rem',
                     margin: 0,
-                    lineHeight: 1.4,
+                    lineHeight: 1.35,
                   }}
                 >
                   {view === 'sign-in'
-                    ? 'Sign in to access your orders, saved grails & wishlist.'
+                    ? 'Sign in to access your orders and wishlist.'
                     : 'Create your account to unlock exclusive perks.'}
                 </p>
               </div>
@@ -345,17 +345,17 @@ function LoginForm() {
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',
-                    gap: '0.65rem',
-                    padding: '0.75rem 1rem',
+                    gap: '0.5rem',
+                    padding: '0.65rem 0.85rem',
                     background: 'rgba(239, 68, 68, 0.12)',
                     border: '1px solid rgba(239, 68, 68, 0.35)',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     color: '#EF4444',
-                    fontSize: '0.82rem',
-                    marginBottom: '1.25rem',
+                    fontSize: '0.78rem',
+                    marginBottom: '1rem',
                   }}
                 >
-                  <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <AlertCircle size={15} style={{ flexShrink: 0, marginTop: '2px' }} />
                   <span>{error}</span>
                 </div>
               )}
@@ -365,23 +365,23 @@ function LoginForm() {
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',
-                    gap: '0.65rem',
-                    padding: '0.75rem 1rem',
+                    gap: '0.5rem',
+                    padding: '0.65rem 0.85rem',
                     background: 'rgba(34, 197, 94, 0.12)',
                     border: '1px solid rgba(34, 197, 94, 0.35)',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     color: '#22C55E',
-                    fontSize: '0.82rem',
-                    marginBottom: '1.25rem',
+                    fontSize: '0.78rem',
+                    marginBottom: '1rem',
                   }}
                 >
-                  <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={15} style={{ flexShrink: 0, marginTop: '2px' }} />
                   <span>{success}</span>
                 </div>
               )}
 
               {/* Form */}
-              <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem' }}>
+              <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                 {view === 'sign-up' && (
                   <>
                     {/* Full Name */}
@@ -389,12 +389,12 @@ function LoginForm() {
                       <label
                         style={{
                           display: 'block',
-                          fontSize: '0.72rem',
+                          fontSize: '0.68rem',
                           fontWeight: 600,
                           color: '#A1A1AA',
                           textTransform: 'uppercase',
                           letterSpacing: '0.08em',
-                          marginBottom: '0.4rem',
+                          marginBottom: '0.3rem',
                         }}
                       >
                         Full Name
@@ -408,20 +408,20 @@ function LoginForm() {
                           onChange={(e) => setFullName(e.target.value)}
                           style={{
                             width: '100%',
-                            height: '46px',
-                            padding: '0 1rem 0 2.6rem',
+                            height: '42px',
+                            padding: '0 0.85rem 0 2.4rem',
                             background: '#16161A',
-                            borderRadius: '10px',
+                            borderRadius: '8px',
                             border: '1px solid #27272A',
                             color: '#FFFFFF',
-                            fontSize: '0.9rem',
+                            fontSize: '0.85rem',
                             outline: 'none',
                             transition: 'border-color 0.2s',
                           }}
                           onFocus={(e) => e.target.style.borderColor = '#FFC800'}
                           onBlur={(e) => e.target.style.borderColor = '#27272A'}
                         />
-                        <User size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
+                        <User size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
                       </div>
                     </div>
 
@@ -430,12 +430,12 @@ function LoginForm() {
                       <label
                         style={{
                           display: 'block',
-                          fontSize: '0.72rem',
+                          fontSize: '0.68rem',
                           fontWeight: 600,
                           color: '#A1A1AA',
                           textTransform: 'uppercase',
                           letterSpacing: '0.08em',
-                          marginBottom: '0.4rem',
+                          marginBottom: '0.3rem',
                         }}
                       >
                         Phone Number
@@ -448,20 +448,20 @@ function LoginForm() {
                           onChange={(e) => setPhone(e.target.value)}
                           style={{
                             width: '100%',
-                            height: '46px',
-                            padding: '0 1rem 0 2.6rem',
+                            height: '42px',
+                            padding: '0 0.85rem 0 2.4rem',
                             background: '#16161A',
-                            borderRadius: '10px',
+                            borderRadius: '8px',
                             border: '1px solid #27272A',
                             color: '#FFFFFF',
-                            fontSize: '0.9rem',
+                            fontSize: '0.85rem',
                             outline: 'none',
                             transition: 'border-color 0.2s',
                           }}
                           onFocus={(e) => e.target.style.borderColor = '#FFC800'}
                           onBlur={(e) => e.target.style.borderColor = '#27272A'}
                         />
-                        <Phone size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
+                        <Phone size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
                       </div>
                     </div>
                   </>
@@ -472,12 +472,12 @@ function LoginForm() {
                   <label
                     style={{
                       display: 'block',
-                      fontSize: '0.72rem',
+                      fontSize: '0.68rem',
                       fontWeight: 600,
                       color: '#A1A1AA',
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
-                      marginBottom: '0.4rem',
+                      marginBottom: '0.3rem',
                     }}
                   >
                     Email Address
@@ -491,29 +491,29 @@ function LoginForm() {
                       onChange={(e) => setEmail(e.target.value)}
                       style={{
                         width: '100%',
-                        height: '46px',
-                        padding: '0 1rem 0 2.6rem',
+                        height: '42px',
+                        padding: '0 0.85rem 0 2.4rem',
                         background: '#16161A',
-                        borderRadius: '10px',
+                        borderRadius: '8px',
                         border: '1px solid #27272A',
                         color: '#FFFFFF',
-                        fontSize: '0.9rem',
+                        fontSize: '0.85rem',
                         outline: 'none',
                         transition: 'border-color 0.2s',
                       }}
                       onFocus={(e) => e.target.style.borderColor = '#FFC800'}
                       onBlur={(e) => e.target.style.borderColor = '#27272A'}
                     />
-                    <Mail size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
+                    <Mail size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
                   </div>
                 </div>
 
                 {/* Password */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
                     <label
                       style={{
-                        fontSize: '0.72rem',
+                        fontSize: '0.68rem',
                         fontWeight: 600,
                         color: '#A1A1AA',
                         textTransform: 'uppercase',
@@ -529,7 +529,7 @@ function LoginForm() {
                           e.preventDefault();
                           alert('Please contact support or email concierge@wearyung.com to reset your password.');
                         }}
-                        style={{ fontSize: '0.75rem', color: '#FFC800', fontWeight: 600, textDecoration: 'none' }}
+                        style={{ fontSize: '0.72rem', color: '#FFC800', fontWeight: 600, textDecoration: 'none' }}
                       >
                         Forgot?
                       </Link>
@@ -544,26 +544,26 @@ function LoginForm() {
                       onChange={(e) => setPassword(e.target.value)}
                       style={{
                         width: '100%',
-                        height: '46px',
-                        padding: '0 2.6rem 0 2.6rem',
+                        height: '42px',
+                        padding: '0 2.4rem 0 2.4rem',
                         background: '#16161A',
-                        borderRadius: '10px',
+                        borderRadius: '8px',
                         border: '1px solid #27272A',
                         color: '#FFFFFF',
-                        fontSize: '0.9rem',
+                        fontSize: '0.85rem',
                         outline: 'none',
                         transition: 'border-color 0.2s',
                       }}
                       onFocus={(e) => e.target.style.borderColor = '#FFC800'}
                       onBlur={(e) => e.target.style.borderColor = '#27272A'}
                     />
-                    <Lock size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
+                    <Lock size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#71717A' }} />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       style={{
                         position: 'absolute',
-                        right: '0.85rem',
+                        right: '0.75rem',
                         top: '50%',
                         transform: 'translateY(-50%)',
                         background: 'none',
@@ -573,7 +573,7 @@ function LoginForm() {
                         display: 'flex',
                       }}
                     >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
                   </div>
                 </div>
@@ -584,16 +584,16 @@ function LoginForm() {
                   disabled={loading}
                   style={{
                     width: '100%',
-                    height: '48px',
-                    marginTop: '0.45rem',
-                    borderRadius: '10px',
+                    height: '44px',
+                    marginTop: '0.35rem',
+                    borderRadius: '8px',
                     background: '#FFC800',
                     border: 'none',
                     color: '#000000',
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.88rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.04em',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
                     textTransform: 'uppercase',
                     cursor: loading ? 'not-allowed' : 'pointer',
                     opacity: loading ? 0.7 : 1,
@@ -607,8 +607,8 @@ function LoginForm() {
               </form>
 
               {/* Bottom Switcher Link */}
-              <div style={{ textAlign: 'center', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #1E1E24' }}>
-                <p style={{ color: '#A1A1AA', fontSize: '0.8rem', margin: 0 }}>
+              <div style={{ textAlign: 'center', marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid #1E1E24' }}>
+                <p style={{ color: '#A1A1AA', fontSize: '0.76rem', margin: 0 }}>
                   {view === 'sign-in' ? "Don't have an account yet?" : 'Already have an account?'}{' '}
                   <button
                     type="button"
@@ -617,9 +617,9 @@ function LoginForm() {
                       background: 'none',
                       border: 'none',
                       color: '#FFC800',
-                      fontWeight: 700,
+                      fontWeight: 600,
                       cursor: 'pointer',
-                      fontSize: '0.8rem',
+                      fontSize: '0.76rem',
                     }}
                   >
                     {view === 'sign-in' ? 'Create VIP Account' : 'Sign In Here'}
