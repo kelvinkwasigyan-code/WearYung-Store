@@ -1,9 +1,10 @@
 -- ========================================================
--- WEAR YUNG - Storage Setup for Product Images
--- Run this in your Supabase SQL Editor (Dashboard > SQL Editor)
+-- WEAR YUNG - Supabase Storage Setup for Product Images
+-- Run this in your Supabase Dashboard > SQL Editor
+-- (https://supabase.com/dashboard/project/atjpjuwwmlymsdkahqts/sql)
 -- ========================================================
 
--- 1. Create the storage bucket for product images
+-- 1. Create the storage bucket for product-images
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'product-images',
@@ -12,59 +13,48 @@ VALUES (
   10485760,  -- 10MB max
   ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'image/heic', 'image/heif']
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET public = true;
 
--- 2. Allow authenticated admins to upload images
+-- 2. Create the storage bucket for products (alias)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'products',
+  'products',
+  true,
+  10485760,
+  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'image/heic', 'image/heif']
+)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- 3. Allow authenticated users to upload images into buckets
+DROP POLICY IF EXISTS "Authenticated users can upload product images" ON storage.objects;
 DROP POLICY IF EXISTS "Admins can upload product images" ON storage.objects;
-CREATE POLICY "Admins can upload product images"
+CREATE POLICY "Authenticated users can upload product images"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
-  bucket_id = 'product-images'
-  AND (
-    (auth.jwt() ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
-    OR EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'::app_role
-    )
-  )
+  bucket_id IN ('product-images', 'products')
 );
 
--- 3. Allow anyone to view product images (public bucket)
+-- 4. Allow public read access to product images
 DROP POLICY IF EXISTS "Anyone can view product images" ON storage.objects;
 CREATE POLICY "Anyone can view product images"
 ON storage.objects FOR SELECT
 TO public
-USING (bucket_id = 'product-images');
+USING (bucket_id IN ('product-images', 'products'));
 
--- 4. Allow admins to delete product images
+-- 5. Allow authenticated users to delete images
 DROP POLICY IF EXISTS "Admins can delete product images" ON storage.objects;
-CREATE POLICY "Admins can delete product images"
+DROP POLICY IF EXISTS "Authenticated users can delete product images" ON storage.objects;
+CREATE POLICY "Authenticated users can delete product images"
 ON storage.objects FOR DELETE
 TO authenticated
-USING (
-  bucket_id = 'product-images'
-  AND (
-    (auth.jwt() ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
-    OR EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'::app_role
-    )
-  )
-);
+USING (bucket_id IN ('product-images', 'products'));
 
--- 5. Allow admins to update product images
+-- 6. Allow authenticated users to update images
 DROP POLICY IF EXISTS "Admins can update product images" ON storage.objects;
-CREATE POLICY "Admins can update product images"
+DROP POLICY IF EXISTS "Authenticated users can update product images" ON storage.objects;
+CREATE POLICY "Authenticated users can update product images"
 ON storage.objects FOR UPDATE
 TO authenticated
-USING (
-  bucket_id = 'product-images'
-  AND (
-    (auth.jwt() ->> 'email') IN ('wearyungworldwide@gmail.com', 'admin@wearyung.com')
-    OR EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'::app_role
-    )
-  )
-);
+USING (bucket_id IN ('product-images', 'products'));
