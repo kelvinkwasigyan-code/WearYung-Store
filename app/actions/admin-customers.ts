@@ -291,17 +291,46 @@ export async function updateCustomerRoleAction(userId: string, newRole: 'manager
       return { success: false, error: 'Only Manager and Customer roles are configurable.' };
     }
 
-    // 1. Update profiles table
-    const { error: profileError } = await db
-      .from('profiles')
-      .update({ role: newRole })
-      .eq('id', userId);
+    let updateWorked = false;
 
-    if (profileError) {
-      console.warn('[updateCustomerRoleAction] Profile table update warning:', profileError);
+    // 1. Try PostgreSQL RPC first (SECURITY DEFINER bypasses RLS)
+    try {
+      const { data: rpcData, error: rpcErr } = await db.rpc('admin_set_user_role', {
+        target_user_id: userId,
+        target_role: newRole,
+      });
+      if (!rpcErr && rpcData?.success) {
+        updateWorked = true;
+      }
+    } catch (rpcEx) {
+      console.warn('[updateCustomerRoleAction] RPC error, falling back to direct table update:', rpcEx);
     }
 
-    // 2. Also update Supabase auth.users metadata
+    // 2. Direct profiles update / upsert fallback
+    if (!updateWorked) {
+      const { data: updatedRows, error: profileError } = await db
+        .from('profiles')
+        .update({ role: newRole, updated_at: new Date().toISOString() })
+        .eq('id', userId)
+        .select();
+
+      if (!profileError && updatedRows && updatedRows.length > 0) {
+        updateWorked = true;
+      } else {
+        // If row didn't exist in profiles table yet, upsert it
+        const { error: upsertErr } = await db
+          .from('profiles')
+          .upsert({ id: userId, role: newRole, updated_at: new Date().toISOString() });
+
+        if (!upsertErr) {
+          updateWorked = true;
+        } else {
+          console.warn('[updateCustomerRoleAction] Profile update/upsert fallback warning:', profileError || upsertErr);
+        }
+      }
+    }
+
+    // 3. Also update Supabase auth.users metadata
     if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
       try {
         const adminClient = createAdminClient();
