@@ -403,7 +403,7 @@ function LoginForm() {
                         <input
                           type="text"
                           required
-                          placeholder="Kwame Mensah"
+                          placeholder="Your full name"
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
                           style={{
@@ -443,7 +443,7 @@ function LoginForm() {
                       <div style={{ position: 'relative' }}>
                         <input
                           type="tel"
-                          placeholder="+233 55 000 0000"
+                          placeholder="+233 XX XXX XXXX"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           style={{
@@ -486,7 +486,7 @@ function LoginForm() {
                     <input
                       type="email"
                       required
-                      placeholder="you@example.com"
+                      placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       style={{

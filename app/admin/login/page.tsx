@@ -211,7 +211,7 @@ export default function AdminLoginPage() {
                 <input
                   type="email"
                   required
-                  placeholder="wearyungworldwide@gmail.com"
+                  placeholder="Enter admin email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{
