@@ -19,16 +19,13 @@ import {
   Calendar,
   DollarSign,
   Users,
-  DatabaseZap,
   CheckCircle2,
-  Sparkles,
 } from 'lucide-react';
 
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [syncing, setSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'customer' | 'admin'>('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -44,6 +41,9 @@ export default function AdminCustomersPage() {
     else setLoading(true);
 
     try {
+      // Auto-sync in the background on refresh or initial load
+      syncExistingCustomersAction().catch(() => {});
+
       const res = await fetchAdminCustomersAction();
       if (res.success && res.customers) {
         setCustomers(res.customers);
@@ -55,19 +55,6 @@ export default function AdminCustomersPage() {
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
-  };
-
-  const handleSyncExisting = async () => {
-    setSyncing(true);
-    try {
-      const res = await syncExistingCustomersAction();
-      showToast(res.message || 'Synchronization completed!');
-      await loadCustomers(true);
-    } catch (err: any) {
-      showToast(err?.message || 'Failed to sync existing accounts');
-    } finally {
-      setSyncing(false);
     }
   };
 
@@ -167,32 +154,6 @@ export default function AdminCustomersPage() {
         </div>
 
         <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-          {/* Sync Existing Customers */}
-          <button
-            onClick={handleSyncExisting}
-            disabled={syncing || loading}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              background: '#FFC800',
-              border: 'none',
-              color: '#000000',
-              padding: '0.65rem 1.2rem',
-              borderRadius: '8px',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              cursor: syncing || loading ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s',
-              opacity: syncing ? 0.7 : 1,
-            }}
-          >
-            <DatabaseZap size={15} className={syncing ? 'spin' : ''} style={{ animation: syncing ? 'spin 1s linear infinite' : 'none' }} />
-            <span>{syncing ? 'Syncing Profiles...' : 'Sync Existing Customers'}</span>
-          </button>
-
           {/* Quick Refresh */}
           <button
             onClick={() => loadCustomers(true)}
@@ -204,7 +165,7 @@ export default function AdminCustomersPage() {
               background: '#18181B',
               border: '1px solid #27272A',
               color: '#FFFFFF',
-              padding: '0.65rem 1rem',
+              padding: '0.65rem 1.1rem',
               borderRadius: '8px',
               fontSize: '0.82rem',
               fontWeight: 600,
@@ -398,28 +359,9 @@ export default function AdminCustomersPage() {
           <div style={{ padding: '4rem', textAlign: 'center', color: '#71717A' }}>
             <Users size={32} style={{ margin: '0 auto 0.75rem', opacity: 0.4 }} />
             <p style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: 600 }}>No customer records found</p>
-            <p style={{ fontSize: '0.78rem', color: '#71717A', marginTop: '0.25rem', marginBottom: '1.25rem' }}>
-              Click "Sync Existing Customers" above to pull all accounts and order records.
+            <p style={{ fontSize: '0.78rem', color: '#71717A', marginTop: '0.25rem' }}>
+              {searchQuery ? 'Try clearing your search query.' : 'New customer registrations and order accounts will appear here automatically.'}
             </p>
-            <button
-              onClick={handleSyncExisting}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                background: '#18181B',
-                border: '1px solid #FFC800',
-                color: '#FFC800',
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              <DatabaseZap size={14} />
-              <span>Sync Customers Now</span>
-            </button>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
