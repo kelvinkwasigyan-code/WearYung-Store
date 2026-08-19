@@ -671,18 +671,6 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                         {badgeText}
                       </div>
 
-                      {/* Quantity In Bag Indicator Badge */}
-                      {quantityInCart > 0 && (
-                        <motion.div
-                          initial={{ scale: 0.7, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full border border-[#FFC800] bg-zinc-950/90 px-2.5 py-1 text-[10px] font-black uppercase text-[#FFC800] shadow-xl backdrop-blur-md"
-                        >
-                          <ShoppingBag size={11} fill="#FFC800" color="#000000" />
-                          <span>{quantityInCart} IN BAG</span>
-                        </motion.div>
-                      )}
-
                       {/* Wishlist Button */}
                       <button
                         type="button"
