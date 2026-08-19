@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Smartphone, Download, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,8 +10,19 @@ interface AppDownloadButtonProps {
 
 export default function AppDownloadButton({ variant = 'solid' }: AppDownloadButtonProps) {
   const [dismissed, setDismissed] = useState(false);
+  const [isInApp, setIsInApp] = useState(true); // Default hidden until verified on client
 
-  if (dismissed && variant === 'floating') return null;
+  useEffect(() => {
+    const ua = window.navigator.userAgent;
+    // Hide if inside custom app, standard Android WebView, or standalone PWA
+    const isApp =
+      ua.includes('WearYungApp') ||
+      ua.includes('; wv') ||
+      window.matchMedia('(display-mode: standalone)').matches;
+    setIsInApp(isApp);
+  }, []);
+
+  if (isInApp || (dismissed && variant === 'floating')) return null;
 
   if (variant === 'floating') {
     return (
