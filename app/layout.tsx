@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 import MobileScrollProgress from '@/components/MobileScrollProgress';
+import AppDownloadButton from '@/components/AppDownloadButton';
 import PWARegister from '@/components/PWARegister';
 import { CartProvider } from '@/context/CartContext';
 import { Analytics } from '@vercel/analytics/next';
@@ -70,6 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <CartDrawer />
           <MobileBottomNav />
+          <AppDownloadButton variant="floating" />
           <PWARegister />
           <Analytics />
         </CartProvider>

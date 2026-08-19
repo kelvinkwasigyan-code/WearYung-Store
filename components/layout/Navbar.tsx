@@ -11,6 +11,7 @@ import { Heart, ShoppingBag, Menu, X, User as UserIcon, Shield } from 'lucide-re
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
 
 import { usePathname } from 'next/navigation';
+import AppDownloadButton from '@/components/AppDownloadButton';
 
 interface NavbarProps {
   cartCount?: number;
@@ -561,6 +562,9 @@ export default function Navbar({ cartCount }: NavbarProps) {
                         {item.label}
                       </Link>
                     ))}
+                    <div className="pt-2">
+                      <AppDownloadButton variant="solid" />
+                    </div>
                   </div>
                 </motion.div>
 

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MapPin, Clock, Navigation } from 'lucide-react';
 import { ALL_CATEGORIES, CATEGORY_LABELS, type ProductCategory } from '@/types/ecommerce';
+import AppDownloadButton from '@/components/AppDownloadButton';
 export default function Footer() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
@@ -74,32 +75,35 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* Social Icons */}
-          <div style={{ display: 'flex', gap: '0.95rem', alignItems: 'center' }}>
-            {/* Instagram */}
-            <a href="https://instagram.com/wearyung1" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ transition: 'opacity 150ms' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-              <Image src="/icons/instagram-icon.png" alt="Instagram" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-            </a>
-            {/* TikTok */}
-            <a href="https://tiktok.com/@wearyung1" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ transition: 'opacity 150ms' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-              <Image src="/icons/tiktok-icon.png" alt="TikTok" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-            </a>
-            {/* Snapchat */}
-            <a href="https://snapchat.com/add/wear_yung" target="_blank" rel="noopener noreferrer" aria-label="Snapchat" style={{ transition: 'opacity 150ms' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-              <Image src="/icons/snapchat-icon.jpg" alt="Snapchat" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-            </a>
-            {/* WhatsApp */}
-            <a href="https://wa.me/233545355585" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ transition: 'opacity 150ms' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-              <Image src="/icons/whatsapp-icon.png" alt="WhatsApp" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
-            </a>
+          {/* Social Icons & Download Button */}
+          <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.95rem', alignItems: 'center' }}>
+              {/* Instagram */}
+              <a href="https://instagram.com/wearyung1" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ transition: 'opacity 150ms' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                <Image src="/icons/instagram-icon.png" alt="Instagram" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+              </a>
+              {/* TikTok */}
+              <a href="https://tiktok.com/@wearyung1" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ transition: 'opacity 150ms' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                <Image src="/icons/tiktok-icon.png" alt="TikTok" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+              </a>
+              {/* Snapchat */}
+              <a href="https://snapchat.com/add/wear_yung" target="_blank" rel="noopener noreferrer" aria-label="Snapchat" style={{ transition: 'opacity 150ms' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                <Image src="/icons/snapchat-icon.jpg" alt="Snapchat" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+              </a>
+              {/* WhatsApp */}
+              <a href="https://wa.me/233545355585" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ transition: 'opacity 150ms' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                <Image src="/icons/whatsapp-icon.png" alt="WhatsApp" width={24} height={24} style={{ objectFit: 'contain', borderRadius: '4px' }} />
+              </a>
+            </div>
+            <AppDownloadButton variant="solid" />
           </div>
         </div>
 
