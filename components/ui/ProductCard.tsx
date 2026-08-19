@@ -1,20 +1,47 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star } from 'lucide-react';
+import { Star, ShoppingBag, Check } from 'lucide-react';
 import type { Product } from '@/types/ecommerce';
+import { useCartContext } from '@/context/CartContext';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCartContext();
+  const [added, setAdded] = useState(false);
+
+  const targetVariant = product.variants?.[0];
   const minPrice = product.variants?.length
     ? Math.min(...product.variants.map((v) => v.price))
     : null;
-  const inStock = product.variants?.some((v) => v.stock_quantity > 0) ?? false;
+  const inStock = product.variants?.some((v) => (v.stock_quantity ?? 0) > 0) ?? false;
   const imageUrl = product.images?.[0] ?? null;
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!targetVariant || !inStock) return;
+
+    addToCart({
+      variantId: targetVariant.id,
+      productId: product.id,
+      productTitle: product.title,
+      productSlug: product.slug,
+      productImage: product.images?.[0] ?? '',
+      sku: targetVariant.sku,
+      price: targetVariant.price,
+      quantity: 1,
+      attributes: targetVariant.attributes,
+    });
+
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
 
   return (
     <Link
@@ -82,6 +109,28 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.category}
         </div>
 
+        {/* Floating Quick Add Button */}
+        {inStock && (
+          <button
+            type="button"
+            onClick={handleQuickAdd}
+            aria-label={`Quick add ${product.title} to bag`}
+            className="absolute bottom-2.5 right-2.5 z-20 flex h-8.5 items-center gap-1.5 rounded-lg border-none bg-[#FFC800] px-3 text-xs font-black uppercase tracking-wider text-black shadow-lg transition-all duration-200 hover:bg-yellow-400 hover:scale-105 active:scale-95"
+          >
+            {added ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-black" strokeWidth={3} />
+                <span className="text-[10px] font-black text-black">Added</span>
+              </>
+            ) : (
+              <>
+                <ShoppingBag className="h-3.5 w-3.5 text-black" strokeWidth={2.4} />
+                <span className="text-[10px] font-black text-black">Quick Add</span>
+              </>
+            )}
+          </button>
+        )}
+
         {/* Out of Stock Pill */}
         {!inStock && (
           <div
@@ -117,12 +166,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* ─── Product Info ─── */}
       <div style={{ display: 'flex', flexDirection: 'column', paddingTop: '0.65rem' }}>
-        {/* Sub-header: Option count & Rating */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-          <span style={{ fontSize: 'clamp(0.65rem, 1vw, 0.72rem)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#71717A' }}>
-            {product.variants?.length ?? 0} {product.variants?.length === 1 ? 'Option' : 'Options'}
-          </span>
-
+        {/* Sub-header: Rating (Option count tag removed) */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '0.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <Star size={11} fill="var(--wy-yellow)" color="var(--wy-yellow)" />
             <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#A1A1AA' }}>
