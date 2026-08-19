@@ -18,7 +18,7 @@ type TopsSleevesSub = 'all' | 'tops' | 'sleeves';
 type JeansSub = 'all' | 'baggy' | 'slim';
 
 export default function UnifiedProductShowcase({ products }: UnifiedProductShowcaseProps) {
-  const { addToCart } = useCartContext();
+  const { addToCart, items } = useCartContext();
   const [selectedCategory, setSelectedCategory] = useState<MainCategory>('all');
   const [selectedClothingGroup, setSelectedClothingGroup] = useState<ClothingPrimaryGroup>('all');
   const [selectedTopsSub, setSelectedTopsSub] = useState<TopsSleevesSub>('all');
@@ -610,6 +610,10 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                   }
                 }
 
+                const quantityInCart = (items || [])
+                  .filter((item) => item.productId === product.id)
+                  .reduce((sum, item) => sum + item.quantity, 0);
+
                 return (
                   <motion.div
                     layout
@@ -621,21 +625,13 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                     style={{
                       background: '#141416',
                       borderRadius: '16px',
-                      border: '1px solid #27272A',
+                      border: isAdded ? '2px solid #FFC800' : '1px solid #27272A',
+                      boxShadow: isAdded ? '0 0 30px rgba(255,200,0,0.35)' : '0 8px 24px rgba(0,0,0,0.4)',
                       overflow: 'hidden',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                      transition: 'border-color 0.2s, transform 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255, 200, 0, 0.4)';
-                      e.currentTarget.style.transform = 'translateY(-4px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#27272A';
-                      e.currentTarget.style.transform = 'translateY(0)';
+                      transition: 'all 0.2s ease',
                     }}
                   >
                     {/* Image Container */}
@@ -674,6 +670,18 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                       }}>
                         {badgeText}
                       </div>
+
+                      {/* Quantity In Bag Indicator Badge */}
+                      {quantityInCart > 0 && (
+                        <motion.div
+                          initial={{ scale: 0.7, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full border border-[#FFC800] bg-zinc-950/90 px-2.5 py-1 text-[10px] font-black uppercase text-[#FFC800] shadow-xl backdrop-blur-md"
+                        >
+                          <ShoppingBag size={11} fill="#FFC800" color="#000000" />
+                          <span>{quantityInCart} IN BAG</span>
+                        </motion.div>
+                      )}
 
                       {/* Wishlist Button */}
                       <button
@@ -737,10 +745,10 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                       </div>
 
                       {/* Quick Add Button */}
-                      <button
+                      <motion.button
                         type="button"
+                        whileTap={{ scale: 0.92, rotate: -2 }}
                         onClick={() => handleQuickAdd(product)}
-                        disabled={isAdded}
                         style={{
                           width: '100%',
                           padding: 'clamp(0.5rem, 1.4vw, 0.75rem)',
@@ -751,7 +759,8 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                           fontFamily: 'var(--font-display)',
                           fontSize: 'clamp(0.72rem, 1.4vw, 0.85rem)',
                           letterSpacing: '0.06em',
-                          cursor: isAdded ? 'default' : 'pointer',
+                          fontWeight: 800,
+                          cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -760,8 +769,14 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                         }}
                       >
                         <ShoppingBag size={13} />
-                        <span>{isAdded ? 'ADDED' : '+ QUICK ADD'}</span>
-                      </button>
+                        <span>
+                          {isAdded
+                            ? `ADDED (${quantityInCart} IN BAG)`
+                            : quantityInCart > 0
+                            ? `+ QUICK ADD (${quantityInCart} IN BAG)`
+                            : '+ QUICK ADD'}
+                        </span>
+                      </motion.button>
                     </div>
                   </motion.div>
                 );
