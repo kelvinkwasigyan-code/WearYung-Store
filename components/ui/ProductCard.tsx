@@ -115,17 +115,17 @@ export default function ProductCard({ product }: ProductCardProps) {
             type="button"
             onClick={handleQuickAdd}
             aria-label={`Quick add ${product.title} to bag`}
-            className="absolute bottom-2.5 right-2.5 z-20 flex h-8.5 items-center gap-1.5 rounded-lg border-none bg-[#FFC800] px-3 text-xs font-black uppercase tracking-wider text-black shadow-lg transition-all duration-200 hover:bg-yellow-400 hover:scale-105 active:scale-95"
+            className="absolute bottom-2.5 right-2.5 z-20 flex h-8.5 items-center gap-1.5 rounded-lg border border-[#FFC800]/30 bg-zinc-950/85 px-3 text-xs font-black uppercase tracking-wider text-[#FFC800] shadow-lg backdrop-blur-md transition-all duration-200 hover:border-[#FFC800] hover:scale-105 active:scale-95"
           >
             {added ? (
               <>
-                <Check className="h-3.5 w-3.5 text-black" strokeWidth={3} />
-                <span className="text-[10px] font-black text-black">Added</span>
+                <Check className="h-3.5 w-3.5 text-emerald-400" strokeWidth={3} />
+                <span className="text-[10px] font-black text-emerald-400">Added</span>
               </>
             ) : (
               <>
-                <ShoppingBag className="h-3.5 w-3.5 text-black" strokeWidth={2.4} />
-                <span className="text-[10px] font-black text-black">Quick Add</span>
+                <ShoppingBag className="h-3.5 w-3.5 text-[#FFC800]" strokeWidth={2.4} />
+                <span className="text-[10px] font-black text-[#FFC800]">Quick Add</span>
               </>
             )}
           </button>

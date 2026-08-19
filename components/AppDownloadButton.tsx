@@ -81,9 +81,9 @@ export default function AppDownloadButton({ variant = 'solid' }: AppDownloadButt
     <a
       href="/app-release.apk"
       download="wear-yung.apk"
-      className="inline-flex items-center gap-2.5 rounded-xl border border-[#FFC800]/40 bg-zinc-900 px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#FFC800] no-underline transition-all duration-300 hover:bg-[#FFC800] hover:text-black hover:shadow-[0_0_20px_rgba(255,200,0,0.3)] active:scale-95"
+      className="inline-flex items-center gap-2 px-1 py-1 text-xs font-black uppercase tracking-wider text-[#FFC800] no-underline transition-all duration-200 hover:opacity-80 active:scale-95"
     >
-      <Download className="h-4 w-4" strokeWidth={2.5} />
+      <Download className="h-4 w-4 text-[#FFC800]" strokeWidth={2.5} />
       <span>Download .APK</span>
     </a>
   );
