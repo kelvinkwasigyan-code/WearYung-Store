@@ -112,10 +112,10 @@ export default function QuickAddButton({ product, variant }: QuickAddButtonProps
             justifyContent: 'space-between',
             width: '100%',
             padding: '0.35rem 0.5rem',
-            borderRadius: 'var(--radius-sm)',
-            background: 'var(--wy-yellow)',
-            color: '#000000',
-            border: 'none',
+            borderRadius: '8px',
+            background: '#09090B',
+            border: '1px solid rgba(255, 200, 0, 0.4)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
           }}
         >
           <motion.button
@@ -127,25 +127,26 @@ export default function QuickAddButton({ product, variant }: QuickAddButtonProps
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '28px',
-              height: '28px',
-              borderRadius: '4px',
-              background: '#000000',
+              width: '32px',
+              height: '32px',
+              borderRadius: '6px',
+              background: 'rgba(255, 200, 0, 0.12)',
               color: '#FFC800',
-              border: 'none',
+              border: '1px solid rgba(255, 200, 0, 0.3)',
               cursor: 'pointer',
+              transition: 'all 0.15s ease',
             }}
           >
-            <Minus size={14} strokeWidth={3} />
+            <Minus size={15} strokeWidth={3} />
           </motion.button>
 
           <span
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: '0.75rem',
-              fontWeight: 900,
-              letterSpacing: '0.04em',
-              color: '#000000',
+              fontSize: 'clamp(0.78rem, 1.4vw, 0.88rem)',
+              fontWeight: 800,
+              letterSpacing: '0.06em',
+              color: '#FFC800',
             }}
           >
             {quantityInCart} IN BAG
@@ -160,16 +161,18 @@ export default function QuickAddButton({ product, variant }: QuickAddButtonProps
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '28px',
-              height: '28px',
-              borderRadius: '4px',
-              background: '#000000',
-              color: '#FFC800',
+              width: '32px',
+              height: '32px',
+              borderRadius: '6px',
+              background: '#FFC800',
+              color: '#000000',
               border: 'none',
               cursor: 'pointer',
+              boxShadow: '0 0 12px rgba(255, 200, 0, 0.4)',
+              transition: 'all 0.15s ease',
             }}
           >
-            <Plus size={14} strokeWidth={3} />
+            <Plus size={15} strokeWidth={3} />
           </motion.button>
         </div>
       ) : (

@@ -159,19 +159,19 @@ export default function ProductCard({ product }: ProductCardProps) {
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="flex h-9 items-center gap-1 rounded-lg border border-[#FFC800] bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-md"
+                  className="flex h-9 items-center gap-1.5 rounded-lg border border-[#FFC800]/50 bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-md"
                 >
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.75 }}
                     onClick={handleDecrease}
                     aria-label="Decrease quantity"
-                    className="flex h-7 w-7 items-center justify-center rounded bg-zinc-900 text-[#FFC800] transition-colors hover:bg-[#FFC800] hover:text-black border-none cursor-pointer"
+                    className="flex h-7 w-7 items-center justify-center rounded bg-[#FFC800]/15 text-[#FFC800] border border-[#FFC800]/30 transition-colors hover:bg-[#FFC800] hover:text-black cursor-pointer"
                   >
                     <Minus className="h-3.5 w-3.5" strokeWidth={3} />
                   </motion.button>
 
-                  <span className="px-1 text-[11px] font-black tracking-tight text-white whitespace-nowrap">
+                  <span className="px-1 text-[11px] font-black tracking-wider text-[#FFC800] whitespace-nowrap">
                     {quantityInCart} IN BAG
                   </span>
 
@@ -180,7 +180,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     whileTap={{ scale: 0.75 }}
                     onClick={handleIncrease}
                     aria-label="Increase quantity"
-                    className="flex h-7 w-7 items-center justify-center rounded bg-[#FFC800] text-black transition-colors hover:bg-yellow-400 border-none cursor-pointer"
+                    className="flex h-7 w-7 items-center justify-center rounded bg-[#FFC800] text-black shadow-[0_0_10px_rgba(255,200,0,0.4)] transition-colors hover:bg-yellow-400 border-none cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" strokeWidth={3} />
                   </motion.button>

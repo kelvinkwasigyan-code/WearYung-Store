@@ -753,10 +753,9 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                           width: '100%',
                           padding: '0.35rem 0.5rem',
                           borderRadius: '8px',
-                          background: '#FFC800',
-                          color: '#000000',
-                          border: 'none',
-                          boxShadow: '0 4px 15px rgba(255, 200, 0, 0.25)',
+                          background: '#09090B',
+                          border: '1px solid rgba(255, 200, 0, 0.4)',
+                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
                         }}>
                           <motion.button
                             type="button"
@@ -766,13 +765,14 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              width: '30px',
-                              height: '30px',
+                              width: '32px',
+                              height: '32px',
                               borderRadius: '6px',
-                              background: '#000000',
+                              background: 'rgba(255, 200, 0, 0.12)',
                               color: '#FFC800',
-                              border: 'none',
+                              border: '1px solid rgba(255, 200, 0, 0.3)',
                               cursor: 'pointer',
+                              transition: 'all 0.15s ease',
                             }}
                             aria-label="Decrease quantity"
                           >
@@ -781,10 +781,10 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
 
                           <span style={{
                             fontFamily: 'var(--font-display)',
-                            fontSize: 'clamp(0.75rem, 1.4vw, 0.88rem)',
-                            fontWeight: 900,
-                            letterSpacing: '0.04em',
-                            color: '#000000',
+                            fontSize: 'clamp(0.78rem, 1.4vw, 0.88rem)',
+                            fontWeight: 800,
+                            letterSpacing: '0.06em',
+                            color: '#FFC800',
                           }}>
                             {quantityInCart} IN BAG
                           </span>
@@ -801,13 +801,15 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              width: '30px',
-                              height: '30px',
+                              width: '32px',
+                              height: '32px',
                               borderRadius: '6px',
-                              background: '#000000',
-                              color: '#FFC800',
+                              background: '#FFC800',
+                              color: '#000000',
                               border: 'none',
                               cursor: 'pointer',
+                              boxShadow: '0 0 12px rgba(255, 200, 0, 0.4)',
+                              transition: 'all 0.15s ease',
                             }}
                             aria-label="Increase quantity"
                           >
