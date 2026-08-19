@@ -54,7 +54,7 @@ export default function AdminSidebar({ userRole = 'admin' }: AdminSidebarProps) 
             const s = Number(v.stock_quantity ?? 0);
             const sizeInv = (v.attributes as any)?.size_inventory;
             const hasLowSize = sizeInv && typeof sizeInv === 'object' && Object.values(sizeInv).some((qty: any) => Number(qty) <= 2);
-            return s <= 5 || Boolean(hasLowSize);
+            return s <= 2 || Boolean(hasLowSize);
           }).length;
           setLowStockCount(count);
         }

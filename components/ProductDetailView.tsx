@@ -106,7 +106,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const totalStock = selectedVariant?.stock_quantity ?? 0;
   const currentSizeStock = hasSizeInventory && selectedSize ? (Number(sizeInventory[selectedSize]) || 0) : totalStock;
   const inStock = currentSizeStock > 0;
-  const isLowStock = inStock && currentSizeStock <= 5;
+  const isLowStock = inStock && currentSizeStock <= 2;
   const stock = currentSizeStock;
 
   const images = product.images?.length ? product.images : ['https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=80'];
@@ -478,7 +478,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                     }}
                   >
                     <span>{['sneakers', 'slides'].includes(product.category) && !sz.startsWith('EU') ? `EU ${sz}` : sz}</span>
-                    {!isItemOutOfStock && Number(count) <= 5 && (
+                    {!isItemOutOfStock && Number(count) <= 2 && (
                       <span style={{ fontSize: '0.68rem', color: '#F59E0B', fontWeight: 600 }}>({count} left)</span>
                     )}
                   </button>

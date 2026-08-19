@@ -84,7 +84,7 @@ export default async function AdminDashboardPage() {
       });
     }
 
-    const isLow = totalStock <= 5 || lowSizes.length > 0;
+    const isLow = totalStock <= 2 || lowSizes.length > 0;
     if (isLow) {
       lowStockItems.push({
         id: p.id,

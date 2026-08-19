@@ -523,7 +523,7 @@ export default function AdminProductsPage() {
     const s = Number(v?.stock_quantity ?? 0);
     const sizeInv = v?.attributes?.size_inventory;
     const hasLowSize = sizeInv && typeof sizeInv === 'object' && Object.values(sizeInv).some((qty: any) => Number(qty) <= 2);
-    return s <= 5 || hasLowSize;
+    return s <= 2 || hasLowSize;
   });
 
   const lowStockCount = lowStockProducts.length;
@@ -541,11 +541,11 @@ export default function AdminProductsPage() {
 
     let matchStock = true;
     if (filterStock === 'low_stock') {
-      matchStock = stock <= 5 || Boolean(hasLowSize);
+      matchStock = stock <= 2 || Boolean(hasLowSize);
     } else if (filterStock === 'out_of_stock') {
       matchStock = stock === 0;
     } else if (filterStock === 'in_stock') {
-      matchStock = stock > 5 && !hasLowSize;
+      matchStock = stock > 2 && !hasLowSize;
     }
 
     return matchSearch && matchCategory && matchStock;
@@ -706,7 +706,7 @@ export default function AdminProductsPage() {
                 });
               }
               const isOutOfStock = stock === 0;
-              const isLowStock = !isOutOfStock && ((stock ?? 0) <= 5 || lowSizes.length > 0);
+              const isLowStock = !isOutOfStock && ((stock ?? 0) <= 2 || lowSizes.length > 0);
 
               return (
                 <div
@@ -954,7 +954,7 @@ export default function AdminProductsPage() {
                               });
                             }
                             const isOutOfStock = stock === 0;
-                            const isLowStock = !isOutOfStock && ((stock ?? 0) <= 5 || lowSizes.length > 0);
+                            const isLowStock = !isOutOfStock && ((stock ?? 0) <= 2 || lowSizes.length > 0);
 
                             return (
                               <div>
