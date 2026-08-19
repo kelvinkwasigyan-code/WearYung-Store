@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingBag, Plus, Minus } from 'lucide-react';
+import { Heart, ShoppingBag, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Product } from '@/types/ecommerce';
 import { useCartContext } from '@/context/CartContext';
@@ -16,6 +16,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart, updateQuantity, removeFromCart, items } = useCartContext();
   const [added, setAdded] = useState(false);
   const [animatingKey, setAnimatingKey] = useState(0);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   // Find existing cart item for this product
   const cartItem = items.find((item) => item.productId === product.id);
@@ -24,11 +25,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     .reduce((sum, item) => sum + item.quantity, 0);
 
   const targetVariant = product.variants?.[0];
-  const minPrice = product.variants?.length
-    ? Math.min(...product.variants.map((v) => v.price))
-    : null;
+  const price = targetVariant?.price ?? 0;
   const inStock = product.variants?.some((v) => (v.stock_quantity ?? 0) > 0) ?? false;
   const imageUrl = product.images?.[0] ?? null;
+
+  const attrs = (targetVariant?.attributes as any) || {};
+  const badgeText = (attrs.clothing_type || product.category || 'Drop').toUpperCase();
 
   const handleIncrease = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -64,8 +66,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsWishlisted((prev) => !prev);
+  };
+
   return (
-    <div className="relative">
+    <div className="relative h-full flex flex-col">
       {/* Outer Floating Particle Badge */}
       <AnimatePresence>
         {added && (
@@ -83,33 +91,42 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
       </AnimatePresence>
 
-      <Link
-        href={`/shop/${product.slug}`}
-        className="group relative flex flex-col transition-all duration-300 no-underline"
+      <motion.div
+        layout
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.25 }}
+        style={{
+          background: '#141416',
+          borderRadius: '16px',
+          border: added ? '2px solid #FFC800' : '1px solid #27272A',
+          boxShadow: added ? '0 0 30px rgba(255,200,0,0.35)' : '0 8px 24px rgba(0,0,0,0.4)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: '100%',
+          transition: 'all 0.2s ease',
+        }}
+        className="group hover:border-[#FFC800]/40"
       >
         {/* ─── Image Frame ─── */}
-        <div
+        <Link
+          href={`/shop/${product.slug}`}
           style={{
             position: 'relative',
-            aspectRatio: '1 / 1.12',
-            width: '100%',
+            aspectRatio: '4 / 5',
             overflow: 'hidden',
-            borderRadius: 'clamp(12px, 2vw, 16px)',
-            background: '#141418',
-            border: added ? '2px solid #FFC800' : '1px solid #27272A',
-            boxShadow: added
-              ? '0 0 35px rgba(255, 200, 0, 0.45)'
-              : '0 8px 24px rgba(0, 0, 0, 0.4)',
-            transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+            background: '#080808',
+            display: 'block',
           }}
-          className="group-hover:border-[#FFC800]/50 group-hover:shadow-[0_8px_30px_rgba(255,200,0,0.15)]"
         >
           {imageUrl ? (
             <Image
               src={imageUrl}
               alt={product.title}
               fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className={`transition-transform duration-500 ease-out group-hover:scale-105 ${
                 added ? 'scale-105 filter brightness-110' : ''
               }`}
@@ -125,84 +142,53 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
 
-          {/* Ambient Dark Scrim */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%)', pointerEvents: 'none' }} />
-
-          {/* Category Pill Tag */}
+          {/* Category / Subtype Badge */}
           <div
             style={{
               position: 'absolute',
-              left: 'clamp(6px, 1.5vw, 10px)',
-              top: 'clamp(6px, 1.5vw, 10px)',
+              top: '12px',
+              left: '12px',
               zIndex: 10,
-              borderRadius: '100px',
-              background: 'rgba(9, 9, 11, 0.82)',
-              border: '1px solid rgba(255, 200, 0, 0.35)',
-              backdropFilter: 'blur(8px)',
+              background: '#FFC800',
+              color: '#000000',
               padding: '0.2rem 0.6rem',
+              borderRadius: '4px',
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(0.62rem, 1.1vw, 0.72rem)',
-              fontWeight: 800,
-              textTransform: 'uppercase',
+              fontSize: '0.7rem',
               letterSpacing: '0.08em',
-              color: 'var(--wy-yellow)',
+              fontWeight: 700,
             }}
           >
-            {product.category}
+            {badgeText}
           </div>
 
-          {/* Floating Quick Add & Stepper Controls */}
-          {inStock && (
-            <div className="absolute bottom-2.5 right-2.5 z-20">
-              {quantityInCart > 0 ? (
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="flex h-9 items-center gap-1.5 rounded-lg border border-[#FFC800]/50 bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-md"
-                >
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.75 }}
-                    onClick={handleDecrease}
-                    aria-label="Decrease quantity"
-                    className="flex h-7 w-7 items-center justify-center rounded bg-[#FFC800]/15 text-[#FFC800] border border-[#FFC800]/30 transition-colors hover:bg-[#FFC800] hover:text-black cursor-pointer"
-                  >
-                    <Minus className="h-3.5 w-3.5" strokeWidth={3} />
-                  </motion.button>
+          {/* Wishlist Button */}
+          <button
+            type="button"
+            onClick={toggleWishlist}
+            style={{
+              position: 'absolute',
+              top: '12px',
+              right: '12px',
+              zIndex: 10,
+              width: '34px',
+              height: '34px',
+              borderRadius: '50%',
+              background: '#000000',
+              border: isWishlisted ? '1px solid #FFC800' : '1px solid #27272A',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: isWishlisted ? '#FFC800' : '#FFFFFF',
+              cursor: 'pointer',
+              transition: 'all 150ms ease',
+            }}
+            aria-label="Wishlist"
+          >
+            <Heart size={16} fill={isWishlisted ? '#FFC800' : 'none'} />
+          </button>
 
-                  <span className="px-1 text-[11px] font-black tracking-wider text-[#FFC800] whitespace-nowrap">
-                    {quantityInCart} IN BAG
-                  </span>
-
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.75 }}
-                    onClick={handleIncrease}
-                    aria-label="Increase quantity"
-                    className="flex h-7 w-7 items-center justify-center rounded bg-[#FFC800] text-black shadow-[0_0_10px_rgba(255,200,0,0.4)] transition-colors hover:bg-yellow-400 border-none cursor-pointer"
-                  >
-                    <Plus className="h-3.5 w-3.5" strokeWidth={3} />
-                  </motion.button>
-                </motion.div>
-              ) : (
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.75, rotate: -6 }}
-                  whileHover={{ scale: 1.08 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 15 }}
-                  onClick={handleIncrease}
-                  aria-label={`Quick add ${product.title} to bag`}
-                  className="relative flex h-9 items-center gap-1.5 rounded-lg border border-[#FFC800]/40 bg-zinc-950/90 px-3.5 text-xs font-black uppercase tracking-wider text-[#FFC800] shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-[#FFC800] hover:bg-[#FFC800] hover:text-black"
-                >
-                  <ShoppingBag className="h-3.5 w-3.5" strokeWidth={2.4} />
-                  <span className="text-[10px] font-black">Quick Add</span>
-                </motion.button>
-              )}
-            </div>
-          )}
-
-          {/* Out of Stock Pill */}
+          {/* Out of Stock Overlay */}
           {!inStock && (
             <div
               style={{
@@ -233,57 +219,153 @@ export default function ProductCard({ product }: ProductCardProps) {
               </span>
             </div>
           )}
-        </div>
+        </Link>
 
-        {/* ─── Product Info ─── */}
-        <div style={{ display: 'flex', flexDirection: 'column', paddingTop: '0.65rem' }}>
-          {/* Sub-header: Rating */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '0.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-              <Star size={11} fill="var(--wy-yellow)" color="var(--wy-yellow)" />
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#A1A1AA' }}>
-                {product.average_rating ? product.average_rating.toFixed(1) : '4.9'}
-              </span>
+        {/* ─── Product Details & Actions ─── */}
+        <div
+          style={{
+            padding: 'clamp(0.65rem, 1.8vw, 1.15rem)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+            flex: 1,
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <Link href={`/shop/${product.slug}`} className="no-underline">
+              <h3
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)',
+                  color: '#FFFFFF',
+                  letterSpacing: '0.03em',
+                  lineHeight: 1.2,
+                  marginBottom: '0.25rem',
+                }}
+                className="group-hover:text-[#FFC800] transition-colors"
+              >
+                {product.title}
+              </h3>
+            </Link>
+            <div
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
+                color: '#FFC800',
+              }}
+            >
+              GH₵ {price.toLocaleString()}
             </div>
           </div>
 
-          {/* Title */}
-          <h3
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(0.88rem, 1.4vw, 1.05rem)',
-              fontWeight: 800,
-              letterSpacing: '0.04em',
-              color: '#FFFFFF',
-              margin: '0 0 0.35rem',
-              lineHeight: 1.25,
-              display: '-webkit-box',
-              WebkitLineClamp: 1,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              transition: 'color 0.2s ease',
-            }}
-            className="group-hover:text-[#FFC800]"
-          >
-            {product.title}
-          </h3>
+          {/* Quick Add Button / Stepper Controls */}
+          {inStock && (
+            <div>
+              {quantityInCart > 0 ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    padding: '0.35rem 0.5rem',
+                    borderRadius: '8px',
+                    background: '#09090B',
+                    border: '1px solid rgba(255, 200, 0, 0.4)',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                  }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                >
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.8 }}
+                    onClick={handleDecrease}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      background: 'rgba(255, 200, 0, 0.12)',
+                      color: '#FFC800',
+                      border: '1px solid rgba(255, 200, 0, 0.3)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus size={15} strokeWidth={3} />
+                  </motion.button>
 
-          {/* Price */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(0.95rem, 1.6vw, 1.18rem)',
-                fontWeight: 900,
-                letterSpacing: '0.04em',
-                color: 'var(--wy-yellow)',
-              }}
-            >
-              {minPrice !== null ? `GH₵ ${minPrice.toLocaleString()}` : '—'}
-            </span>
-          </div>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: 'clamp(0.78rem, 1.4vw, 0.88rem)',
+                      fontWeight: 800,
+                      letterSpacing: '0.06em',
+                      color: '#FFC800',
+                    }}
+                  >
+                    {quantityInCart} IN BAG
+                  </span>
+
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.8 }}
+                    onClick={handleIncrease}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      background: '#FFC800',
+                      color: '#000000',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 0 12px rgba(255, 200, 0, 0.4)',
+                      transition: 'all 0.15s ease',
+                    }}
+                    aria-label="Increase quantity"
+                  >
+                    <Plus size={15} strokeWidth={3} />
+                  </motion.button>
+                </div>
+              ) : (
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.92, rotate: -2 }}
+                  onClick={handleIncrease}
+                  style={{
+                    width: '100%',
+                    padding: 'clamp(0.5rem, 1.4vw, 0.75rem)',
+                    borderRadius: '8px',
+                    background: '#FFC800',
+                    color: '#000000',
+                    border: 'none',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(0.72rem, 1.4vw, 0.85rem)',
+                    letterSpacing: '0.06em',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.35rem',
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  <ShoppingBag size={13} />
+                  <span>+ QUICK ADD</span>
+                </motion.button>
+              )}
+            </div>
+          )}
         </div>
-      </Link>
+      </motion.div>
     </div>
   );
 }
