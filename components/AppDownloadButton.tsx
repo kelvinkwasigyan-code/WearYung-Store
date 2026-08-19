@@ -20,7 +20,16 @@ export default function AppDownloadButton({ variant = 'solid' }: AppDownloadButt
       ua.includes('; wv') ||
       window.matchMedia('(display-mode: standalone)').matches;
     setIsInApp(isApp);
-  }, []);
+
+    if (!isApp && variant === 'floating') {
+      // Auto-dismiss floating pill after 2 minutes (120,000 ms)
+      const timer = setTimeout(() => {
+        setDismissed(true);
+      }, 120000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [variant]);
 
   if (isInApp || (dismissed && variant === 'floating')) return null;
 
