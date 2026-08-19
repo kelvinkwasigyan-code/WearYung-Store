@@ -22,10 +22,10 @@ export default function AppDownloadButton({ variant = 'solid' }: AppDownloadButt
     setIsInApp(isApp);
 
     if (!isApp && variant === 'floating') {
-      // Auto-dismiss floating pill after 2 minutes (120,000 ms)
+      // Auto-dismiss floating pill after 1 minute (60,000 ms)
       const timer = setTimeout(() => {
         setDismissed(true);
-      }, 120000);
+      }, 60000);
 
       return () => clearTimeout(timer);
     }
