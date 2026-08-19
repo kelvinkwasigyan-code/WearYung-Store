@@ -570,52 +570,11 @@ export default function AdminProductsPage() {
         </p>
       </div>
 
-      {/* ─── Low Stock Alert Banner ─── */}
-      {lowStockCount > 0 && filterStock !== 'low_stock' && (
-        <div style={{
-          background: 'rgba(239, 68, 68, 0.08)',
-          border: '1px solid rgba(239, 68, 68, 0.4)',
-          borderRadius: '10px',
-          padding: '0.9rem 1.25rem',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '0.75rem',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <span style={{ fontSize: '1.1rem' }}>⚠️</span>
-            <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 600 }}>
-              <strong style={{ color: '#EF4444' }}>{lowStockCount} item{lowStockCount > 1 ? 's' : ''}</strong> running low on stock (≤ 5 units or depleted sizes).
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setFilterStock('low_stock')}
-            style={{
-              background: '#EF4444',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '0.4rem 0.85rem',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              letterSpacing: '0.04em',
-            }}
-          >
-            VIEW LOW STOCK ITEMS ({lowStockCount})
-          </button>
-        </div>
-      )}
-
       {/* Quick Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
         {[
           { label: 'Total Products', value: products.length, color: '#FFC800' },
           { label: 'Published', value: publishedCount, color: '#10B981' },
-          { label: 'Low Stock Alerts', value: lowStockCount, color: lowStockCount > 0 ? '#EF4444' : '#10B981' },
           { label: 'Total Stock', value: totalStock, color: '#3B82F6' },
         ].map(stat => (
           <div key={stat.label} style={{

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import StatsCard from '@/components/admin/StatsCard';
-import { Package, ShoppingBag, Users, TrendingUp, Clock, AlertTriangle, AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Package, ShoppingBag, Users, TrendingUp, Clock } from 'lucide-react';
 import { isAdminEmail } from '@/lib/constants';
 import Link from 'next/link';
 
@@ -165,13 +165,6 @@ export default async function AdminDashboardPage() {
           accent="#FFC800"
         />
         <StatsCard
-          title="Low Stock Alerts"
-          value={lowStockCount}
-          subtitle={lowStockCount > 0 ? `${lowStockCount} items need restock` : 'All inventory healthy'}
-          icon={<AlertTriangle size={20} />}
-          accent={lowStockCount > 0 ? '#EF4444' : '#10B981'}
-        />
-        <StatsCard
           title="Total Orders"
           value={orderCount ?? 0}
           subtitle="Processed orders"
@@ -204,169 +197,6 @@ export default async function AdminDashboardPage() {
               accent="#8b5cf6"
             />
           </>
-        )}
-      </div>
-
-      {/* ─── Low Stock Alerts Widget ─── */}
-      <div style={{
-        background: '#0D0D10',
-        border: lowStockCount > 0 ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid #27272A',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: lowStockCount > 0 ? '0 0 20px rgba(239, 68, 68, 0.08)' : 'none',
-      }}>
-        <div style={{
-          padding: '1.15rem 1.5rem',
-          background: lowStockCount > 0 ? 'rgba(239, 68, 68, 0.06)' : '#121215',
-          borderBottom: '1px solid #27272A',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '0.5rem',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            {lowStockCount > 0 ? (
-              <div style={{
-                background: 'rgba(239, 68, 68, 0.2)',
-                color: '#EF4444',
-                padding: '0.4rem',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <AlertCircle size={18} />
-              </div>
-            ) : (
-              <div style={{
-                background: 'rgba(16, 185, 129, 0.2)',
-                color: '#10B981',
-                padding: '0.4rem',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <CheckCircle2 size={18} />
-              </div>
-            )}
-            <div>
-              <h2 style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '1.05rem',
-                color: '#FFFFFF',
-                letterSpacing: '0.04em',
-                margin: 0,
-              }}>
-                {lowStockCount > 0 ? `INVENTORY ALERT: ${lowStockCount} ITEMS RUNNING LOW` : 'INVENTORY STATUS: ALL HEALTHY'}
-              </h2>
-              <p style={{ fontSize: '0.75rem', color: '#71717A', margin: 0, marginTop: '2px' }}>
-                {lowStockCount > 0 ? 'Items below 5 total units or with empty sizes.' : 'No stock shortages detected across active catalog.'}
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/admin/products?filter=low_stock"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              fontSize: '0.78rem',
-              color: '#FFC800',
-              fontWeight: 700,
-              textDecoration: 'none',
-              background: '#1A1A20',
-              border: '1px solid #27272A',
-              padding: '0.4rem 0.8rem',
-              borderRadius: '6px',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            Manage Catalog Stock <ArrowRight size={14} />
-          </Link>
-        </div>
-
-        {lowStockCount === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#71717A' }}>
-            <p style={{ fontSize: '0.85rem' }}>✓ All products have sufficient inventory on hand.</p>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.75rem', padding: '1rem' }}>
-            {lowStockItems.slice(0, 6).map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  background: '#141418',
-                  border: item.isOutOfStock ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(245, 158, 11, 0.3)',
-                  borderRadius: '8px',
-                  padding: '0.85rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                <div style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '6px',
-                  overflow: 'hidden',
-                  background: '#1E1E24',
-                  flexShrink: 0,
-                  border: '1px solid #27272A',
-                }}>
-                  {item.image ? (
-                    <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#52525B' }}>
-                      <Package size={18} />
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.82rem', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {item.title}
-                  </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.2rem', flexWrap: 'wrap' }}>
-                    <span style={{
-                      fontSize: '0.68rem',
-                      fontWeight: 800,
-                      padding: '1px 6px',
-                      borderRadius: '4px',
-                      background: item.isOutOfStock ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                      color: item.isOutOfStock ? '#EF4444' : '#F59E0B',
-                    }}>
-                      {item.isOutOfStock ? 'OUT OF STOCK' : `ONLY ${item.totalStock} LEFT`}
-                    </span>
-                    {item.lowSizes.length > 0 && (
-                      <span style={{ fontSize: '0.68rem', color: '#A1A1AA' }}>
-                        Low sizes: {item.lowSizes.map(s => `${s.size}(${s.count})`).join(', ')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <Link
-                  href="/admin/products"
-                  style={{
-                    background: '#1F1F24',
-                    border: '1px solid #27272A',
-                    borderRadius: '6px',
-                    padding: '0.35rem 0.6rem',
-                    color: '#FFC800',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    flexShrink: 0,
-                  }}
-                >
-                  Restock
-                </Link>
-              </div>
-            ))}
-          </div>
         )}
       </div>
 
