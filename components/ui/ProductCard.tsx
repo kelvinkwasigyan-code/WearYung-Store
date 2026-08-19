@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ShoppingBag, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Product } from '@/types/ecommerce';
 import { useCartContext } from '@/context/CartContext';
 
@@ -14,6 +15,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCartContext();
   const [added, setAdded] = useState(false);
+  const [animatingKey, setAnimatingKey] = useState(0);
 
   const targetVariant = product.variants?.[0];
   const minPrice = product.variants?.length
@@ -40,6 +42,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     });
 
     setAdded(true);
+    setAnimatingKey((prev) => prev + 1);
     setTimeout(() => setAdded(false), 1800);
   };
 
@@ -109,26 +112,56 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.category}
         </div>
 
-        {/* Floating Quick Add Button */}
+        {/* Floating Quick Add Button with Tap Physics & Fly-up Particle */}
         {inStock && (
-          <button
-            type="button"
-            onClick={handleQuickAdd}
-            aria-label={`Quick add ${product.title} to bag`}
-            className="absolute bottom-2.5 right-2.5 z-20 flex h-8.5 items-center gap-1.5 rounded-lg border border-[#FFC800]/30 bg-zinc-950/85 px-3 text-xs font-black uppercase tracking-wider text-[#FFC800] shadow-lg backdrop-blur-md transition-all duration-200 hover:border-[#FFC800] hover:scale-105 active:scale-95"
-          >
-            {added ? (
-              <>
-                <Check className="h-3.5 w-3.5 text-emerald-400" strokeWidth={3} />
-                <span className="text-[10px] font-black text-emerald-400">Added</span>
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="h-3.5 w-3.5 text-[#FFC800]" strokeWidth={2.4} />
-                <span className="text-[10px] font-black text-[#FFC800]">Quick Add</span>
-              </>
-            )}
-          </button>
+          <div className="absolute bottom-2.5 right-2.5 z-20">
+            {/* Fly-up Floating Badge Particle */}
+            <AnimatePresence>
+              {added && (
+                <motion.div
+                  key={animatingKey}
+                  initial={{ opacity: 1, y: 0, scale: 0.6, rotate: 0 }}
+                  animate={{ opacity: 0, y: -45, scale: 1.25, rotate: -12 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="pointer-events-none absolute -top-4 right-1 flex items-center gap-1 rounded-full bg-[#FFC800] px-2.5 py-1 text-[10px] font-black uppercase text-black shadow-xl"
+                >
+                  <ShoppingBag className="h-3 w-3 fill-black text-black" />
+                  <span>+1 BAG</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.82, rotate: -4 }}
+              whileHover={{ scale: 1.06 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              onClick={handleQuickAdd}
+              aria-label={`Quick add ${product.title} to bag`}
+              className={`relative flex h-8.5 items-center gap-1.5 rounded-lg border px-3 text-xs font-black uppercase tracking-wider shadow-lg backdrop-blur-md transition-colors duration-200 ${
+                added
+                  ? 'border-emerald-500/50 bg-emerald-950/90 text-emerald-400'
+                  : 'border-[#FFC800]/30 bg-zinc-950/85 text-[#FFC800] hover:border-[#FFC800]'
+              }`}
+            >
+              {added ? (
+                <motion.span
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex items-center gap-1"
+                >
+                  <Check className="h-3.5 w-3.5 text-emerald-400" strokeWidth={3} />
+                  <span className="text-[10px] font-black text-emerald-400">Added</span>
+                </motion.span>
+              ) : (
+                <span className="flex items-center gap-1.5">
+                  <ShoppingBag className="h-3.5 w-3.5 text-[#FFC800]" strokeWidth={2.4} />
+                  <span className="text-[10px] font-black text-[#FFC800]">Quick Add</span>
+                </span>
+              )}
+            </motion.button>
+          </div>
         )}
 
         {/* Out of Stock Pill */}
