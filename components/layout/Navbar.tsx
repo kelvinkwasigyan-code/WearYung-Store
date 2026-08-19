@@ -305,9 +305,9 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   href="/admin"
                   id="nav-admin-btn"
                   aria-label="Admin Portal"
-                  className="hidden lg:inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black text-[#FFC800] rounded-full font-black text-xs uppercase tracking-wider hover:bg-zinc-900 border border-black/30 transition-all whitespace-nowrap no-underline"
+                  className="hidden lg:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-75 transition-all whitespace-nowrap no-underline"
                 >
-                  <Shield size={14} />
+                  <Shield size={14} className="text-black" />
                   <span>Admin</span>
                 </Link>
               ) : (
@@ -315,9 +315,9 @@ export default function Navbar({ cartCount }: NavbarProps) {
                   href="/account"
                   id="nav-account-btn"
                   aria-label="Account"
-                  className="hidden lg:inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-black/15 text-black rounded-full font-black text-xs uppercase tracking-wider hover:bg-black/25 transition-all whitespace-nowrap no-underline"
+                  className="hidden lg:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 text-black font-extrabold text-xs uppercase tracking-wider hover:opacity-75 transition-all whitespace-nowrap no-underline"
                 >
-                  <UserIcon size={14} />
+                  <UserIcon size={14} className="text-black" />
                   <span>Account</span>
                 </Link>
               )
@@ -325,13 +325,13 @@ export default function Navbar({ cartCount }: NavbarProps) {
               <Link
                 href="/login"
                 id="nav-login-btn"
-                className="hidden lg:inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-black text-[#FFC800] rounded-full font-bold text-xs uppercase tracking-wider hover:bg-zinc-900 hover:scale-105 active:scale-95 border border-black/40 shadow-sm transition-all whitespace-nowrap no-underline"
+                className="hidden lg:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 text-black font-bold text-xs uppercase tracking-wider hover:opacity-75 transition-all whitespace-nowrap no-underline"
                 style={{
                   fontFamily: 'var(--font-body)',
                   letterSpacing: '0.08em',
                 }}
               >
-                <UserIcon size={13} strokeWidth={2.4} />
+                <UserIcon size={14} strokeWidth={2.4} className="text-black" />
                 <span>Sign In</span>
               </Link>
             )}
