@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import type { ProductVariant } from '@/types/ecommerce';
@@ -40,7 +40,7 @@ export default function AddToCartButton({
       price: selectedVariant.price,
       quantity,
       attributes: selectedVariant.attributes,
-    });
+    }, true);
 
     // Flash confirmation
     setAdded(true);

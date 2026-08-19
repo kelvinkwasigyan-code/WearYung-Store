@@ -56,7 +56,7 @@ interface CartContextType {
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem, openDrawer?: boolean) => void;
   removeFromCart: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;
@@ -72,7 +72,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const closeCart = useCallback(() => setIsOpen(false), []);
   const toggleCart = useCallback(() => setIsOpen((prev) => !prev), []);
 
-  const addToCart = useCallback((newItem: CartItem) => {
+  const addToCart = useCallback((newItem: CartItem, openDrawer: boolean = false) => {
     const current = getSnapshot();
     const existingIndex = current.findIndex((i) => i.variantId === newItem.variantId);
     let updated: CartItem[];
@@ -91,7 +91,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items: updated }));
       emitChange();
     }
-    setIsOpen(true);
+    if (openDrawer) {
+      setIsOpen(true);
+    }
   }, []);
 
   const removeFromCart = useCallback((variantId: string) => {
