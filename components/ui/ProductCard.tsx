@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingBag, Check } from 'lucide-react';
+import { Star, ShoppingBag, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Product } from '@/types/ecommerce';
 import { useCartContext } from '@/context/CartContext';
@@ -13,11 +13,12 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addToCart, items } = useCartContext();
+  const { addToCart, updateQuantity, removeFromCart, items } = useCartContext();
   const [added, setAdded] = useState(false);
   const [animatingKey, setAnimatingKey] = useState(0);
 
-  // Calculate total items of this product currently in bag
+  // Find existing cart item for this product
+  const cartItem = items.find((item) => item.productId === product.id);
   const quantityInCart = items
     .filter((item) => item.productId === product.id)
     .reduce((sum, item) => sum + item.quantity, 0);
@@ -29,7 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const inStock = product.variants?.some((v) => (v.stock_quantity ?? 0) > 0) ?? false;
   const imageUrl = product.images?.[0] ?? null;
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
+  const handleIncrease = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!targetVariant || !inStock) return;
@@ -51,9 +52,21 @@ export default function ProductCard({ product }: ProductCardProps) {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const handleDecrease = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!cartItem) return;
+
+    if (cartItem.quantity > 1) {
+      updateQuantity(cartItem.variantId, cartItem.quantity - 1);
+    } else {
+      removeFromCart(cartItem.variantId);
+    }
+  };
+
   return (
     <div className="relative">
-      {/* Outer Floating Particle Badge (Outside overflow-hidden boundary) */}
+      {/* Outer Floating Particle Badge */}
       <AnimatePresence>
         {added && (
           <motion.div
@@ -138,41 +151,54 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.category}
           </div>
 
-
-
-          {/* Floating Quick Add Button with Tap Physics */}
+          {/* Floating Quick Add & Stepper Controls */}
           {inStock && (
             <div className="absolute bottom-2.5 right-2.5 z-20">
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.75, rotate: -6 }}
-                whileHover={{ scale: 1.08 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 15 }}
-                onClick={handleQuickAdd}
-                aria-label={`Quick add ${product.title} to bag`}
-                className={`relative flex h-9 items-center gap-1.5 rounded-lg border px-3.5 text-xs font-black uppercase tracking-wider shadow-2xl backdrop-blur-md transition-all duration-200 ${
-                  added
-                    ? 'border-[#FFC800] bg-[#FFC800] text-black shadow-[0_0_20px_rgba(255,200,0,0.6)]'
-                    : 'border-[#FFC800]/40 bg-zinc-950/90 text-[#FFC800] hover:border-[#FFC800] hover:bg-[#FFC800] hover:text-black'
-                }`}
-              >
-                {added ? (
-                  <motion.span
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 500 }}
-                    className="flex items-center gap-1.5"
+              {quantityInCart > 0 ? (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  className="flex h-9 items-center gap-1 rounded-lg border border-[#FFC800] bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-md"
+                >
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.75 }}
+                    onClick={handleDecrease}
+                    aria-label="Decrease quantity"
+                    className="flex h-7 w-7 items-center justify-center rounded bg-zinc-900 text-[#FFC800] transition-colors hover:bg-[#FFC800] hover:text-black border-none cursor-pointer"
                   >
-                    <Check className="h-4 w-4 text-black stroke-[3]" />
-                    <span className="text-[11px] font-black text-black">Added!</span>
-                  </motion.span>
-                ) : (
-                  <span className="flex items-center gap-1.5">
-                    <ShoppingBag className="h-3.5 w-3.5" strokeWidth={2.4} />
-                    <span className="text-[10px] font-black">Quick Add</span>
+                    <Minus className="h-3.5 w-3.5" strokeWidth={3} />
+                  </motion.button>
+
+                  <span className="px-1 text-[11px] font-black tracking-tight text-white whitespace-nowrap">
+                    {quantityInCart} IN BAG
                   </span>
-                )}
-              </motion.button>
+
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.75 }}
+                    onClick={handleIncrease}
+                    aria-label="Increase quantity"
+                    className="flex h-7 w-7 items-center justify-center rounded bg-[#FFC800] text-black transition-colors hover:bg-yellow-400 border-none cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+                  </motion.button>
+                </motion.div>
+              ) : (
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.75, rotate: -6 }}
+                  whileHover={{ scale: 1.08 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                  onClick={handleIncrease}
+                  aria-label={`Quick add ${product.title} to bag`}
+                  className="relative flex h-9 items-center gap-1.5 rounded-lg border border-[#FFC800]/40 bg-zinc-950/90 px-3.5 text-xs font-black uppercase tracking-wider text-[#FFC800] shadow-2xl backdrop-blur-md transition-all duration-200 hover:border-[#FFC800] hover:bg-[#FFC800] hover:text-black"
+                >
+                  <ShoppingBag className="h-3.5 w-3.5" strokeWidth={2.4} />
+                  <span className="text-[10px] font-black">Quick Add</span>
+                </motion.button>
+              )}
             </div>
           )}
 

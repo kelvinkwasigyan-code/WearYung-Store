@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { Product, ProductVariant } from '@/types/ecommerce';
 import { useCartContext } from '@/context/CartContext';
-import { ShoppingBag, Check, Plus } from 'lucide-react';
+import { ShoppingBag, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface QuickAddButtonProps {
@@ -12,13 +12,22 @@ interface QuickAddButtonProps {
 }
 
 export default function QuickAddButton({ product, variant }: QuickAddButtonProps) {
-  const { addToCart } = useCartContext();
+  const { addToCart, updateQuantity, removeFromCart, items } = useCartContext();
   const [added, setAdded] = useState(false);
   const [animatingKey, setAnimatingKey] = useState(0);
+
   const targetVariant = variant || product.variants?.[0];
   const inStock = (targetVariant?.stock_quantity ?? 0) > 0;
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
+  const cartItem = items.find(
+    (i) => i.productId === product.id && (!targetVariant || i.variantId === targetVariant.id)
+  );
+
+  const quantityInCart = items
+    .filter((i) => i.productId === product.id)
+    .reduce((sum, i) => sum + i.quantity, 0);
+
+  const handleIncrease = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!targetVariant || !inStock) return;
@@ -38,6 +47,18 @@ export default function QuickAddButton({ product, variant }: QuickAddButtonProps
     setAdded(true);
     setAnimatingKey((prev) => prev + 1);
     setTimeout(() => setAdded(false), 1800);
+  };
+
+  const handleDecrease = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!cartItem) return;
+
+    if (cartItem.quantity > 1) {
+      updateQuantity(cartItem.variantId, cartItem.quantity - 1);
+    } else {
+      removeFromCart(cartItem.variantId);
+    }
   };
 
   if (!inStock) {
@@ -82,43 +103,107 @@ export default function QuickAddButton({ product, variant }: QuickAddButtonProps
         )}
       </AnimatePresence>
 
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.92, rotate: -2 }}
-        whileHover={{ scale: 1.02 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-        onClick={handleQuickAdd}
-        className="btn btn-sm"
-        style={{
-          width: '100%',
-          background: added ? 'var(--wy-success)' : 'var(--wy-yellow)',
-          color: added ? '#FFFFFF' : 'var(--wy-canvas)',
-          border: 'none',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: '0.75rem',
-          fontWeight: 700,
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          cursor: 'pointer',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.4rem',
-          transition: 'all 150ms ease',
-        }}
-      >
-        {added ? (
-          <motion.span initial={{ scale: 0.6 }} animate={{ scale: 1 }} className="flex items-center gap-1">
-            <Check size={14} strokeWidth={3} />
-            <span>Added!</span>
-          </motion.span>
-        ) : (
+      {quantityInCart > 0 ? (
+        <div
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            padding: '0.35rem 0.5rem',
+            borderRadius: 'var(--radius-sm)',
+            background: 'var(--wy-yellow)',
+            color: '#000000',
+            border: 'none',
+          }}
+        >
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.8 }}
+            onClick={handleDecrease}
+            aria-label="Decrease quantity"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '28px',
+              height: '28px',
+              borderRadius: '4px',
+              background: '#000000',
+              color: '#FFC800',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <Minus size={14} strokeWidth={3} />
+          </motion.button>
+
+          <span
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '0.75rem',
+              fontWeight: 900,
+              letterSpacing: '0.04em',
+              color: '#000000',
+            }}
+          >
+            {quantityInCart} IN BAG
+          </span>
+
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.8 }}
+            onClick={handleIncrease}
+            aria-label="Increase quantity"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '28px',
+              height: '28px',
+              borderRadius: '4px',
+              background: '#000000',
+              color: '#FFC800',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <Plus size={14} strokeWidth={3} />
+          </motion.button>
+        </div>
+      ) : (
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.92, rotate: -2 }}
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          onClick={handleIncrease}
+          className="btn btn-sm"
+          style={{
+            width: '100%',
+            background: 'var(--wy-yellow)',
+            color: 'var(--wy-canvas)',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.4rem',
+            transition: 'all 150ms ease',
+          }}
+        >
           <span className="flex items-center gap-1">
             <Plus size={14} strokeWidth={2.5} />
             <span>Quick Add</span>
           </span>
-        )}
-      </motion.button>
+        </motion.button>
+      )}
     </div>
   );
 }

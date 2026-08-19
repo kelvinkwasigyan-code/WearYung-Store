@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, ArrowRight, Filter, Search, X } from 'lucide-react';
+import { Heart, ShoppingBag, ArrowRight, Filter, Search, X, Plus, Minus } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
 import type { CartItem, Product } from '@/types/ecommerce';
 
@@ -18,7 +18,7 @@ type TopsSleevesSub = 'all' | 'tops' | 'sleeves';
 type JeansSub = 'all' | 'baggy' | 'slim';
 
 export default function UnifiedProductShowcase({ products }: UnifiedProductShowcaseProps) {
-  const { addToCart, items } = useCartContext();
+  const { addToCart, updateQuantity, removeFromCart, items } = useCartContext();
   const [selectedCategory, setSelectedCategory] = useState<MainCategory>('all');
   const [selectedClothingGroup, setSelectedClothingGroup] = useState<ClothingPrimaryGroup>('all');
   const [selectedTopsSub, setSelectedTopsSub] = useState<TopsSleevesSub>('all');
@@ -121,6 +121,18 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
         return next;
       });
     }, 2000);
+  };
+
+  const handleDecrease = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const cartItem = (items || []).find((i) => i.productId === product.id);
+    if (!cartItem) return;
+    if (cartItem.quantity > 1) {
+      updateQuantity(cartItem.variantId, cartItem.quantity - 1);
+    } else {
+      removeFromCart(cartItem.variantId);
+    }
   };
 
   const mainCategories: { id: MainCategory; label: string; count: number }[] = [
@@ -732,39 +744,104 @@ export default function UnifiedProductShowcase({ products }: UnifiedProductShowc
                         </div>
                       </div>
 
-                      {/* Quick Add Button */}
-                      <motion.button
-                        type="button"
-                        whileTap={{ scale: 0.92, rotate: -2 }}
-                        onClick={() => handleQuickAdd(product)}
-                        style={{
-                          width: '100%',
-                          padding: 'clamp(0.5rem, 1.4vw, 0.75rem)',
-                          borderRadius: '8px',
-                          background: isAdded ? '#10b981' : '#FFC800',
-                          color: isAdded ? '#FFFFFF' : '#000000',
-                          border: 'none',
-                          fontFamily: 'var(--font-display)',
-                          fontSize: 'clamp(0.72rem, 1.4vw, 0.85rem)',
-                          letterSpacing: '0.06em',
-                          fontWeight: 800,
-                          cursor: 'pointer',
+                      {/* Quick Add Button / Quantity Stepper */}
+                      {quantityInCart > 0 ? (
+                        <div style={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '0.35rem',
-                          transition: 'background 0.2s',
-                        }}
-                      >
-                        <ShoppingBag size={13} />
-                        <span>
-                          {isAdded
-                            ? `ADDED (${quantityInCart} IN BAG)`
-                            : quantityInCart > 0
-                            ? `+ QUICK ADD (${quantityInCart} IN BAG)`
-                            : '+ QUICK ADD'}
-                        </span>
-                      </motion.button>
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          padding: '0.35rem 0.5rem',
+                          borderRadius: '8px',
+                          background: '#FFC800',
+                          color: '#000000',
+                          border: 'none',
+                          boxShadow: '0 4px 15px rgba(255, 200, 0, 0.25)',
+                        }}>
+                          <motion.button
+                            type="button"
+                            whileTap={{ scale: 0.8 }}
+                            onClick={(e) => handleDecrease(e, product)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '30px',
+                              height: '30px',
+                              borderRadius: '6px',
+                              background: '#000000',
+                              color: '#FFC800',
+                              border: 'none',
+                              cursor: 'pointer',
+                            }}
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus size={15} strokeWidth={3} />
+                          </motion.button>
+
+                          <span style={{
+                            fontFamily: 'var(--font-display)',
+                            fontSize: 'clamp(0.75rem, 1.4vw, 0.88rem)',
+                            fontWeight: 900,
+                            letterSpacing: '0.04em',
+                            color: '#000000',
+                          }}>
+                            {quantityInCart} IN BAG
+                          </span>
+
+                          <motion.button
+                            type="button"
+                            whileTap={{ scale: 0.8 }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleQuickAdd(product);
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '30px',
+                              height: '30px',
+                              borderRadius: '6px',
+                              background: '#000000',
+                              color: '#FFC800',
+                              border: 'none',
+                              cursor: 'pointer',
+                            }}
+                            aria-label="Increase quantity"
+                          >
+                            <Plus size={15} strokeWidth={3} />
+                          </motion.button>
+                        </div>
+                      ) : (
+                        <motion.button
+                          type="button"
+                          whileTap={{ scale: 0.92, rotate: -2 }}
+                          onClick={() => handleQuickAdd(product)}
+                          style={{
+                            width: '100%',
+                            padding: 'clamp(0.5rem, 1.4vw, 0.75rem)',
+                            borderRadius: '8px',
+                            background: '#FFC800',
+                            color: '#000000',
+                            border: 'none',
+                            fontFamily: 'var(--font-display)',
+                            fontSize: 'clamp(0.72rem, 1.4vw, 0.85rem)',
+                            letterSpacing: '0.06em',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.35rem',
+                            transition: 'background 0.2s',
+                          }}
+                        >
+                          <ShoppingBag size={13} />
+                          <span>+ QUICK ADD</span>
+                        </motion.button>
+                      )}
                     </div>
                   </motion.div>
                 );
