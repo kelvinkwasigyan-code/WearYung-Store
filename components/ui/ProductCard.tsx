@@ -13,9 +13,14 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCartContext();
+  const { addToCart, items } = useCartContext();
   const [added, setAdded] = useState(false);
   const [animatingKey, setAnimatingKey] = useState(0);
+
+  // Calculate total items of this product currently in bag
+  const quantityInCart = items
+    .filter((item) => item.productId === product.id)
+    .reduce((sum, item) => sum + item.quantity, 0);
 
   const targetVariant = product.variants?.[0];
   const minPrice = product.variants?.length
@@ -132,6 +137,22 @@ export default function ProductCard({ product }: ProductCardProps) {
           >
             {product.category}
           </div>
+
+          {/* Items in Bag Count Badge (Top Right) */}
+          <AnimatePresence>
+            {quantityInCart > 0 && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 22 }}
+                className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5 rounded-full border border-[#FFC800] bg-zinc-950/90 px-2.5 py-1 text-[10px] font-black uppercase text-[#FFC800] shadow-xl backdrop-blur-md"
+              >
+                <ShoppingBag className="h-3 w-3 fill-[#FFC800] text-black" />
+                <span>{quantityInCart} IN BAG</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Floating Quick Add Button with Tap Physics */}
           {inStock && (
